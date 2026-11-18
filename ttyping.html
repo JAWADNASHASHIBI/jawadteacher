@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق الحساب السريع وسرعة الطباعة | T-Typing Classic Modernized</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Tajawal', sans-serif;
+            user-select: none;
+        }
+        .glass {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glow-text {
+            text-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+        }
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+        .floating {
+            animation: floatSlow 3s ease-in-out infinite;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden relative">
+
+    <!-- Top Header / HUD -->
+    <header class="w-full glass sticky top-0 z-30 px-4 py-3 border-b border-slate-800 shadow-xl">
+        <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <!-- Brand & Title -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-black text-2xl shadow-lg shadow-blue-500/30">
+                    ÷
+                </div>
+                <div>
+                    <h1 class="font-black text-lg md:text-xl text-white tracking-wide">تحدي الحساب وسرعة الكتابة</h1>
+                    <p class="text-xs text-slate-400">تطوير حديث لبرنامج T-Typing القديم</p>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="flex items-center gap-4 md:gap-8 bg-slate-900/80 px-4 py-2 rounded-2xl border border-slate-800">
+                <!-- Score -->
+                <div class="text-center">
+                    <span class="block text-[10px] text-slate-400 font-semibold uppercase tracking-wider">النقاط</span>
+                    <span id="scoreText" class="text-xl md:text-2xl font-black text-emerald-400">0</span>
+                </div>
+
+                <div class="h-8 w-[1px] bg-slate-800"></div>
+
+                <!-- Combo -->
+                <div class="text-center">
+                    <span class="block text-[10px] text-slate-400 font-semibold uppercase tracking-wider">الكُمبو</span>
+                    <span id="comboText" class="text-xl md:text-2xl font-black text-amber-400">x1</span>
+                </div>
+
+                <div class="h-8 w-[1px] bg-slate-800"></div>
+
+                <!-- Lives -->
+                <div class="text-center">
+                    <span class="block text-[10px] text-slate-400 font-semibold uppercase tracking-wider">المحاولات</span>
+                    <div id="livesContainer" class="flex gap-1 text-red-500 text-lg md:text-xl mt-0.5">
+                        ♥ ♥ ♥ ♥ ♥
+                    </div>
+                </div>
+
+                <div class="h-8 w-[1px] bg-slate-800"></div>
+
+                <!-- High Score -->
+                <div class="text-center">
+                    <span class="block text-[10px] text-slate-400 font-semibold uppercase tracking-wider">أعلى نتيجة</span>
+                    <span id="highScoreText" class="text-xl md:text-2xl font-black text-purple-400">0</span>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="flex items-center gap-2">
+                <button id="audioBtn" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all border border-slate-700">
+                    🔊
+                </button>
+                <button id="pauseBtn" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-bold transition-all border border-slate-700">
+                    إيقاف مؤقت
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-6xl w-full mx-auto p-4 flex flex-col gap-4 relative">
+        
+        <!-- Controls Bar / Game Mode Select -->
+        <div id="setupBar" class="glass rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 z-20">
+            <div class="flex flex-wrap items-center gap-3">
+                <label class="text-xs text-slate-400 font-bold">نوع التحدي:</label>
+                <select id="modeSelect" class="bg-slate-900 text-slate-200 font-bold text-sm px-3 py-2 rounded-xl border border-slate-700 focus:outline-none focus:border-blue-500">
+                    <option value="division">القسمة فقط (مثل الكود الأصلي)</option>
+                    <option value="allMath">جميع العمليات (قسمة، ضرب، جمع، طرح)</option>
+                    <option value="arabicWords">كلمات عربية (اختبار طباعة)</option>
+                </select>
+
+                <label class="text-xs text-slate-400 font-bold ml-2">مستوى السرعة:</label>
+                <select id="diffSelect" class="bg-slate-900 text-slate-200 font-bold text-sm px-3 py-2 rounded-xl border border-slate-700 focus:outline-none focus:border-blue-500">
+                    <option value="veryEasy">بطيء جداً 🐢 (للهدوء والتمهل)</option>
+                    <option value="easy" selected>بطيء 🚶 (سلس ومريح)</option>
+                    <option value="medium">متوسط 🏃</option>
+                    <option value="hard">سريع ⚡</option>
+                </select>
+            </div>
+
+            <button id="startBtn" class="w-full md:w-auto px-8 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-base shadow-lg shadow-blue-600/30 transition-all transform active:scale-95">
+                بدء اللعبة الجديدة 🚀
+            </button>
+        </div>
+
+        <!-- Canvas Game Arena -->
+        <div class="relative flex-1 min-h-[420px] rounded-3xl glass border border-slate-800 overflow-hidden shadow-2xl flex flex-col justify-between">
+            
+            <!-- Game Canvas -->
+            <canvas id="gameCanvas" class="absolute inset-0 w-full h-full block z-0"></canvas>
+
+            <!-- Feedback Overlay Text (أحسنت / أخطأت) -->
+            <div id="feedbackText" class="absolute top-6 left-1/2 -translate-x-1/2 text-3xl md:text-4xl font-black pointer-events-none transition-all duration-300 opacity-0 transform -translate-y-4 z-10">
+            </div>
+
+            <!-- Start / Pause Overlay -->
+            <div id="startOverlay" class="absolute inset-0 bg-slate-950/85 backdrop-blur-md z-20 flex flex-col items-center justify-center p-6 text-center">
+                <div class="w-20 h-20 rounded-3xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-4xl mb-4 floating">
+                    🎯
+                </div>
+                <h2 class="text-3xl font-black text-white mb-2">جاهز للتحدي؟</h2>
+                <p class="text-slate-400 max-w-md mb-6 text-sm leading-relaxed">
+                    ستسقط المسائل أو الكلمات من الأعلى! اكتب الإجابة أو الكلمة المطلوبة بسرعة واضغط Enter أو واصل الكتابة لتدمير الهدف قبل أن يصل للأرض.
+                </p>
+                <button id="overlayStartBtn" class="px-10 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-lg shadow-xl shadow-blue-600/40 transition-all transform hover:scale-105 active:scale-95">
+                    انطلق الآن! 🔥
+                </button>
+            </div>
+
+            <!-- Typing Input Control Zone -->
+            <div class="relative z-10 p-4 md:p-6 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent mt-auto flex flex-col items-center justify-center gap-3">
+                <div class="w-full max-w-xl relative flex items-center">
+                    <input type="text" id="userInput" autocomplete="off" placeholder="اكتب الناتج هنا واضغط Enter..." 
+                           class="w-full bg-slate-900/90 border-2 border-blue-500/50 focus:border-blue-400 text-white font-black text-xl md:text-2xl text-center py-3.5 px-6 rounded-2xl shadow-2xl shadow-blue-950 focus:outline-none transition-all placeholder:text-slate-600 placeholder:text-base placeholder:font-normal" />
+                    <span class="absolute left-4 text-xs font-bold bg-blue-600/30 text-blue-300 px-3 py-1 rounded-lg border border-blue-500/30">
+                        Enter ↵
+                    </span>
+                </div>
+                <p class="text-xs text-slate-500 font-medium">نصيحة: يمكنك الكتابة مباشرة على الكيبورد دون الحاجة للضغط بالماوس داخل الصندوق!</p>
+            </div>
+        </div>
+
+        <!-- Explanation of Upgrades (Comparison with Original Code) -->
+        <section class="glass rounded-2xl p-5 border border-slate-800 text-slate-300">
+            <h3 class="text-base font-bold text-blue-400 mb-3 flex items-center gap-2">
+                <span>💡</span> كيف تم تطوير كودك الأصلي إلى هذا البرنامج الحديث؟
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs leading-relaxed">
+                <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
+                    <h4 class="font-bold text-slate-200 mb-1 text-sm text-indigo-300">1. الحركة والسلاسة</h4>
+                    <p class="text-slate-400">
+                        في كودك الأصلي استخدمت <code class="text-amber-300">setTimeout</code> وحركات CSS المباشرة. تم استبدالها بـ <code class="text-emerald-300">Canvas 2D Engine</code> و <code class="text-emerald-300">requestAnimationFrame</code> ليعمل البرنامج بسرعة 60 إطار في الثانية وبشكل سلس جداً.
+                    </p>
+                </div>
+                <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
+                    <h4 class="font-bold text-slate-200 mb-1 text-sm text-indigo-300">2. الصوت والتغذية الراجعة</h4>
+                    <p class="text-slate-400">
+                        بدلاً من <code class="text-amber-300">&lt;bgsound&gt;</code> القديم المعتمد على ملفات חיצוניة، تم دمج محرك أصوات تفاعلي <code class="text-emerald-300">Web Audio API</code> يقوم بتوليد أصوات "الإجابة الصحيحة" و "الخطأ" برمجياً داخل المتصفح مباشرة.
+                    </p>
+                </div>
+                <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-800">
+                    <h4 class="font-bold text-slate-200 mb-1 text-sm text-indigo-300">3. توليد المسائل تلقائياً</h4>
+                    <p class="text-slate-400">
+                        بدلاً من المسائل الأربعة المحددة ثابتاً (6/2, 8/2, 15/3, 14/2)، أصبح البرنامج يقوم بتوليد عدد لا نهائي من المسائل العشوائية ذات الإجابات الصحيحة والتدرج في الصعوبة مع زيادة نقاطك!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal: Game Over -->
+    <div id="gameOverModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass max-w-md w-full rounded-3xl p-6 text-center border border-red-500/30 shadow-2xl relative">
+            <div class="w-16 h-16 rounded-2xl bg-red-500/20 text-red-500 flex items-center justify-center text-3xl mx-auto mb-3 border border-red-500/30">
+                💔
+            </div>
+            <h2 class="text-2xl font-black text-white mb-1">انتهت اللعبة!</h2>
+            <p class="text-sm text-slate-400 mb-6">وصلت المسائل إلى الأسفل، حاول مرة أخرى!</p>
+            
+            <div class="bg-slate-900/80 rounded-2xl p-4 border border-slate-800 space-y-3 mb-6">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-400">النقاط الكلية:</span>
+                    <span id="finalScore" class="font-black text-emerald-400 text-lg">0</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-400">أعلى كمبو متتالي:</span>
+                    <span id="finalCombo" class="font-black text-amber-400 text-lg">x0</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-400">المسائل المحلولة:</span>
+                    <span id="finalSolved" class="font-black text-blue-400 text-lg">0</span>
+                </div>
+            </div>
+
+            <button id="restartBtn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-base shadow-lg shadow-blue-600/30 transition-all">
+                إعادة المحاولة 🔄
+            </button>
+        </div>
+    </div>
+
+    <script>
+        class SoundEffects {
+            constructor() {
+                this.ctx = null;
+                this.muted = false;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioCtx();
+                }
+            }
+
+            playCorrect() {
+                if (this.muted) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                
+                // Oscillators for pleasant chime sound
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.exponentialRampToValueAtTime(1046.50, now + 0.15); // C6
+
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                
+                osc.start(now);
+                osc.stop(now + 0.25);
+            }
+
+            playWrong() {
+                if (this.muted) return;
+                this.init();
+                const now = this.ctx.currentTime;
+
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.linearRampToValueAtTime(90, now + 0.2);
+
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.2);
+            }
+
+            playGameOver() {
+                if (this.muted) return;
+                this.init();
+                const now = this.ctx.currentTime;
+
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(80, now + 0.6);
+
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.6);
+            }
+        }
+
+        const sound = new SoundEffects();
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // State variables
+        let isRunning = false;
+        let isPaused = false;
+        let score = 0;
+        let combo = 0;
+        let maxCombo = 0;
+        let solvedCount = 0;
+        let lives = 5;
+        let highScore = parseInt(localStorage.getItem('typing_game_highscore') || '0');
+        let targets = [];
+        let particles = [];
+        let spawnTimer = 0;
+        let spawnInterval = 120; // frames
+        let animFrameId = null;
+
+        // Arabic Words Bank for Typing Mode
+        const arabicWordsBank = [
+            "قسمة", "ضرب", "معلم", "مدرسة", "حاسوب", "تفوق", "إبداع", "نجاح", 
+            "عافية", "برمجة", "تحدي", "معرفة", "رياضيات", "ذكاء", "سرعة", "إتقان",
+            "اجتهاد", "قلم", "كتاب", "عالم", "فكرة", "طالب", "علم", "ثقافة"
+        ];
+
+        // UI Element References
+        const scoreText = document.getElementById('scoreText');
+        const comboText = document.getElementById('comboText');
+        const livesContainer = document.getElementById('livesContainer');
+        const highScoreText = document.getElementById('highScoreText');
+        const userInput = document.getElementById('userInput');
+        const feedbackText = document.getElementById('feedbackText');
+        const startOverlay = document.getElementById('startOverlay');
+        const modeSelect = document.getElementById('modeSelect');
+        const diffSelect = document.getElementById('diffSelect');
+
+        highScoreText.textContent = highScore;
+
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class FallingTarget {
+            constructor(text, answer, speed) {
+                this.text = text;
+                this.answer = answer.toString();
+                this.x = Math.random() * (canvas.width - 140) + 70;
+                this.y = -40;
+                this.speed = speed;
+                this.radius = 45;
+                this.color = ['#3b82f6', '#8b5cf6', '#ec4899', '#06b6d4', '#10b981'][Math.floor(Math.random() * 5)];
+                this.wobble = Math.random() * Math.PI * 2;
+            }
+
+            update() {
+                this.y += this.speed;
+                this.wobble += 0.05;
+                this.x += Math.sin(this.wobble) * 0.5;
+            }
+
+            draw() {
+                ctx.save();
+                
+                // Shadow
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 15;
+
+                // Card Box
+                const width = Math.max(110, ctx.measureText(this.text).width + 30);
+                const height = 50;
+                const rectX = this.x - width / 2;
+                const rectY = this.y - height / 2;
+
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 2;
+
+                // Rounded rectangle
+                ctx.beginPath();
+                ctx.roundRect(rectX, rectY, width, height, 16);
+                ctx.fill();
+                ctx.stroke();
+
+                // Text
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 20px Tajawal';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.text, this.x, this.y);
+
+                ctx.restore();
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.vx = (Math.random() - 0.5) * 8;
+                this.vy = (Math.random() - 0.5) * 8;
+                this.alpha = 1;
+                this.size = Math.random() * 4 + 2;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= 0.03;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, this.alpha);
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function createExplosion(x, y, color) {
+            for (let i = 0; i < 20; i++) {
+                particles.push(new Particle(x, y, color));
+            }
+        }
+
+        function generateProblem() {
+            const mode = modeSelect.value;
+            let text = "";
+            let answer = "";
+
+            if (mode === "division") {
+                // Division equations (e.g., 8 / 2 = 4)
+                const divisor = Math.floor(Math.random() * 9) + 2; // 2 to 10
+                const result = Math.floor(Math.random() * 10) + 1; // 1 to 10
+                const dividend = divisor * result;
+                text = `${dividend} ÷ ${divisor} =`;
+                answer = result.toString();
+            } else if (mode === "allMath") {
+                // Mixed math ops (+, -, *, /)
+                const ops = ['+', '-', '×', '÷'];
+                const op = ops[Math.floor(Math.random() * ops.length)];
+                
+                if (op === '+') {
+                    const a = Math.floor(Math.random() * 25) + 1;
+                    const b = Math.floor(Math.random() * 25) + 1;
+                    text = `${a} + ${b} =`;
+                    answer = (a + b).toString();
+                } else if (op === '-') {
+                    const a = Math.floor(Math.random() * 30) + 10;
+                    const b = Math.floor(Math.random() * a);
+                    text = `${a} - ${b} =`;
+                    answer = (a - b).toString();
+                } else if (op === '×') {
+                    const a = Math.floor(Math.random() * 9) + 2;
+                    const b = Math.floor(Math.random() * 9) + 1;
+                    text = `${a} × ${b} =`;
+                    answer = (a * b).toString();
+                } else {
+                    const b = Math.floor(Math.random() * 8) + 2;
+                    const ans = Math.floor(Math.random() * 10) + 1;
+                    const a = b * ans;
+                    text = `${a} ÷ ${b} =`;
+                    answer = ans.toString();
+                }
+            } else if (mode === "arabicWords") {
+                const word = arabicWordsBank[Math.floor(Math.random() * arabicWordsBank.length)];
+                text = word;
+                answer = word;
+            }
+
+            // Speed based on difficulty
+            const diff = diffSelect.value;
+            let speed = 0.5; // تم تقليل السرعة الافتراضية بشكل كبير
+            if (diff === 'veryEasy') speed = 0.4;
+            if (diff === 'easy') speed = 0.7;
+            if (diff === 'medium') speed = 1.2;
+            if (diff === 'hard') speed = 2.0;
+
+            // زيادة طفيفة جداً ومدروسة في السرعة مع زيادة النقاط
+            speed += Math.min(1.0, score * 0.005);
+
+            return new FallingTarget(text, answer, speed);
+        }
+
+        function gameLoop() {
+            if (!isRunning || isPaused) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Spawn new target (تم زيادة الوقت بين ظهور كل مسألة وأخرى)
+            spawnTimer++;
+            const currentDiff = diffSelect.value;
+            let currentInterval = currentDiff === 'veryEasy' ? 220 : currentDiff === 'easy' ? 160 : currentDiff === 'medium' ? 110 : 70;
+            currentInterval = Math.max(50, currentInterval - Math.floor(score / 100) * 5);
+
+            if (spawnTimer >= currentInterval) {
+                targets.push(generateProblem());
+                spawnTimer = 0;
+            }
+
+            // Update & Draw Targets
+            for (let i = targets.length - 1; i >= 0; i--) {
+                const target = targets[i];
+                target.update();
+                target.draw();
+
+                // Bottom boundary hit (Lost Life)
+                if (target.y >= canvas.height - 80) {
+                    createExplosion(target.x, target.y, '#ef4444');
+                    targets.splice(i, 1);
+                    onTargetMissed();
+                }
+            }
+
+            // Update & Draw Particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.update();
+                p.draw();
+                if (p.alpha <= 0) particles.splice(i, 1);
+            }
+
+            animFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        function checkInput() {
+            const val = userInput.value.trim();
+            if (!val) return;
+
+            let matchedIndex = -1;
+            
+            // Search for target matching the user input
+            for (let i = 0; i < targets.length; i++) {
+                if (targets[i].answer === val) {
+                    matchedIndex = i;
+                    break;
+                }
+            }
+
+            if (matchedIndex !== -1) {
+                // Correct answer!
+                const target = targets[matchedIndex];
+                createExplosion(target.x, target.y, target.color);
+                targets.splice(matchedIndex, 1);
+
+                combo++;
+                if (combo > maxCombo) maxCombo = combo;
+
+                const addedPoints = 10 * combo;
+                score += addedPoints;
+                solvedCount++;
+
+                sound.playCorrect();
+                showFeedback("أحسنت! 🌟", "text-blue-400");
+                updateHUD();
+
+                userInput.value = "";
+            } else {
+                // Check if user pressed Enter on wrong input
+                // Or if it's partial, we keep typing
+            }
+        }
+
+        function onTargetMissed() {
+            lives--;
+            combo = 0;
+            sound.playWrong();
+            showFeedback("أخطأت! ⚠️", "text-red-400");
+            updateHUD();
+
+            if (lives <= 0) {
+                endGame();
+            }
+        }
+
+        function showFeedback(text, textColorClass) {
+            feedbackText.textContent = text;
+            feedbackText.className = `absolute top-6 left-1/2 -translate-x-1/2 text-3xl md:text-4xl font-black pointer-events-none transition-all duration-300 opacity-100 transform translate-y-0 z-10 ${textColorClass}`;
+            
+            setTimeout(() => {
+                feedbackText.classList.add('opacity-0', '-translate-y-4');
+                feedbackText.classList.remove('opacity-100', 'translate-y-0');
+            }, 700);
+        }
+
+        function updateHUD() {
+            scoreText.textContent = score;
+            comboText.textContent = `x${combo}`;
+            livesContainer.textContent = '♥ '.repeat(Math.max(0, lives));
+
+            if (score > highScore) {
+                highScore = score;
+                highScoreText.textContent = highScore;
+                localStorage.setItem('typing_game_highscore', highScore.toString());
+            }
+        }
+
+        function startGame() {
+            score = 0;
+            combo = 0;
+            maxCombo = 0;
+            solvedCount = 0;
+            lives = 5;
+            targets = [];
+            particles = [];
+            spawnTimer = 0;
+            isRunning = true;
+            isPaused = false;
+
+            updateHUD();
+            startOverlay.classList.add('hidden');
+            document.getElementById('gameOverModal').classList.add('hidden');
+            userInput.focus();
+
+            if (animFrameId) cancelAnimationFrame(animFrameId);
+            gameLoop();
+        }
+
+        function endGame() {
+            isRunning = false;
+            if (animFrameId) cancelAnimationFrame(animFrameId);
+            sound.playGameOver();
+
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('finalCombo').textContent = `x${maxCombo}`;
+            document.getElementById('finalSolved').textContent = solvedCount;
+            document.getElementById('gameOverModal').classList.remove('hidden');
+        }
+
+        // Auto-check on typing or Enter key
+        userInput.addEventListener('input', checkInput);
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                checkInput();
+                userInput.value = "";
+            }
+        });
+
+        // Global keydown so user doesn't strictly need focus on input box
+        window.addEventListener('keydown', (e) => {
+            if (!isRunning || isPaused) return;
+            if (document.activeElement !== userInput) {
+                userInput.focus();
+            }
+        });
+
+        document.getElementById('startBtn').addEventListener('click', startGame);
+        document.getElementById('overlayStartBtn').addEventListener('click', startGame);
+        document.getElementById('restartBtn').addEventListener('click', startGame);
+
+        // Sound Toggle
+        const audioBtn = document.getElementById('audioBtn');
+        audioBtn.addEventListener('click', () => {
+            sound.muted = !sound.muted;
+            audioBtn.textContent = sound.muted ? '🔇' : '🔊';
+        });
+
+        // Pause Toggle
+        const pauseBtn = document.getElementById('pauseBtn');
+        pauseBtn.addEventListener('click', () => {
+            if (!isRunning) return;
+            isPaused = !isPaused;
+            pauseBtn.textContent = isPaused ? 'استئناف ▶️' : 'إيقاف مؤقت';
+            if (!isPaused) gameLoop();
+        });
+
+    </script>
+</body>
+</html>

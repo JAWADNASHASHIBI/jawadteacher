@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوستر المعرض المدرسي - Smart Focus</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981; /* أخضر الطاقة */
+            --secondary: #2563eb; /* أزرق تكنولوجي */
+            --dark: #0f172a;
+            --light: #ffffff;
+            --gray-bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #e2e8f0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* تنسيق A3 للطباعة */
+        .poster-sheet {
+            width: 297mm;
+            height: 420mm; /* ارتفاع A3 ثابت */
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* الرأس - تصميم رسمي ونظيف */
+        header {
+            background: linear-gradient(to left, var(--dark), #1e293b);
+            color: white;
+            padding: 25px;
+            border-bottom: 8px solid var(--primary);
+            position: relative;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        /* قسم معلومات المدرسة */
+        .school-info-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-placeholder {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            border: 3px dashed var(--primary); /* مكان للصق الشعار */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 0.7rem;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .circle-logo {
+             width: 60px;        /* حجم الدائرة — غيّره كما تريد */
+             height: 60px;
+              border-radius: 50%;
+              overflow: hidden;   /* مهم جداً ليقص الصورة داخل الدائرة */
+               display: flex;
+               align-items: center;
+               justify-content: center;
+            }
+
+         .circle-logo img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;   /* يجعل الصورة تملأ الدائرة بالكامل */
+
+        }
+
+
+        .school-text {
+            text-align: right;
+        }
+
+        .school-name {
+            font-size: 1.6rem;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 5px;
+        }
+
+        .school-details {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .supervisor-info {
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.85rem;
+            color: #cbd5e1;
+        }
+
+        /* عنوان المشروع */
+        .project-title-section {
+            text-align: left;
+            padding-top: 10px;
+        }
+
+        h1 {
+            font-size: 3.8rem;
+            margin: 0;
+            line-height: 1;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: var(--primary);
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.4rem;
+            color: white;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
+        /* جسم البوستر */
+        .content {
+            flex: 1;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 30px;
+        }
+
+        .col-left, .col-right {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* الصناديق - تصميم كلاسيكي واضح */
+        .box {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            background: var(--gray-bg);
+            position: relative;
+        }
+
+        .box-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 8px;
+            background: white;
+            margin: -20px -20px 15px -20px; /* لملء العرض */
+            padding: 15px 20px;
+            border-radius: 10px 10px 0 0;
+        }
+
+        p, li {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #334155;
+            text-align: justify;
+            margin: 0;
+        }
+
+        /* تمييز الرؤية */
+        .vision-box {
+            background: #ecfdf5;
+            border-color: var(--primary);
+        }
+
+        /* المخطط الانسيابي - دوائر كبيرة */
+        .system-diagram {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px dashed #94a3b8;
+        }
+
+        .diagram-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            text-align: center;
+        }
+
+        .icon-circle {
+            width: 65px; /* تكبير الدوائر */
+            height: 65px;
+            background: var(--secondary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .icon-circle i {
+            width: 32px;
+            height: 32px;
+        }
+        
+        .diagram-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .diagram-arrow {
+            color: var(--primary);
+            font-weight: 900;
+            font-size: 1.5rem;
+        }
+
+        /* الصور */
+        .images-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .img-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .img-placeholder {
+            width: 100%;
+            height: 180px;
+            background: #cbd5e1;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .img-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .img-caption {
+            font-size: 0.9rem;
+            color: var(--dark);
+            text-align: center;
+            font-weight: bold;
+        }
+        .project-design {
+           margin: 0;      /* إزالة أي إزاحة */
+           padding: 0;     /* إزالة أي حشو */
+          width: 100%;          /* أو حجم محدد */
+           height: auto;
+        /* اضبطه حسب مساحة البوستر */
+          overflow: hidden;     /* يخفي الأطراف غير المرغوبة */
+          border-radius: 12px;  /* اختياري */
+          /* أهم سطرين */
+            align-self: start;
+           justify-self: start;
+
+
+         }
+
+        .project-design img {
+         width: 100%;
+         height: auto;
+        object-fit: cover;      /* يجعل الصورة تملأ المساحة */
+        object-position: right  center; /* يمكنك تغييرها لإخفاء الجزء غير المرغوب */
+        border-radius: inherit; /* يجعل الصورة تتبع نفس التقويس */
+
+        }
+
+        /* قسم الفريق */
+        .team-section {
+            background: var(--dark);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: auto;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .team-member {
+            background: rgba(255,255,255,0.1);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border-right: 4px solid var(--primary);
+        }
+
+        .member-name { font-weight: bold; font-size: 1rem; display: block; }
+        .member-role { font-size: 0.85rem; opacity: 0.8; display: block; }
+
+        /* الفوتر */
+        footer {
+            background: #f1f5f9;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9rem;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+            font-weight: bold;
+        }
+
+        @media print {
+            body { padding: 0; background: none; }
+            .poster-sheet { width: 100%; height: auto; box-shadow: none; }
+           
+            header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .vision-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .team-section { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .icon-circle { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="poster-sheet">
+        
+        <header>
+            <div class="header-content">
+                <!-- معلومات المدرسة (يمين) -->
+                <div class="school-info-section">
+                    <!-- دائرة الشعار -->
+                    <div class="logo-placeholder">
+                        <span><img src="schoollogo.jpeg" alt="logo" class="circle-logo"></span>
+                    </div>
+                    
+                    <div class="school-text">
+                        <div class="school-name">مدرسة شعفاط للبنات أ</div>
+                        <div class="school-details">
+                            رمز المدرسة: 118281<br>
+                            مديرة المدرسة: <strong>سوزان الخطيب</strong>
+                        </div>
+                        <div class="supervisor-info">
+                            بإشراف المعلم: <strong>جواد النشاشيبي</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- عنوان المشروع (يسار) -->
+                <div class="project-title-section">
+                    <h1>Smart Focus</h1>
+                    <div class="subtitle">بيئة صفية ذكية تدعم التنوع العصبي</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+            
+            <!-- العمود الأيمن -->
+            <div class="col-left">
+                
+                <!-- الرؤية -->
+                <div class="box vision-box">
+                    <div class="box-title"><i data-lucide="eye"></i> رؤيتنا (Our Vision)</div>
+                    <p>
+                        نسعى لخلق بيئة مدرسية دامجة، حيث لا يُنظر للحركة الزائدة كـ "مشكلة"، بل كـ "طاقة كامنة" يمكن استثمارها. رؤيتنا هي <strong>صف دراسي</strong> يحترم احتياجات كل طالبة ويحول التحديات إلى إنجازات مستدامة.
+                    </p>
+                </div>
+
+                <!-- المشكلة -->
+                <div class="box">
+                    <div class="box-title"><i data-lucide="alert-triangle"></i> المشكلة (The Challenge)</div>
+                    <p>
+                        تعاني <strong>الصفوف</strong> الدراسية من تحدي مزدوج: <strong>فرط الحركة</strong> لدى بعض الطالبات، و<strong>الضغط النفسي</strong> من الامتحانات. مما يصعب على المعلمة إدارة الحصة ويشعر الطالبة بالإحباط.
+                    </p>
+                </div>
+
+                <!-- الحل المبتكر -->
+                <div class="box">
+                    <div class="box-title"><i data-lucide="lightbulb"></i> الحل المبتكر (Innovation)</div>
+                    <p>
+                        نظام <strong>"التركيز الذكي"</strong> هو حل شامل يتكون من:
+                        <br>1. <strong>دواسة مخفية:</strong> تحول الحركة العصبية لطاقة.
+                        <br>2. <strong>استدراك ذكي:</strong> شرح الدروس بصوت المعلمة مع صور توضيحية.
+                        <br>3. <strong>عزل صوتي:</strong> سماعات تبث موسيقى هادئة (White Noise) للتركيز.
+                    </p>
+                    
+                    <!-- المخطط (دوائر كبيرة) -->
+                    <div class="system-diagram">
+                        <div class="diagram-step">
+                            <div class="icon-circle" style="background: #ef4444;"><i data-lucide="footprints"></i></div>
+                            <span class="diagram-label">حركة<br>(Motion)</span>
+                        </div>
+                        <div class="diagram-arrow">←</div> 
+                        <div class="diagram-step">
+                            <div class="icon-circle" style="background: #eab308;"><i data-lucide="cpu"></i></div>
+                            <span class="diagram-label">معالجة<br>(Micro:bit)</span>
+                        </div>
+                        <div class="diagram-arrow">←</div>
+                        <div class="diagram-step">
+                            <div class="icon-circle" style="background: #10b981;"><i data-lucide="presentation"></i></div>
+                            <span class="diagram-label">شرح بصري<br>(Visual AI)</span>
+                        </div>
+                        <div class="diagram-arrow">+</div>
+                        <div class="diagram-step">
+                            <div class="icon-circle" style="background: #3b82f6;"><i data-lucide="headphones"></i></div>
+                            <span class="diagram-label">عزل وتركيز<br>(Focus)</span>
+                        </div>
+                    </div>
+                    <div class="img-caption" style="margin-top: 5px;">آلية عمل النظام المتكامل</div>
+                </div>
+
+                <!-- الأهداف -->
+                <div class="box">
+                    <div class="box-title"><i data-lucide="target"></i> أهداف التنمية (Goals)</div>
+                    <ul style="padding-right: 20px; line-height: 1.6;">
+                        <li><strong>STEM:</strong> فيزياء وبرمجة.</li>
+                        <li><strong>Well-being:</strong> صحة نفسية.</li>
+                        <li><strong>Sustainability:</strong> طاقة نظيفة واستدامة.</li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- العمود الأيسر -->
+            <div class="col-right">
+                
+                <!-- التكنولوجيا -->
+                <div class="box" style="border-color: var(--primary);">
+                    <div class="box-title"><i data-lucide="cpu"></i> التكنولوجيا والهندسة</div>
+                    <p>
+                        يدمج المشروع بين الـ <strong>Hardware</strong> والذكاء الاصطناعي:
+                    </p>
+                    
+                    <div class="images-grid">
+                        <div class="img-container">
+                            <div class="img-placeholder">
+                                <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=600&q=80" alt="Kinetic Pedal">
+                            </div>
+                            <div class="img-caption">1. المقعد والدواسة المخفية (Energy)</div>
+                        </div>
+                        <div class="img-container">
+                            <div class="img-placeholder">
+                                <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80" alt="Headphones">
+                            </div>
+                            <div class="img-caption">2. السماعة والتطبيق الذكي (AI Focus)</div>
+                        </div>
+                    </div>
+
+                    <ul style="padding-right: 20px; margin-top: 15px; line-height: 1.5; font-size: 0.95rem;">
+                        <li><strong>آلية الدباسة (Smart Pedal):</strong> تحويل الضغط الميكانيكي لإشارة.</li>
+                        <li><strong>Micro:bit:</strong> معالجة الإشارة وحساب الطاقة.</li>
+                        <li><strong>المعلم الذكي (AI Teacher):</strong> دمج صوت المعلمة مع صور توضيحية.</li>
+                    </ul>
+                </div>
+
+                <!-- صورة المشروع -->
+                <figure class="project-design">
+                <img src="projectimage.jpeg" alt="التصميم الأولي">
+                </figure>
+
+                <!-- الفريق -->
+                <div class="team-section">
+                    <div style="font-size: 1.2rem; font-weight: bold; color: var(--primary); margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="users"></i> فريق مغيرات الطاقة (Energy Changers)
+                    </div>
+                    <div class="team-grid">
+                        <div class="team-member">
+                            <span class="member-name">سدين اسماعيل</span>
+                            <span class="member-role">القائدة وصاحبة الفكرة</span>
+                        </div>
+                        <div class="team-member">
+                            <span class="member-name">ديانا مطرية</span>
+                            <span class="member-role">ملهمة المشكلة (UX)</span>
+                        </div>
+                        <div class="team-member">
+                            <span class="member-name">منيسا عبد الكريم</span>
+                            <span class="member-role">الهندسة والعرض (Tech)</span>
+                        </div>
+                        <div class="team-member">
+                            <span class="member-name">سارة مسالمة</span>
+                            <span class="member-role">التنسيق والإعداد</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <footer>
+            مدرسة شعفاط للبنات أ | StartCup 2026 Competition
+        </footer>
+
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

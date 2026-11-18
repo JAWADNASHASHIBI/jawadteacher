@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>غرفة الهروب: طاقة المستقبل والمحاكاة الحيوية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #022c22; /* Dark green background */
+            color: #e2e8f0;
+            background-image: radial-gradient(circle at 50% 50%, #064e3b 0%, #020617 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #064e3b; }
+        ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 4px; }
+
+        /* Animations */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(250, 204, 21, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(250, 204, 21, 0.9); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        .glass-panel {
+            background: rgba(6, 78, 59, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .btn-neon {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-neon:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+        }
+
+        .btn-neon::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(45deg);
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .btn-neon:hover::after {
+            animation: shimmer 1s infinite;
+            opacity: 1;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        /* Eco Animation */
+        .eco-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+        }
+        
+        .sun {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #fde047, #eab308);
+            border-radius: 50%;
+            box-shadow: 0 0 20px #eab308;
+            z-index: 10;
+            animation: pulse-glow 2.5s infinite;
+        }
+
+        .orbit {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            border: 2px dashed rgba(16, 185, 129, 0.4);
+            border-radius: 50%;
+            transform-origin: center;
+            transform: translate(-50%, -50%);
+            animation: orbit-spin 10s linear infinite;
+        }
+
+        .leaf {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            font-size: 24px;
+            transform: translateX(-50%);
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.8);
+        }
+
+        @keyframes orbit-spin {
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+    </style>
+</head>
+<body class="antialiased flex flex-col justify-between items-center py-8 px-4">
+
+    <!-- Header / Timer -->
+    <header class="w-full max-w-4xl flex justify-between items-center glass-panel p-4 rounded-2xl mb-8 z-10 relative">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center text-2xl shadow-[0_0_15px_rgba(22,163,74,0.6)]">
+                🌿
+            </div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold text-white">مسابقة علم بعدسة الكاميرا</h1>
+                <p class="text-green-300 text-sm">مهمة الطاقة المستدامة - الصف الثامن (أ)</p>
+            </div>
+        </div>
+        <div class="text-center">
+            <p class="text-sm text-gray-300 mb-1">الوقت المتبقي لإنقاذ الطاقة</p>
+            <div id="timer" class="text-2xl md:text-3xl font-black text-yellow-400 font-mono tracking-wider drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]">
+                10:00
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Game Container -->
+    <main class="w-full max-w-4xl relative z-10 flex-grow flex flex-col items-center justify-center">
+        
+        <!-- Intro Screen -->
+        <div id="intro-screen" class="glass-panel p-8 rounded-3xl w-full text-center max-w-2xl mx-auto transform transition-all duration-500">
+            <div class="eco-container mb-8">
+                <div class="sun"></div>
+                <div class="orbit">
+                    <div class="leaf">🍃</div>
+                </div>
+            </div>
+            <h2 class="text-3xl font-bold text-white mb-4">انقطاع في شبكة الكهرباء!</h2>
+            <p class="text-lg text-gray-200 mb-8 leading-relaxed">
+                مرحباً بك في مختبر الطاقة الخضراء. لقد انقطع التيار الكهربائي عن المختبر بالكامل! الأمل الوحيد لإعادة تشغيل النظام هو استخدام نظام 
+                <span class="text-green-400 font-bold">"الشاحن الشمسي الذكي"</span> المستوحى من الطبيعة.
+                <br><br>
+                أمامك 10 دقائق لفتح بوابات الطاقة الأربعة بناءً على التفسير العلمي لمشروع الطالبة <strong>سالي محمد علي</strong> (بنات شعفاط الأساسية أ). هل أنت مستعد؟
+            </p>
+            <button onclick="startGame()" class="btn-neon bg-green-600 hover:bg-green-500 text-white text-xl font-bold py-4 px-12 rounded-full w-full md:w-auto">
+                ابدأ توليد الطاقة ⚡
+            </button>
+        </div>
+
+        <!-- Puzzle Screen -->
+        <div id="puzzle-screen" class="hidden glass-panel p-6 md:p-10 rounded-3xl w-full max-w-3xl mx-auto">
+            <!-- Progress Bar -->
+            <div class="mb-8">
+                <div class="flex justify-between text-sm text-green-300 mb-2 font-semibold">
+                    <span id="level-indicator">البوابة 1 من 4</span>
+                    <span id="progress-percentage">25%</span>
+                </div>
+                <div class="w-full bg-gray-800 rounded-full h-3">
+                    <div id="progress-bar" class="bg-gradient-to-l from-green-400 to-green-600 h-3 rounded-full transition-all duration-700 ease-out" style="width: 25%"></div>
+                </div>
+            </div>
+
+            <!-- Question Area -->
+            <div class="mb-8 text-center">
+                <div id="puzzle-icon" class="text-5xl mb-4 text-yellow-400">💡</div>
+                <h3 id="puzzle-title" class="text-2xl font-bold text-green-400 mb-2">البوابة الأولى: تحولات الطاقة</h3>
+                <p id="puzzle-question" class="text-xl text-white leading-relaxed">
+                    يعتمد الشاحن المبتكر على دمج "ألواح شمسية مرنة" لتعمل مثل صبغة الكلوروفيل في النبات. ما هو تحول الطاقة الأساسي الذي تقوم به هذه الخلايا في الجهاز؟
+                </p>
+            </div>
+
+            <!-- Options -->
+            <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Options injected via JS -->
+            </div>
+        </div>
+
+        <!-- Out of Time Screen -->
+        <div id="game-over-screen" class="hidden glass-panel p-10 rounded-3xl w-full text-center max-w-2xl mx-auto border-red-500 border-2 shadow-[0_0_30px_rgba(239,68,68,0.3)]">
+            <div class="text-7xl mb-6">🪫</div>
+            <h2 class="text-4xl font-black text-red-500 mb-4">نفدت الطاقة!</h2>
+            <p class="text-xl text-gray-300 mb-8">انتهى الوقت ولم نتمكن من إعادة تشغيل المختبر. راجع مبادئ البناء الضوئي والطاقة المستدامة وحاول مرة أخرى.</p>
+            <button onclick="location.reload()" class="bg-red-600 hover:bg-red-500 text-white text-xl font-bold py-3 px-8 rounded-full transition-colors">
+                إعادة المحاولة 🔄
+            </button>
+        </div>
+
+        <!-- Victory Screen -->
+        <div id="victory-screen" class="hidden glass-panel p-10 rounded-3xl w-full text-center max-w-2xl mx-auto border-green-500 border-2 shadow-[0_0_30px_rgba(34,197,94,0.3)]">
+            <div class="text-7xl mb-6">🌍</div>
+            <h2 class="text-4xl font-black text-green-400 mb-4">عمل رائع! عاد التيار!</h2>
+            <p class="text-lg text-gray-200 mb-6">
+                تهانينا! لقد نجحت في تطبيق مبادئ <strong>المحاكاة الحيوية (Biomimicry)</strong> لإعادة تشغيل المختبر بنجاح باستخدام الطاقة النظيفة.
+            </p>
+            <div class="bg-emerald-900 bg-opacity-50 p-6 rounded-2xl mb-8 text-right border border-emerald-600">
+                <h4 class="text-lg font-bold text-yellow-300 mb-3 border-b border-emerald-600 pb-2">تحية شكر وإبداع 🌟</h4>
+                <p class="text-gray-200 mb-2">هذه اللعبة مستوحاة من العمل الإبداعي:</p>
+                <ul class="list-none text-gray-300 space-y-1 font-semibold">
+                    <li>👩‍🎓 الطالبة: <span class="text-white">سالي محمد علي</span></li>
+                    <li>🏫 المدرسة: <span class="text-white">بنات شعفاط الأساسية ( أ )</span></li>
+                    <li>👩‍🏫 المعلمة الموجهة: <span class="text-white">ديمة غيث</span></li>
+                </ul>
+            </div>
+            <button onclick="location.reload()" class="bg-green-600 hover:bg-green-500 text-white text-xl font-bold py-3 px-8 rounded-full transition-colors">
+                توليد طاقة من جديد 🔋
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Custom Modal for Feedback -->
+    <div id="feedback-modal" class="fixed inset-0 modal-overlay z-50 hidden flex items-center justify-center opacity-0 transition-opacity duration-300 px-4">
+        <div id="modal-content" class="bg-gray-800 border-2 rounded-2xl p-8 max-w-md w-full text-center transform scale-90 transition-transform duration-300">
+            <div id="modal-icon" class="text-6xl mb-4">✅</div>
+            <h3 id="modal-title" class="text-2xl font-bold mb-2">إجابة صحيحة!</h3>
+            <p id="modal-message" class="text-gray-200 mb-6 text-lg">رسالة التوضيح تظهر هنا.</p>
+            <button onclick="closeModalAndProceed()" id="modal-btn" class="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-8 rounded-full w-full">
+                متابعة للبوابة التالية ➔
+            </button>
+        </div>
+    </div>
+
+    <!-- Background Decorative Elements -->
+    <div class="fixed top-20 left-10 w-48 h-48 bg-green-500 rounded-full mix-blend-multiply filter blur-[100px] opacity-20 z-0 animate-pulse"></div>
+    <div class="fixed bottom-20 right-10 w-64 h-64 bg-yellow-500 rounded-full mix-blend-multiply filter blur-[120px] opacity-10 z-0"></div>
+
+    <script>
+        // --- Game Data based on "ادعاء علمي اعدادي.docx" ---
+        const levels = [
+            {
+                title: "البوابة الأولى: تحولات الطاقة",
+                icon: "⚡",
+                question: "يعتمد الشاحن المبتكر على دمج 'ألواح شمسية مرنة' لتعمل مثل صبغة الكلوروفيل في النبات. ما هو تحول الطاقة الأساسي الذي تقوم به هذه الخلايا في الجهاز؟",
+                options: [
+                    "من طاقة كيميائية إلى طاقة حركية",
+                    "من طاقة ضوئية إلى طاقة كهربائية",
+                    "من طاقة حرارية إلى طاقة ضوئية",
+                    "من طاقة كهربائية إلى طاقة كيميائية"
+                ],
+                correctAnswer: 1, // index 1 (Light to Electrical)
+                successMsg: "ممتاز! تحول الخلايا الكهرومغناطيسية الفوتونات الضوئية إلى طاقة كهربائية، تماماً كما نص التفسير العلمي للمشروع."
+            },
+            {
+                title: "البوابة الثانية: إلهام الطبيعة",
+                icon: "🍃",
+                question: "يُعرف هذا التصميم بـ (Biomimicry) أو المحاكاة الحيوية. ما هي العملية الحيوية الطبيعية التي تقوم بها أوراق النباتات ويحاول هذا الشاحن تقليدها لتوليد الطاقة؟",
+                options: [
+                    "النتح",
+                    "التنفس الخلوي",
+                    "البناء الضوئي",
+                    "الامتصاص الجذري"
+                ],
+                correctAnswer: 2, // البناء الضوئي
+                successMsg: "إجابة دقيقة! تعتمد النباتات على عملية (البناء الضوئي) لامتصاص الضوء عبر أوراقها وتصنيع الطاقة، وهذا هو أساس ابتكار سالي."
+            },
+            {
+                title: "البوابة الثالثة: التصميم الهندسي",
+                icon: "📐",
+                question: "وفقاً للأدلة في المشروع، تم تصميم الشاحن بسطح عريض ومائل يحاكي شكل ورقة الزيتون. ما هو التعليل العلمي لهذا التصميم المائل والعريض؟",
+                options: [
+                    "لتقليل زاوية الانعكاس وزيادة امتصاص الضوء المباشر",
+                    "ليكون وزنه خفيفاً ويسهل حمله في الجيب",
+                    "ليقوم بتبريد بطارية الهاتف بشكل أسرع",
+                    "لمنع تراكم الأتربة على الألواح الشمسية"
+                ],
+                correctAnswer: 0, // لتقليل زاوية الانعكاس...
+                successMsg: "أحسنت! الانحناءة والمساحة السطحية المأخوذة عن ورقة الزيتون تقلل من زاوية الانعكاس وتلتقط أكبر قدر ممكن من أشعة الشمس."
+            },
+            {
+                title: "البوابة الرابعة: مستقبل الاستدامة",
+                icon: "🔋",
+                question: "يدعي المشروع أن الجهاز يوفر 'مصدراً مستداماً ونظيفاً'. لماذا تُعد الطاقة الشمسية التي يعتمد عليها الجهاز طاقة (مستدامة)؟",
+                options: [
+                    "لأنها تنتج الكثير من الدخان والغازات المفيدة",
+                    "لأنها تعتمد على شبكة الكهرباء التقليدية فقط",
+                    "لأنها متجددة لا تنفد وصديقة للبيئة ولا تعتمد على الوقود الأحفوري",
+                    "لأنها تعمل في الليل بنفس الكفاءة دون الحاجة لبطاريات"
+                ],
+                correctAnswer: 2, 
+                successMsg: "رائع جداً! الطاقة الشمسية مصدر نظيف ومستدام يحررنا من الاعتماد على الشبكات الكهربائية التقليدية. لقد فتحت جميع البوابات!"
+            }
+        ];
+
+        let currentLevel = 0;
+        let timerInterval;
+        let timeLeft = 600; // 10 minutes in seconds
+        let isGameOver = false;
+
+        // --- DOM Elements ---
+        const introScreen = document.getElementById('intro-screen');
+        const puzzleScreen = document.getElementById('puzzle-screen');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const victoryScreen = document.getElementById('victory-screen');
+        
+        const puzzleTitle = document.getElementById('puzzle-title');
+        const puzzleIcon = document.getElementById('puzzle-icon');
+        const puzzleQuestion = document.getElementById('puzzle-question');
+        const optionsContainer = document.getElementById('options-container');
+        const levelIndicator = document.getElementById('level-indicator');
+        const progressPercentage = document.getElementById('progress-percentage');
+        const progressBar = document.getElementById('progress-bar');
+        const timerDisplay = document.getElementById('timer');
+
+        // Modal Elements
+        const modal = document.getElementById('feedback-modal');
+        const modalContent = document.getElementById('modal-content');
+        const modalIcon = document.getElementById('modal-icon');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const modalBtn = document.getElementById('modal-btn');
+
+        // --- Functions ---
+
+        function startGame() {
+            introScreen.classList.add('hidden');
+            puzzleScreen.classList.remove('hidden');
+            startTimer();
+            loadLevel(currentLevel);
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (isGameOver) return clearInterval(timerInterval);
+                
+                timeLeft--;
+                
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 60) {
+                    timerDisplay.classList.remove('text-yellow-400');
+                    timerDisplay.classList.add('text-red-500', 'animate-pulse');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    triggerGameOver();
+                }
+            }, 1000);
+        }
+
+        function triggerGameOver() {
+            isGameOver = true;
+            puzzleScreen.classList.add('hidden');
+            gameOverScreen.classList.remove('hidden');
+        }
+
+        function loadLevel(index) {
+            const level = levels[index];
+            
+            // Update UI
+            puzzleTitle.textContent = level.title;
+            puzzleIcon.textContent = level.icon;
+            
+            // Replace newlines with <br> for HTML rendering
+            puzzleQuestion.innerHTML = level.question.replace(/\n/g, '<br>');
+            
+            // Update Progress
+            let currentStep = index + 1;
+            let totalSteps = levels.length;
+            let percent = (currentStep / totalSteps) * 100;
+            
+            levelIndicator.textContent = `البوابة ${currentStep} من ${totalSteps}`;
+            progressPercentage.textContent = `${percent}%`;
+            progressBar.style.width = `${percent}%`;
+
+            // Clear and Load Options
+            optionsContainer.innerHTML = '';
+            level.options.forEach((optionText, i) => {
+                const btn = document.createElement('button');
+                btn.className = "btn-neon bg-emerald-900 hover:bg-emerald-800 border border-emerald-700 hover:border-emerald-400 text-white font-semibold py-4 px-6 rounded-xl text-right transition-all flex items-center gap-3";
+                
+                // Add a letter indicator (A, B, C, D) corresponding to Arabic (أ, ب, ج, د)
+                const letters = ['أ', 'ب', 'ج', 'د'];
+                btn.innerHTML = `<span class="bg-emerald-800 text-yellow-300 w-8 h-8 flex items-center justify-center rounded-lg font-bold shrink-0 shadow-md">${letters[i]}</span> <span>${optionText}</span>`;
+                
+                btn.onclick = () => checkAnswer(i, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, buttonElement) {
+            const level = levels[currentLevel];
+            
+            if (selectedIndex === level.correctAnswer) {
+                // Correct
+                buttonElement.classList.remove('bg-emerald-900', 'border-emerald-700');
+                buttonElement.classList.add('bg-green-600', 'border-green-300');
+                showModal(true, level.successMsg);
+            } else {
+                // Incorrect
+                buttonElement.classList.remove('bg-emerald-900');
+                buttonElement.classList.add('bg-red-800', 'border-red-500', 'shake');
+                
+                // Remove shake class after animation so it can be triggered again if needed
+                setTimeout(() => {
+                    buttonElement.classList.remove('shake');
+                }, 500);
+
+                // Show error feedback (briefly)
+                showModal(false, "إجابة خاطئة! راجع التفسير العلمي لمشروع المحاكاة الحيوية وحاول مرة أخرى.");
+            }
+        }
+
+        function showModal(isSuccess, message) {
+            modal.classList.remove('hidden');
+            // small delay to allow display:block to apply before animating opacity
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-90');
+            }, 10);
+
+            if (isSuccess) {
+                modalContent.className = "bg-emerald-900 border-2 border-green-400 rounded-3xl p-8 max-w-md w-full text-center transform transition-transform duration-300 shadow-[0_0_30px_rgba(52,211,153,0.3)]";
+                modalIcon.textContent = "✅";
+                modalTitle.textContent = "طاقة مكتسبة!";
+                modalTitle.className = "text-3xl font-bold mb-2 text-green-300";
+                modalMessage.textContent = message;
+                modalBtn.textContent = currentLevel === levels.length - 1 ? "تشغيل المختبر بالكامل ➔" : "متابعة للبوابة التالية ➔";
+                modalBtn.className = "bg-green-500 hover:bg-green-400 text-emerald-900 text-lg font-bold py-3 px-8 rounded-full w-full transition-colors mt-4 shadow-lg";
+                
+                // Remove the close event if it was set to just hide
+                modalBtn.onclick = closeModalAndProceed;
+            } else {
+                modalContent.className = "bg-gray-900 border-2 border-red-500 rounded-3xl p-8 max-w-md w-full text-center transform transition-transform duration-300 shadow-[0_0_30px_rgba(239,68,68,0.3)]";
+                modalIcon.textContent = "❌";
+                modalTitle.textContent = "تسرب في الطاقة!";
+                modalTitle.className = "text-3xl font-bold mb-2 text-red-400";
+                modalMessage.textContent = message;
+                modalBtn.textContent = "حاول مرة أخرى ↺";
+                modalBtn.className = "bg-red-600 hover:bg-red-500 text-white text-lg font-bold py-3 px-8 rounded-full w-full transition-colors mt-4";
+                
+                modalBtn.onclick = hideModal; // Just hide, don't proceed
+            }
+        }
+
+        function hideModal() {
+            modal.classList.add('opacity-0');
+            modalContent.classList.add('scale-90');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function closeModalAndProceed() {
+            hideModal();
+            
+            // Wait for modal animation to finish before changing level
+            setTimeout(() => {
+                currentLevel++;
+                if (currentLevel < levels.length) {
+                    loadLevel(currentLevel);
+                } else {
+                    triggerVictory();
+                }
+            }, 300);
+        }
+
+        function triggerVictory() {
+            isGameOver = true;
+            clearInterval(timerInterval);
+            puzzleScreen.classList.add('hidden');
+            victoryScreen.classList.remove('hidden');
+        }
+
+    </script>
+</body>
+</html>

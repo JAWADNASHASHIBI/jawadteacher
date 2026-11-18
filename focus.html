@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوستر مشروع Energy Changers</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .poster-container {
+            width: 210mm; /* A4 width */
+            min-height: 297mm; /* A4 height */
+            background: white;
+            padding: 40px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            border-top: 15px solid #22c55e;
+            border-bottom: 15px solid #3b82f6;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .team-badge {
+            background: #22c55e;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin: 0;
+            color: #1e293b;
+            line-height: 1.1;
+        }
+
+        .slogan {
+            font-size: 1.5rem;
+            color: #64748b;
+            font-style: italic;
+            margin-top: 10px;
+        }
+
+        /* Grid Layout */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .section-box {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 5px;
+        }
+
+        .text-content {
+            font-size: 1.1rem;
+            color: #334155;
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        /* Image Placeholders */
+        .image-placeholder {
+            background-color: #f1f5f9;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            height: 200px;
+            display: flex;
+            flex-col: column;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .image-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .image-placeholder:hover img {
+            transform: scale(1.05);
+        }
+
+        .img-label {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(4px);
+            font-weight: bold;
+        }
+
+        /* Highlights */
+        .impact-box {
+            background: linear-gradient(135deg, #dcfce7 0%, #dbeafe 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            text-align: center;
+            border: 1px solid #bbf7d0;
+        }
+
+        .impact-stat {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #15803d;
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
+        }
+
+        @media print {
+            body { background: none; padding: 0; }
+            .poster-container { box-shadow: none; width: 100%; height: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="poster-container">
+        
+        <header>
+            <div class="team-badge">TEAM ENERGY CHANGERS</div>
+            <h1>Energy Focus ⚡</h1>
+            <div class="slogan">"نحوّل الحركة إلى طاقة.. والضجيج إلى إنجاز!"</div>
+        </header>
+
+        <div class="content-grid">
+            
+            <!-- Left Column: Text Info -->
+            <div class="left-col">
+                
+                <div class="section-box">
+                    <div class="section-title">
+                        <i data-lucide="alert-circle" class="text-red-500"></i> المشكلة (The Pain)
+                    </div>
+                    <p class="text-content">
+                        بيئة صفية مشتتة بسبب الضجيج والحركة الزائدة، مما يؤدي لضعف التركيز وزيادة التوتر وقت الامتحانات.
+                    </p>
+                </div>
+
+                <div class="section-box">
+                    <div class="section-title">
+                        <i data-lucide="lightbulb" class="text-yellow-500"></i> الحل (The Solution)
+                    </div>
+                    <p class="text-content">
+                        نظام صف ذكي يدمج بين:
+                        <br>1. <strong>سماعات عزل ذكية</strong> للتركيز العميق.
+                        <br>2. <strong>مقاعد لتوليد الطاقة</strong> تحول فرط الحركة إلى كهرباء مفيدة.
+                    </p>
+                </div>
+
+                <div class="impact-box">
+                    <div class="impact-stat">100%</div>
+                    <div>استغلال للطاقة الحركية</div>
+                    <div style="margin-top: 10px; font-size: 0.9rem;">تحويل "الإزعاج" إلى "إنتاج"</div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Visuals -->
+            <div class="right-col">
+                
+                <!-- Image 1: Kinetic Chair -->
+                <div class="image-placeholder">
+                    <!-- صورة تعبيرية عن الحركة/الأقدام -->
+                    <img src="https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=800&q=80" 
+                         alt="Kinetic Chair Illustration"
+                         onerror="this.onerror=null; this.src='https://placehold.co/600x400/e2e8f0/94a3b8?text=Kinetic+Chair';">
+                    <div class="img-label">المقعد المولد للطاقة (Kinetic Chair)</div>
+                </div>
+
+                <!-- Image 2: Headphones -->
+                <div class="image-placeholder">
+                    <!-- صورة سماعات حديثة -->
+                    <img src="https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=800&q=80" 
+                         alt="Smart Headphones"
+                         onerror="this.onerror=null; this.src='https://placehold.co/600x400/e2e8f0/94a3b8?text=Smart+Headphones';">
+                    <div class="img-label">سماعات العزل والتركيز (Focus Zone)</div>
+                </div>
+
+                <!-- Image 3: App Dashboard -->
+                <div class="image-placeholder">
+                     <!-- صورة شاشة تابلت -->
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80" 
+                         alt="App Dashboard Screen"
+                         onerror="this.onerror=null; this.src='https://placehold.co/600x400/e2e8f0/94a3b8?text=App+Interface';">
+                    <div class="img-label">الشاشة التفاعلية (Energy Dashboard)</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Bottom Quote -->
+        <div style="text-align: center; margin-top: 30px; font-weight: bold; color: #3b82f6;">
+            مسار العلوم والتكنولوجيا (STEM) + مهارات الحياة
+        </div>
+
+        <footer>
+            تم التطوير بواسطة طالبات "مغيرات الطاقة" | بطولة StartCup 2026
+        </footer>
+
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

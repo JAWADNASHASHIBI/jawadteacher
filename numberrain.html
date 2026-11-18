@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مطر المسائل</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lalezar&family=Reem+Kufi:wght@500;700&family=Tajawal:wght@400;500;700&display=swap">
+<style>
+/* Layout: a classroom chalkboard in a wooden frame; problems fall onto the chalk ledge, answers typed on the bar below. Single deliberate dark look. */
+:root {
+  --board: #22403a;
+  --board-deep: #172d29;
+  --chalk: #f2f0e6;
+  --chalk-dim: #a9b8b0;
+  --chalk-yellow: #f4d46e;
+  --chalk-pink: #f39b8d;
+  --chalk-green: #a6e3a9;
+  --wood: #8b5a35;
+  --wood-dark: #5e3a20;
+  --font-display: "Lalezar", "Tajawal", system-ui, sans-serif;
+  --font-body: "Tajawal", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-math: "Reem Kufi", "Tajawal", system-ui, sans-serif;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body {
+  background: var(--wood-dark);
+  color: var(--chalk);
+  font-family: var(--font-body);
+  font-size: 16px;
+  overflow: hidden;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--chalk-yellow); outline-offset: 2px; }
+
+#app {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 10px;
+  padding-block: 10px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ---------- HUD ---------- */
+.hud {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px;
+  color: #f6e7d3;
+}
+.hud h1 {
+  font-family: var(--font-display); font-weight: 400; font-size: 1.7rem;
+  margin: 0; margin-inline-end: auto; letter-spacing: .5px;
+  text-wrap: balance;
+}
+.stat { display: flex; align-items: baseline; gap: 6px; }
+.stat small { font-size: .8rem; opacity: .75; }
+.stat b { font-family: var(--font-math); font-size: 1.35rem; font-variant-numeric: tabular-nums; }
+#lives { font-size: 1.1rem; letter-spacing: 2px; }
+.icon-btn {
+  background: rgba(0,0,0,.25); border: 1px solid rgba(255,255,255,.18);
+  border-radius: 8px; padding: 4px 12px; min-height: 36px;
+}
+.icon-btn:hover { background: rgba(0,0,0,.4); }
+
+/* ---------- Board ---------- */
+.board {
+  position: relative; min-height: 0; overflow: hidden;
+  border: 12px solid var(--wood);
+  border-bottom-width: 0;
+  border-radius: 6px 6px 0 0;
+  box-shadow: inset 0 0 60px rgba(0,0,0,.55), 0 6px 18px rgba(0,0,0,.4);
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255,255,255,.06), transparent 55%),
+    radial-gradient(ellipse at 75% 70%, rgba(255,255,255,.04), transparent 50%),
+    repeating-linear-gradient(115deg, rgba(255,255,255,.012) 0 2px, transparent 2px 7px),
+    var(--board);
+}
+.ledge {
+  position: absolute; inset: auto 0 0 0; height: 14px;
+  background: linear-gradient(var(--wood), var(--wood-dark));
+  box-shadow: 0 -2px 6px rgba(0,0,0,.4);
+  z-index: 2;
+}
+#field { position: absolute; inset: 0 0 14px 0; }
+.prob {
+  position: absolute; top: 0;
+  font-family: var(--font-math); font-weight: 700;
+  font-size: clamp(1.4rem, 3.6vw, 2.3rem);
+  white-space: nowrap;
+  color: var(--chalk);
+  text-shadow: 0 0 1px var(--chalk), 0 0 8px rgba(242,240,230,.25);
+  will-change: transform;
+  translate: -50% 0;
+  transition: color .3s;
+  user-select: none;
+}
+.prob .q { color: var(--chalk-yellow); }
+.prob.eq { font-size: clamp(1rem, 2.8vw, 1.8rem); text-align: center; line-height: 1.3; }
+.prob .xq { font-size: .8em; color: var(--chalk-dim); }
+.prob.danger { color: var(--chalk-pink); }
+.prob.hit { animation: dust .45s ease-out forwards; color: var(--chalk-green); }
+.prob.miss { animation: smudge .7s ease-out forwards; color: var(--chalk-pink); }
+@keyframes dust { to { opacity: 0; filter: blur(6px); scale: 1.6; } }
+@keyframes smudge { to { opacity: 0; filter: blur(3px); translate: -50% 10px; } }
+
+#flash {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  pointer-events: none; z-index: 3;
+  font-family: var(--font-display); font-size: clamp(2.2rem, 7vw, 4.2rem);
+  opacity: 0;
+}
+#flash.show { animation: pop .8s ease-out; }
+#flash.good { color: var(--chalk-green); }
+#flash.bad { color: var(--chalk-pink); }
+#flash.lvl { color: var(--chalk-yellow); }
+@keyframes pop { 0% { opacity: 0; scale: .7 } 20% { opacity: 1; scale: 1.05 } 70% { opacity: 1 } 100% { opacity: 0; scale: 1 } }
+
+/* ---------- Overlays ---------- */
+.overlay {
+  position: absolute; inset: 0; z-index: 5;
+  display: grid; place-items: center;
+  background: rgba(16, 32, 29, .82);
+  backdrop-filter: blur(2px);
+  overflow-y: auto; padding: 18px;
+}
+.panel { width: min(640px, 100%); display: grid; gap: 16px; }
+.panel h2 {
+  font-family: var(--font-display); font-weight: 400; margin: 0;
+  font-size: clamp(2rem, 6vw, 3rem); color: var(--chalk-yellow); text-align: center;
+  text-wrap: balance;
+}
+.panel p.lead { margin: 0; text-align: center; color: var(--chalk-dim); line-height: 1.7; }
+.setting { display: grid; gap: 8px; }
+.setting > span { font-weight: 700; font-size: .95rem; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip input { position: absolute; opacity: 0; pointer-events: none; }
+.chip > span {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 40px;
+  padding: 6px 14px; border-radius: 999px;
+  border: 1.5px dashed rgba(242,240,230,.45);
+  color: var(--chalk-dim); cursor: pointer; user-select: none;
+}
+.chip .sym { font-family: var(--font-math); font-size: 1.2rem; }
+.chip input:checked + span { border-style: solid; border-color: var(--chalk); color: var(--chalk); background: rgba(242,240,230,.1); }
+.chip input:focus-visible + span { outline: 3px solid var(--chalk-yellow); outline-offset: 2px; }
+.cta {
+  justify-self: center; min-width: 200px; min-height: 52px;
+  font-family: var(--font-display); font-size: 1.5rem;
+  background: var(--chalk-yellow); color: var(--board-deep);
+  border: 0; border-radius: 12px; padding: 6px 28px;
+  box-shadow: 0 4px 0 #b4932f;
+}
+.cta:active { translate: 0 3px; box-shadow: 0 1px 0 #b4932f; }
+.hint { text-align: center; font-size: .85rem; color: var(--chalk-dim); margin: 0; }
+#err { color: var(--chalk-pink); text-align: center; margin: 0; min-height: 1.2em; }
+
+.results { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 26px; }
+.results div { text-align: center; }
+.results b { display: block; font-family: var(--font-math); font-size: 2rem; color: var(--chalk); font-variant-numeric: tabular-nums; }
+.results small { color: var(--chalk-dim); }
+.review h3 { margin: 0 0 8px; font-size: 1.05rem; }
+.review ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.review li {
+  font-family: var(--font-math); font-size: 1.15rem; direction: ltr;
+  border: 1px solid rgba(243,155,141,.5); border-radius: 8px; padding: 4px 12px;
+}
+.review li em { font-style: normal; color: var(--chalk-green); }
+.review li sup { color: var(--chalk-pink); font-size: .75rem; }
+.review .none { color: var(--chalk-green); }
+
+/* ---------- Answer bar ---------- */
+.bar {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px;
+  background: linear-gradient(var(--wood), var(--wood-dark));
+  margin-top: -10px; padding: 10px; border-radius: 0 0 8px 8px;
+}
+#answer {
+  width: 9ch; min-height: 54px; text-align: center;
+  font-family: var(--font-math); font-size: 2rem; font-weight: 700;
+  background: var(--board-deep); color: var(--chalk);
+  border: 2px solid rgba(242,240,230,.35); border-radius: 10px;
+  direction: ltr;
+}
+#answer.shake { animation: shake .35s; border-color: var(--chalk-pink); }
+@keyframes shake { 25% { translate: 6px } 50% { translate: -6px } 75% { translate: 4px } }
+.pad { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.pad button {
+  min-width: 44px; min-height: 44px; border-radius: 8px;
+  font-family: var(--font-math); font-size: 1.25rem; font-weight: 700;
+  background: rgba(0,0,0,.28); border: 1px solid rgba(255,255,255,.2);
+}
+.pad button:active { background: rgba(0,0,0,.5); }
+.pad .ok { background: var(--chalk-green); color: var(--board-deep); min-width: 64px; }
+
+@media (max-width: 560px) {
+  .hud h1 { font-size: 1.35rem; width: 100%; }
+  .pad { display: grid; grid-template-columns: repeat(7, 1fr); width: 100%; }
+  .pad button { min-width: 0; }
+  .pad .ok { grid-column: span 2; }
+  #answer { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .prob.hit, .prob.miss, #flash.show, #answer.shake { animation-duration: .01s; }
+}
+</style>
+</head>
+<body>
+
+<div id="app" dir="rtl">
+  <header class="hud">
+    <h1>مطر المسائل</h1>
+    <div class="stat"><small>النقاط</small><b id="score">0</b></div>
+    <div class="stat"><small>المستوى</small><b id="level">1</b></div>
+    <div class="stat"><small>المحاولات</small><span id="lives"></span></div>
+    <button class="icon-btn" id="muteBtn" type="button" aria-label="الصوت">🔊</button>
+    <button class="icon-btn" id="pauseBtn" type="button">إيقاف مؤقت</button>
+  </header>
+
+  <main class="board" id="board">
+    <div id="field" aria-live="off"></div>
+    <div class="ledge"></div>
+    <div id="flash"></div>
+
+    <!-- Start / teacher settings -->
+    <section class="overlay" id="startScreen">
+      <form class="panel" id="setupForm">
+        <h2>مطر المسائل</h2>
+        <p class="lead">المسائل تتساقط على السبورة. اكتب الناتج واضغط Enter قبل أن تصل المسألة إلى الأسفل.</p>
+
+        <div class="setting"><span>العمليات</span>
+          <div class="chips">
+            <label class="chip"><input type="checkbox" name="ops" value="add" id="op-add"><span><span class="sym">+</span> جمع</span></label>
+            <label class="chip"><input type="checkbox" name="ops" value="sub" id="op-sub"><span><span class="sym">−</span> طرح</span></label>
+            <label class="chip"><input type="checkbox" name="ops" value="mul" id="op-mul"><span><span class="sym">×</span> ضرب</span></label>
+            <label class="chip"><input type="checkbox" name="ops" value="div" id="op-div" checked><span><span class="sym">÷</span> قسمة</span></label>
+            <label class="chip"><input type="checkbox" name="ops" value="lin" id="op-lin"><span><span class="sym">x</span> معادلات خطية</span></label>
+          </div>
+          <p class="hint" style="text-align:start">المعادلات الخطية تسقط ببطء أكبر، وحلّها قد يكون سالباً (زر − في لوحة الأرقام).</p>
+        </div>
+
+        <div class="setting"><span>الأعداد حتى</span>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="max" value="5" id="max-5"><span>5</span></label>
+            <label class="chip"><input type="radio" name="max" value="10" id="max-10" checked><span>10</span></label>
+            <label class="chip"><input type="radio" name="max" value="12" id="max-12"><span>12</span></label>
+            <label class="chip"><input type="radio" name="max" value="20" id="max-20"><span>20</span></label>
+          </div>
+        </div>
+
+        <div class="setting"><span>سرعة البداية</span>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="speed" value="slow" id="sp-slow" checked><span>بطيئة</span></label>
+            <label class="chip"><input type="radio" name="speed" value="mid" id="sp-mid"><span>متوسطة</span></label>
+            <label class="chip"><input type="radio" name="speed" value="fast" id="sp-fast"><span>سريعة</span></label>
+          </div>
+        </div>
+
+        <div class="setting"><span>عدد المحاولات</span>
+          <div class="chips">
+            <label class="chip"><input type="radio" name="lives" value="3" id="lv-3"><span>3</span></label>
+            <label class="chip"><input type="radio" name="lives" value="5" id="lv-5" checked><span>5</span></label>
+            <label class="chip"><input type="radio" name="lives" value="10" id="lv-10"><span>10</span></label>
+          </div>
+        </div>
+
+        <p id="err"></p>
+        <button class="cta" type="submit">ابدأ</button>
+        <p class="hint">كل 8 إجابات صحيحة تنقلك إلى مستوى أسرع · Esc للإيقاف المؤقت</p>
+      </form>
+    </section>
+
+    <section class="overlay" id="pauseScreen" hidden>
+      <div class="panel">
+        <h2>استراحة</h2>
+        <button class="cta" id="resumeBtn" type="button">تابع</button>
+        <button class="icon-btn" id="quitBtn" type="button" style="justify-self:center">إنهاء اللعبة</button>
+      </div>
+    </section>
+
+    <section class="overlay" id="endScreen" hidden>
+      <div class="panel">
+        <h2 id="endTitle">انتهت اللعبة</h2>
+        <div class="results" id="results"></div>
+        <div class="review" id="review"></div>
+        <button class="cta" id="againBtn" type="button">العب مرة أخرى</button>
+        <button class="icon-btn" id="settingsBtn" type="button" style="justify-self:center">تغيير الإعدادات</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bar">
+    <input id="answer" type="text" inputmode="numeric" autocomplete="off" aria-label="الناتج" placeholder="؟">
+    <div class="pad" id="pad">
+      <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button>
+      <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button>
+      <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button>
+      <button type="button" data-k="neg" aria-label="سالب">−</button><button type="button" data-k="0">0</button><button type="button" data-k="back" aria-label="حذف">⌫</button>
+      <button type="button" data-k="enter" class="ok">✓</button>
+    </div>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const field = $('#field'), answer = $('#answer'), flash = $('#flash');
+  const EAST = '٠١٢٣٤٥٦٧٨٩';
+  const SPEED = { slow: 1 / 15, mid: 1 / 10, fast: 1 / 7 };   // fraction of board per second
+  const PRAISE = ['أحسنت!', 'ممتاز!', 'رائع!', 'بطل!', 'عبقري!', 'أصبت!'];
+  const PER_LEVEL = 8;
+  let LANES = 5;
+
+  let S = { ops: ['div'], max: 10, speed: 'slow', lives: 5, digits: 'western' };
+  let G = null, raf = 0, muted = false;
+
+  const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+  // Bagrut style: always Western Arabic digits (0-9). Hindi digits typed on an Arabic keyboard are converted.
+  const fmt = n => String(n);
+  const norm = s => {
+    const t = s.replace(/[٠-٩]/g, d => d.charCodeAt(0) - 1632)
+               .replace(/[۰-۹]/g, d => d.charCodeAt(0) - 1776)
+               .replace(/[−–]/g, '-');
+    return (/^\s*-/.test(t) ? '-' : '') + t.replace(/\D/g, '');
+  };
+  const num = n => n < 0 ? `−${-n}` : String(n);
+  const signed = n => n < 0 ? ` − ${-n}` : ` + ${n}`;
+  const term = a => a === 1 ? 'x' : `${a}x`;
+  const nz = (a, b) => { let v; do v = rnd(a, b); while (v === 0); return v; };
+
+  // grade-9 linear equations with an integer solution
+  function linear() {
+    const m = S.max, X = rnd(-m, m), type = rnd(1, 3);
+    if (type === 1) {                       // ax + b = c
+      const a = rnd(2, 9), b = nz(-20, 20);
+      return { text: `${term(a)}${signed(b)} = ${num(a * X + b)}`, ans: X };
+    }
+    if (type === 2) {                       // a(x + b) = c
+      const a = rnd(2, 6), b = nz(-9, 9);
+      return { text: `${a}(x${signed(b)}) = ${num(a * (X + b))}`, ans: X };
+    }
+    const a = rnd(2, 9);                    // ax + b = cx + d
+    let c; do c = rnd(1, 8); while (c === a);
+    const b = rnd(-15, 15), d = a * X + b - c * X;
+    return { text: `${term(a)}${b ? signed(b) : ''} = ${term(c)}${d ? signed(d) : ''}`, ans: X };
+  }
+
+  /* ---------- sound (generated, no files needed) ---------- */
+  let ac = null;
+  function tone(freq, dur, type = 'sine', vol = .15, when = 0) {
+    if (muted) return;
+    try {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + when;
+      o.type = type; o.frequency.value = freq;
+      g.gain.setValueAtTime(vol, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      o.connect(g).connect(ac.destination);
+      o.start(t); o.stop(t + dur);
+    } catch (e) {}
+  }
+  const sDing = s => { tone(780 + Math.min(s, 10) * 45, .22, 'triangle'); tone(1560, .25, 'sine', .06, .05); };
+  const sWrong = () => tone(160, .25, 'sawtooth', .07);
+  const sMiss = () => { tone(330, .18, 'square', .05); tone(220, .3, 'square', .05, .14); };
+  const sLevel = () => [523, 659, 784, 1046].forEach((f, i) => tone(f, .2, 'triangle', .1, i * .09));
+
+  /* ---------- problems ---------- */
+  function makeProblem() {
+    const m = S.max;
+    for (let tries = 0; tries < 20; tries++) {
+      const op = pick(S.ops);
+      if (op === 'lin') {
+        const p = { ...linear(), lin: true };
+        p.key = p.text;
+        if (!G.items.some(it => it.key === p.key)) return p;
+        continue;
+      }
+      let a, b, ans, sym;
+      if (op === 'add') { a = rnd(1, m); b = rnd(1, m); ans = a + b; sym = '+'; }
+      if (op === 'sub') { a = rnd(1, m); b = rnd(1, m); if (b > a) [a, b] = [b, a]; ans = a - b; sym = '−'; }
+      if (op === 'mul') { a = rnd(2, m); b = rnd(2, m); ans = a * b; sym = '×'; }
+      if (op === 'div') { b = rnd(2, m); ans = rnd(1, m); a = b * ans; sym = '÷'; }
+      const key = `${a} ${sym} ${b}`;
+      if (!G.items.some(it => it.key === key)) return { text: key, ans, key };
+    }
+    return null;
+  }
+
+  // equations fall at 40% speed, giving students time to solve them
+  const rate = it => SPEED[S.speed] * Math.min(2.6, 1 + 0.13 * (G.level - 1)) * (it.lin ? 0.4 : 1);
+  const hasLin = () => S.ops.includes('lin');
+  const gap = () => Math.max(0.9, (3.4 - 0.22 * (G.level - 1)) * (S.speed === 'fast' ? .8 : 1)) * (hasLin() ? 1.8 : 1);
+  const maxOn = () => Math.min(hasLin() ? 4 : 6, 2 + G.level);
+
+  function spawn() {
+    const p = makeProblem();
+    if (!p) return;
+    const busy = new Set(G.items.filter(it => it.y < 0.3).map(it => it.lane));
+    const free = [...Array(LANES).keys()].filter(l => !busy.has(l));
+    if (!free.length) return;
+    const lane = pick(free);
+    const el = document.createElement('div');
+    el.className = p.lin ? 'prob eq' : 'prob';
+    el.dir = 'ltr';
+    el.innerHTML = p.lin
+      ? `<div>${p.text}</div><div class="xq">x = <span class="q">؟</span></div>`
+      : `${p.text} = <span class="q">؟</span>`;
+    el.style.left = `${(lane + 0.5) * (100 / LANES)}%`;
+    el.style.rotate = `${rnd(-4, 4)}deg`;
+    field.appendChild(el);
+    G.items.push({ ...p, lane, y: 0, el, h: el.offsetHeight });
+  }
+
+  /* ---------- game loop ---------- */
+  function tick(t) {
+    if (!G || G.state !== 'play') return;
+    const dt = G.last == null ? 0 : Math.min(0.05, (t - G.last) / 1000);
+    G.last = t;
+    G.spawnIn -= dt;
+    if (G.spawnIn <= 0 && G.items.length < maxOn()) { spawn(); G.spawnIn = gap(); }
+    if (!G.items.length && G.spawnIn > 0.6) G.spawnIn = 0.6;
+    const H = field.clientHeight;
+    for (const it of [...G.items]) {
+      it.y += rate(it) * dt;
+      it.el.style.transform = `translateY(${it.y * (H - it.h)}px)`;
+      it.el.classList.toggle('danger', it.y > 0.72);
+      if (it.y >= 1) miss(it);
+      if (!G || G.state !== 'play') return;
+    }
+    raf = requestAnimationFrame(tick);
+  }
+
+  function removeItem(it, cls) {
+    G.items = G.items.filter(x => x !== it);
+    it.el.classList.add(cls);
+    setTimeout(() => it.el.remove(), 750);
+  }
+
+  function showFlash(text, cls) {
+    flash.textContent = text;
+    flash.className = '';
+    void flash.offsetWidth;
+    flash.className = `show ${cls}`;
+  }
+
+  function hit(it) {
+    G.correct++; G.streak++;
+    G.score += 10 * G.level * (it.lin ? 2 : 1) + Math.round((1 - it.y) * 10) + (G.streak >= 5 ? 5 : 0);
+    it.el.querySelector('.q').textContent = num(it.ans);
+    removeItem(it, 'hit');
+    sDing(G.streak);
+    answer.value = '';
+    if (G.correct % PER_LEVEL === 0) {
+      G.level++;
+      sLevel();
+      showFlash(`المستوى ${fmt(G.level)}`, 'lvl');
+    } else {
+      showFlash(G.streak >= 5 && G.streak % 5 === 0 ? `${fmt(G.streak)} متتالية!` : pick(PRAISE), 'good');
+    }
+    hud();
+  }
+
+  function wrong() {
+    G.wrong++; G.streak = 0;
+    sWrong();
+    showFlash('حاول مرة أخرى', 'bad');
+    answer.classList.remove('shake'); void answer.offsetWidth; answer.classList.add('shake');
+    answer.value = '';
+  }
+
+  function miss(it) {
+    G.lives--; G.streak = 0;
+    G.missed.push(it);
+    it.el.querySelector('.q').textContent = num(it.ans);
+    removeItem(it, 'miss');
+    sMiss();
+    hud();
+    if (G.lives <= 0) end();
+  }
+
+  // the lowest (most urgent) problem whose answer matches
+  const findMatch = v => G.items.filter(it => String(it.ans) === v).sort((a, b) => b.y - a.y)[0];
+
+  function onType() {
+    const v = norm(answer.value);
+    answer.value = fmt(v);
+    if (!G || G.state !== 'play' || !v || v === '-') return;
+    const m = findMatch(v);
+    // answer automatically unless a longer answer on screen still starts with these digits
+    const longer = G.items.some(it => String(it.ans).length > v.length && String(it.ans).startsWith(v));
+    if (m && !longer) hit(m);
+  }
+
+  function submit() {
+    if (!G || G.state !== 'play') return;
+    const v = norm(answer.value);
+    if (!v || v === '-') return;
+    const m = findMatch(v);
+    m ? hit(m) : wrong();
+  }
+
+  /* ---------- HUD ---------- */
+  function hud() {
+    $('#score').textContent = fmt(G.score);
+    $('#level').textContent = fmt(G.level);
+    $('#lives').textContent = '●'.repeat(Math.max(0, G.lives)) + '○'.repeat(Math.max(0, S.lives - G.lives));
+  }
+
+  /* ---------- states ---------- */
+  function readSettings() {
+    const f = $('#setupForm');
+    const ops = [...f.querySelectorAll('input[name=ops]:checked')].map(i => i.value);
+    if (!ops.length) { $('#err').textContent = 'اختر عملية واحدة على الأقل.'; return false; }
+    $('#err').textContent = '';
+    S = {
+      ops,
+      max: +f.querySelector('input[name=max]:checked').value,
+      speed: f.querySelector('input[name=speed]:checked').value,
+      lives: +f.querySelector('input[name=lives]:checked').value,
+      digits: 'western',
+    };
+    try { localStorage.setItem('mathrain-settings', JSON.stringify(S)); } catch (e) {}
+    return true;
+  }
+
+  function start() {
+    cancelAnimationFrame(raf);
+    field.innerHTML = '';
+    LANES = S.ops.includes('lin') ? 3 : 5;   // equations are wider, so fewer columns
+    G = { state: 'play', items: [], score: 0, level: 1, lives: S.lives, correct: 0, wrong: 0,
+          streak: 0, missed: [], spawnIn: 0.4, last: null };
+    ['#startScreen', '#endScreen', '#pauseScreen'].forEach(s => $(s).hidden = true);
+    answer.value = '';
+    hud();
+    answer.focus({ preventScroll: true });
+    raf = requestAnimationFrame(tick);
+  }
+
+  function pause() {
+    if (!G || G.state !== 'play') return;
+    G.state = 'pause';
+    cancelAnimationFrame(raf);
+    $('#pauseScreen').hidden = false;
+    $('#resumeBtn').focus();
+  }
+  function resume() {
+    if (!G || G.state !== 'pause') return;
+    G.state = 'play'; G.last = null;
+    $('#pauseScreen').hidden = true;
+    answer.focus({ preventScroll: true });
+    raf = requestAnimationFrame(tick);
+  }
+
+  function end() {
+    G.state = 'over';
+    cancelAnimationFrame(raf);
+    $('#pauseScreen').hidden = true;
+    let best = 0;
+    try { best = +localStorage.getItem('mathrain-best') || 0; } catch (e) {}
+    const isBest = G.score > best;
+    if (isBest) try { localStorage.setItem('mathrain-best', G.score); } catch (e) {}
+    const total = G.correct + G.wrong + G.missed.length;
+    const acc = total ? Math.round(100 * G.correct / total) : 0;
+    $('#endTitle').textContent = isBest && G.score > 0 ? 'رقم قياسي جديد!' : 'انتهت اللعبة';
+    $('#results').innerHTML = [
+      [G.score, 'النقاط'], [G.level, 'المستوى'], [G.correct, 'إجابات صحيحة'],
+      [G.wrong, 'إجابات خاطئة'], [`${acc}%`, 'الدقة'], [Math.max(best, G.score), 'أفضل نتيجة'],
+    ].map(([v, l]) => `<div><b>${typeof v === 'number' ? fmt(v) : v}</b><small>${l}</small></div>`).join('');
+
+    const counts = new Map();
+    G.missed.forEach(p => {
+      const c = counts.get(p.key) || { ...p, n: 0 };
+      c.n++; counts.set(p.key, c);
+    });
+    const list = [...counts.values()].sort((a, b) => b.n - a.n);
+    $('#review').innerHTML = list.length
+      ? `<h3>راجع هذه المسائل</h3><ul>${list.map(p =>
+          `<li>${p.lin ? `${p.text} → <em>x = ${num(p.ans)}</em>` : `${p.text} = <em>${num(p.ans)}</em>`}${p.n > 1 ? ` <sup>×${fmt(p.n)}</sup>` : ''}</li>`).join('')}</ul>`
+      : `<p class="none">لم تفُتك أي مسألة. عمل ممتاز!</p>`;
+    $('#endScreen').hidden = false;
+    $('#againBtn').focus();
+  }
+
+  function showSettings() {
+    if (G) { G.state = 'over'; cancelAnimationFrame(raf); }
+    field.innerHTML = '';
+    ['#endScreen', '#pauseScreen'].forEach(s => $(s).hidden = true);
+    $('#startScreen').hidden = false;
+  }
+
+  /* ---------- wiring ---------- */
+  $('#setupForm').addEventListener('submit', e => { e.preventDefault(); if (readSettings()) start(); });
+  $('#againBtn').addEventListener('click', start);
+  $('#settingsBtn').addEventListener('click', showSettings);
+  $('#resumeBtn').addEventListener('click', resume);
+  $('#quitBtn').addEventListener('click', end);
+  $('#pauseBtn').addEventListener('click', () => G && G.state === 'pause' ? resume() : pause());
+  $('#muteBtn').addEventListener('click', e => { muted = !muted; e.currentTarget.textContent = muted ? '🔇' : '🔊'; });
+
+  answer.addEventListener('input', onType);
+  answer.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); submit(); } });
+
+  $('#pad').addEventListener('click', e => {
+    const k = e.target.closest('button')?.dataset.k;
+    if (!k) return;
+    if (k === 'enter') submit();
+    else if (k === 'back') answer.value = fmt(norm(answer.value).slice(0, -1));
+    else if (k === 'neg') { const v = norm(answer.value); answer.value = v.startsWith('-') ? v.slice(1) : '-' + v; onType(); }
+    else { answer.value = norm(answer.value) + k; onType(); }
+  });
+  // on touch screens use the on-screen pad instead of the phone keyboard
+  if (matchMedia('(pointer: coarse)').matches) answer.setAttribute('inputmode', 'none');
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { G && G.state === 'pause' ? resume() : pause(); return; }
+    if (G && G.state === 'play' && document.activeElement !== answer && /^[0-9٠-٩]$/.test(e.key)) {
+      answer.focus({ preventScroll: true });
+    }
+  });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
+
+  // restore the last chosen settings
+  try {
+    const saved = JSON.parse(localStorage.getItem('mathrain-settings') || 'null');
+    if (saved) {
+      const f = $('#setupForm');
+      f.querySelectorAll('input[name=ops]').forEach(i => i.checked = saved.ops.includes(i.value));
+      ['max', 'speed', 'lives', 'digits'].forEach(n => {
+        const i = f.querySelector(`input[name=${n}][value="${saved[n]}"]`);
+        if (i) i.checked = true;
+      });
+    }
+  } catch (e) {}
+
+  // a few chalk problems resting on the board behind the start screen
+  G = { items: [] };
+  [[8, '÷', 2], [6, '×', 7], [15, '÷', 3], [9, '+', 6]].forEach(([a, sym, b], i) => {
+    const el = document.createElement('div');
+    el.className = 'prob'; el.dir = 'ltr';
+    el.innerHTML = `${a} ${sym} ${b} = <span class="q">؟</span>`;
+    el.style.left = `${(i * 1.2 + 0.8) * (100 / LANES)}%`;
+    el.style.top = `${12 + i * 18}%`;
+    el.style.rotate = `${rnd(-4, 4)}deg`;
+    field.appendChild(el);
+  });
+  G = null;
+  $('#lives').textContent = '●●●●●';
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,280 @@
+
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شاشة EnergyFocus الذكية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #0f172a;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* تنسيق كرة الطاقة */
+        .energy-ball-container {
+            width: 280px;
+            height: 280px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+        }
+
+        .energy-ball {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #4ade80, #22c55e);
+            box-shadow: 0 0 40px #22c55e, inset 0 0 20px rgba(255,255,255,0.5);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* حلقات الطاقة */
+        .ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: rgba(74, 222, 128, 0.5);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: spin 6s linear infinite;
+        }
+        .ring-1 { width: 180px; height: 180px; border-width: 2px; animation-duration: 4s; }
+        .ring-2 { width: 220px; height: 220px; border-width: 1px; animation-duration: 7s; animation-direction: reverse; border-top-color: #3b82f6; }
+        .ring-3 { width: 260px; height: 260px; border-width: 1px; animation-duration: 10s; border-top-color: #facc15; }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* موجات الصوت (AI Voice) */
+        .voice-wave {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            height: 20px;
+        }
+        .bar {
+            width: 4px;
+            background: #3b82f6;
+            animation: wave 1s ease-in-out infinite;
+        }
+        @keyframes wave {
+            0%, 100% { height: 5px; opacity: 0.5; }
+            50% { height: 20px; opacity: 1; }
+        }
+
+        /* كرت التحكم */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col p-6">
+
+    <!-- الرأس -->
+    <header class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-blue-500">
+                Smart Focus
+            </h1>
+            <p class="text-xs text-slate-400">Connected: Micro:bit v2</p>
+        </div>
+        <div class="flex items-center gap-2 bg-slate-800 px-4 py-2 rounded-full border border-slate-700">
+            <span class="text-yellow-400 font-bold text-xl" id="pointsDisplay">1240</span>
+            <span class="text-xs text-gray-400">نقطة طاقة</span>
+        </div>
+    </header>
+
+    <!-- الجسم الرئيسي -->
+    <main class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- القسم الأيمن: كرة الطاقة (Kinetic) -->
+        <div class="glass-panel p-6 flex flex-col items-center justify-center relative overflow-hidden group">
+            <div class="absolute top-4 right-4 bg-green-900/50 text-green-400 text-xs px-2 py-1 rounded border border-green-800">
+                نظام الحركة نشط
+            </div>
+            
+            <div class="energy-ball-container" id="ballContainer">
+                <div class="ring ring-1"></div>
+                <div class="ring ring-2"></div>
+                <div class="ring ring-3"></div>
+                <div class="energy-ball shadow-[0_0_50px_#22c55e]" id="mainBall"></div>
+            </div>
+
+            <div class="text-center mt-4">
+                <div class="text-4xl font-mono font-bold" id="wattCounter">45W</div>
+                <div class="text-sm text-green-400">طاقة مولدة</div>
+            </div>
+            
+            <!-- محاكاة الحركة (مخفي للعرض، يمكن استخدامه للشرح) -->
+            <input type="range" min="0" max="100" value="30" class="w-full mt-6 opacity-30 hover:opacity-100 transition-opacity" id="motionSlider">
+        </div>
+
+        <!-- القسم الأيسر: الميزات الذكية (AI & Focus) -->
+        <div class="flex flex-col gap-6">
+            
+            <!-- 1. الاستدراك الذكي (AI Teacher) -->
+            <div class="glass-panel p-6 flex-1 flex flex-col justify-between">
+                <div class="flex justify-between items-start mb-2">
+                    <div class="flex items-center gap-3">
+                        <div class="p-3 bg-blue-600 rounded-lg">
+                            <i data-lucide="bot" class="text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg">المعلم الذكي (AI)</h3>
+                            <p class="text-xs text-slate-400">استدراك الدروس الفائتة</p>
+                        </div>
+                    </div>
+                    <span class="text-xs bg-blue-900 text-blue-300 px-2 py-1 rounded">جاهز</span>
+                </div>
+
+                <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700">
+                    <!-- إضافة قسم الصور التوضيحية (الجديد) -->
+                    <div class="relative w-full h-32 mb-3 rounded-lg overflow-hidden border border-slate-600 group bg-black">
+                         <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&w=400&q=80" 
+                              alt="Physics Lesson" 
+                              class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+                         <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                             <div class="bg-black/40 p-2 rounded-full backdrop-blur-sm">
+                                <i data-lucide="presentation" class="text-white opacity-90 w-6 h-6"></i>
+                             </div>
+                         </div>
+                         <div class="absolute bottom-2 left-2 flex gap-1">
+                             <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                             <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+                             <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+                         </div>
+                         <span class="absolute top-2 left-2 bg-black/60 text-[10px] px-2 py-1 rounded text-white border border-white/10">شرح بصري</span>
+                    </div>
+
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-bold">درس الفيزياء: قوانين نيوتن</span>
+                        <span class="text-xs text-gray-400">بصوت المعلمة: حنان</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button class="w-10 h-10 rounded-full bg-white text-blue-900 flex items-center justify-center hover:bg-blue-100 transition" onclick="togglePlay()">
+                            <i data-lucide="play" id="playIcon" class="fill-current"></i>
+                        </button>
+                        <div class="voice-wave opacity-0 transition-opacity duration-300" id="voiceWave">
+                            <div class="bar" style="animation-delay: 0s"></div>
+                            <div class="bar" style="animation-delay: 0.1s"></div>
+                            <div class="bar" style="animation-delay: 0.2s"></div>
+                            <div class="bar" style="animation-delay: 0.3s"></div>
+                            <div class="bar" style="animation-delay: 0.4s"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. منطقة التركيز (White Noise) -->
+            <div class="glass-panel p-6 flex-1 flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <div class="flex items-center gap-3">
+                        <div class="p-3 bg-purple-600 rounded-lg">
+                            <i data-lucide="headphones" class="text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg">منطقة التركيز</h3>
+                            <p class="text-xs text-slate-400">عزل الضوضاء</p>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" value="" class="sr-only peer" id="noiseToggle">
+                        <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                    </label>
+                </div>
+
+                <div class="mt-4 text-sm text-slate-300 flex items-center gap-2 opacity-50 transition-opacity" id="noiseStatus">
+                    <i data-lucide="waves"></i>
+                    <span>موسيقى بيضاء (White Noise) - مفعلة</span>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        // 1. محاكاة الحركة (Kinetic)
+        const slider = document.getElementById('motionSlider');
+        const ball = document.getElementById('mainBall');
+        const wattCounter = document.getElementById('wattCounter');
+        const pointsDisplay = document.getElementById('pointsDisplay');
+        const rings = document.querySelectorAll('.ring');
+        
+        let points = 1240;
+
+        slider.addEventListener('input', (e) => {
+            const val = e.target.value;
+            // تكبير وتصغير الكرة
+            ball.style.transform = `scale(${1 + val/200})`;
+            // زيادة التوهج
+            ball.style.boxShadow = `0 0 ${30 + val/2}px #22c55e`;
+            // تحديث الواط
+            wattCounter.innerText = Math.floor(val * 1.5) + 'W';
+            
+            // تسريع الحلقات
+            rings.forEach(ring => {
+                ring.style.animationDuration = (11 - val/10) + 's';
+            });
+        });
+
+        // محاكاة زيادة النقاط تلقائياً عند وجود حركة
+        setInterval(() => {
+            if(slider.value > 10) {
+                points += 1;
+                pointsDisplay.innerText = points;
+            }
+        }, 2000);
+
+
+        // 2. محاكاة مشغل الصوت (AI Teacher)
+        let isPlaying = false;
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            const icon = document.getElementById('playIcon');
+            const wave = document.getElementById('voiceWave');
+            
+            if (isPlaying) {
+                // تغيير الأيقونة إلى إيقاف مؤقت
+                // هنا مجرد محاكاة بصرية
+                wave.classList.remove('opacity-0');
+            } else {
+                wave.classList.add('opacity-0');
+            }
+        }
+
+        // 3. محاكاة الضوضاء البيضاء
+        const noiseToggle = document.getElementById('noiseToggle');
+        const noiseStatus = document.getElementById('noiseStatus');
+
+        noiseToggle.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                noiseStatus.classList.remove('opacity-50');
+                noiseStatus.classList.add('text-purple-300');
+            } else {
+                noiseStatus.classList.add('opacity-50');
+                noiseStatus.classList.remove('text-purple-300');
+            }
+        });
+    </script>
+</body>
+</html>

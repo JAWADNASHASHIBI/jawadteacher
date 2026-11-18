@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>غرفة الهروب: أسرار الذرة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+            background-image: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+
+        /* Animations */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.9); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .btn-neon {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-neon:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
+        }
+
+        .btn-neon::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(45deg);
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .btn-neon:hover::after {
+            animation: shimmer 1s infinite;
+            opacity: 1;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        /* Atom Animation */
+        .atom-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+        }
+        
+        .nucleus {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, #ef4444, #b91c1c);
+            border-radius: 50%;
+            box-shadow: 0 0 15px #ef4444;
+            z-index: 10;
+            animation: pulse-glow 2s infinite;
+        }
+
+        .orbit {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 40%;
+            border: 1px solid rgba(56, 189, 248, 0.5);
+            border-radius: 50%;
+            transform-origin: center;
+        }
+
+        .orbit:nth-child(2) { transform: translate(-50%, -50%) rotate(60deg); }
+        .orbit:nth-child(3) { transform: translate(-50%, -50%) rotate(120deg); }
+        .orbit:nth-child(4) { transform: translate(-50%, -50%) rotate(180deg); }
+
+        .electron {
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            background: #38bdf8;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #38bdf8;
+            animation: orbit-spin 3s linear infinite;
+            transform-origin: 0 75px; /* Radius of orbit */
+        }
+
+        @keyframes orbit-spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+    </style>
+</head>
+<body class="antialiased flex flex-col justify-between items-center py-8 px-4">
+
+    <!-- Header / Timer -->
+    <header class="w-full max-w-4xl flex justify-between items-center glass-panel p-4 rounded-2xl mb-8 z-10 relative">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-2xl shadow-[0_0_15px_rgba(37,99,235,0.6)]">
+                🔬
+            </div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold text-white">مختبر الكيمياء السري</h1>
+                <p class="text-blue-300 text-sm">مهمة الهروب - الصف الثامن</p>
+            </div>
+        </div>
+        <div class="text-center">
+            <p class="text-sm text-gray-400 mb-1">الوقت المتبقي</p>
+            <div id="timer" class="text-2xl md:text-3xl font-black text-red-400 font-mono tracking-wider drop-shadow-[0_0_8px_rgba(248,113,113,0.8)]">
+                10:00
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Game Container -->
+    <main class="w-full max-w-4xl relative z-10 flex-grow flex flex-col items-center justify-center">
+        
+        <!-- Intro Screen -->
+        <div id="intro-screen" class="glass-panel p-8 rounded-3xl w-full text-center max-w-2xl mx-auto transform transition-all duration-500">
+            <div class="atom-container mb-8">
+                <div class="nucleus"></div>
+                <div class="orbit"><div class="electron" style="animation-duration: 2s;"></div></div>
+                <div class="orbit"><div class="electron" style="animation-duration: 3s; animation-delay: -1s;"></div></div>
+                <div class="orbit"><div class="electron" style="animation-duration: 2.5s; animation-delay: -2s;"></div></div>
+            </div>
+            <h2 class="text-3xl font-bold text-white mb-4">كارثة في المختبر!</h2>
+            <p class="text-lg text-gray-300 mb-8 leading-relaxed">
+                لقد انغلق باب مختبر الكيمياء السري تلقائياً بسبب تسرب إشعاعي وهمي! نظام الأمان الذكي لن يفتح الباب إلا إذا أثبتّ فهمك العميق لبنية <span class="text-blue-400 font-bold">الذرة</span>.
+                <br><br>
+                لديك 10 دقائق لفك شيفرات الأبواب الأربعة. هل أنت مستعد للتحدي؟
+            </p>
+            <button onclick="startGame()" class="btn-neon bg-blue-600 hover:bg-blue-500 text-white text-xl font-bold py-4 px-12 rounded-full w-full md:w-auto">
+                ابدأ الهروب الآن! 🚀
+            </button>
+        </div>
+
+        <!-- Puzzle Screen -->
+        <div id="puzzle-screen" class="hidden glass-panel p-6 md:p-10 rounded-3xl w-full max-w-3xl mx-auto">
+            <!-- Progress Bar -->
+            <div class="mb-8">
+                <div class="flex justify-between text-sm text-blue-300 mb-2 font-semibold">
+                    <span id="level-indicator">الغرفة 1 من 4</span>
+                    <span id="progress-percentage">25%</span>
+                </div>
+                <div class="w-full bg-gray-700 rounded-full h-3">
+                    <div id="progress-bar" class="bg-gradient-to-l from-blue-400 to-blue-600 h-3 rounded-full transition-all duration-700 ease-out" style="width: 25%"></div>
+                </div>
+            </div>
+
+            <!-- Question Area -->
+            <div class="mb-8 text-center">
+                <div id="puzzle-icon" class="text-5xl mb-4">🚪</div>
+                <h3 id="puzzle-title" class="text-2xl font-bold text-blue-400 mb-2">الباب الأول: قلب الذرة</h3>
+                <p id="puzzle-question" class="text-xl text-white leading-relaxed">
+                    تحتاج لتجاوز هذا الباب إلى معرفة الجسيمات الموجودة في مركز الذرة (النواة). ما هو الجسيم الذي يحمل شحنة موجبة؟
+                </p>
+            </div>
+
+            <!-- Options -->
+            <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Options injected via JS -->
+            </div>
+        </div>
+
+        <!-- Out of Time Screen -->
+        <div id="game-over-screen" class="hidden glass-panel p-10 rounded-3xl w-full text-center max-w-2xl mx-auto border-red-500 border-2 shadow-[0_0_30px_rgba(239,68,68,0.3)]">
+            <div class="text-7xl mb-6">⏰</div>
+            <h2 class="text-4xl font-black text-red-500 mb-4">انتهى الوقت!</h2>
+            <p class="text-xl text-gray-300 mb-8">لقد تم إغلاق المختبر بالكامل. يجب عليك مراجعة دروسك عن الذرة والمحاولة مرة أخرى.</p>
+            <button onclick="location.reload()" class="bg-red-600 hover:bg-red-500 text-white text-xl font-bold py-3 px-8 rounded-full transition-colors">
+                إعادة المحاولة 🔄
+            </button>
+        </div>
+
+        <!-- Victory Screen -->
+        <div id="victory-screen" class="hidden glass-panel p-10 rounded-3xl w-full text-center max-w-2xl mx-auto border-green-500 border-2 shadow-[0_0_30px_rgba(34,197,94,0.3)]">
+            <div class="text-7xl mb-6">🏆</div>
+            <h2 class="text-4xl font-black text-green-400 mb-4">نجاح باهر! لقد هربت!</h2>
+            <p class="text-xl text-gray-300 mb-6">تهانينا! لقد أثبت أنك عالم مستقبلي رائع في فهم بنية الذرة. تم فتح أبواب المختبر بأمان.</p>
+            <div class="bg-gray-800 p-6 rounded-2xl mb-8 text-right border border-gray-600">
+                <h4 class="text-lg font-bold text-blue-300 mb-3 border-b border-gray-600 pb-2">ملخص ما تعلمته اليوم:</h4>
+                <ul class="list-disc list-inside text-gray-300 space-y-2">
+                    <li>البروتونات موجبة والنيوترونات متعادلة، وكلاهما في النواة.</li>
+                    <li>الإلكترونات سالبة وتدور في مستويات الطاقة.</li>
+                    <li>العدد الكتلي = عدد البروتونات + عدد النيوترونات.</li>
+                    <li>الإلكترونات هي الأخف وزناً في الذرة.</li>
+                </ul>
+            </div>
+            <button onclick="location.reload()" class="bg-green-600 hover:bg-green-500 text-white text-xl font-bold py-3 px-8 rounded-full transition-colors">
+                العب مرة أخرى 🌟
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Custom Modal for Feedback -->
+    <div id="feedback-modal" class="fixed inset-0 modal-overlay z-50 hidden flex items-center justify-center opacity-0 transition-opacity duration-300 px-4">
+        <div id="modal-content" class="bg-gray-800 border-2 rounded-2xl p-8 max-w-md w-full text-center transform scale-90 transition-transform duration-300">
+            <div id="modal-icon" class="text-6xl mb-4">✅</div>
+            <h3 id="modal-title" class="text-2xl font-bold mb-2">إجابة صحيحة!</h3>
+            <p id="modal-message" class="text-gray-300 mb-6 text-lg">رسالة التوضيح تظهر هنا.</p>
+            <button onclick="closeModalAndProceed()" id="modal-btn" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full w-full">
+                متابعة للغرفة التالية ➔
+            </button>
+        </div>
+    </div>
+
+    <!-- Background Decorative Elements -->
+    <div class="fixed top-20 left-10 w-32 h-32 bg-blue-600 rounded-full mix-blend-multiply filter blur-[80px] opacity-30 z-0 animate-pulse"></div>
+    <div class="fixed bottom-20 right-10 w-48 h-48 bg-purple-600 rounded-full mix-blend-multiply filter blur-[100px] opacity-20 z-0"></div>
+
+    <script>
+        // --- Game Data ---
+        const levels = [
+            {
+                title: "الباب الأول: قلب الذرة",
+                icon: "⚛️",
+                question: "تحتاج لتجاوز هذا الباب إلى معرفة الجسيمات الموجودة في مركز الذرة (النواة). ما هو الجسيم الذي يحمل شحنة موجبة؟",
+                options: [
+                    "الإلكترون (Electron)",
+                    "البروتون (Proton)",
+                    "النيوترون (Neutron)",
+                    "الفوتون (Photon)"
+                ],
+                correctAnswer: 1, // index 1 (Proton)
+                successMsg: "عمل ممتاز! البروتونات تحمل شحنة موجبة وتوجد في النواة المركزية الثقيلة للذرة."
+            },
+            {
+                title: "الباب الثاني: السحابة الغامضة",
+                icon: "🌪️",
+                question: "تم فتح الباب الأول! الآن يطلب النظام معرفة موقع الجسيمات سالبة الشحنة (الإلكترونات). أين تتواجد هذه الجسيمات؟",
+                options: [
+                    "ملتصقة بالبروتونات داخل النواة",
+                    "تتحرك بحرية خارج الذرة تماماً",
+                    "توجد داخل النواة مع النيوترونات",
+                    "تدور حول النواة في مناطق تُسمى مستويات الطاقة"
+                ],
+                correctAnswer: 3, 
+                successMsg: "صحيح! الإلكترونات تدور بسرعة هائلة حول النواة في مسارات أو سحابات تُعرف بمستويات الطاقة."
+            },
+            {
+                title: "الباب الثالث: شيفرة الأرقام",
+                icon: "🔢",
+                question: "شاشة التحكم تتطلب رقماً سرياً! لديك ذرة صوديوم (Na)، عددها الذري هو (11) وعددها الكتلي هو (23). الشيفرة السرية هي عدد النيوترونات في هذه الذرة. ما هي الشيفرة؟\n\n(تلميح: العدد الكتلي = البروتونات + النيوترونات)",
+                options: [
+                    "11",
+                    "12",
+                    "23",
+                    "34"
+                ],
+                correctAnswer: 1, // 23 - 11 = 12
+                successMsg: "عبقري! بما أن العدد الكتلي (23) ناقص العدد الذري (11) يساوي 12، فإن عدد النيوترونات هو 12. لقد أدخلت الشيفرة الصحيحة!"
+            },
+            {
+                title: "الباب الأخير: الميزان الدقيق",
+                icon: "⚖️",
+                question: "هذا هو الباب الأخير للهروب. يجب عليك اختيار الجسيم الأخف وزناً في الذرة، والذي تُعتبر كتلته مهملة تقريباً مقارنة بالجسيمات الأخرى. من هو؟",
+                options: [
+                    "البروتون",
+                    "النيوترون",
+                    "الإلكترون",
+                    "النواة بأكملها"
+                ],
+                correctAnswer: 2, 
+                successMsg: "أحسنت! الإلكترون كتلته صغيرة جداً جداً لدرجة أنها تُهمل عند حساب كتلة الذرة. لقد تم فتح الباب الرئيسي!"
+            }
+        ];
+
+        let currentLevel = 0;
+        let timerInterval;
+        let timeLeft = 600; // 10 minutes in seconds
+        let isGameOver = false;
+
+        // --- DOM Elements ---
+        const introScreen = document.getElementById('intro-screen');
+        const puzzleScreen = document.getElementById('puzzle-screen');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const victoryScreen = document.getElementById('victory-screen');
+        
+        const puzzleTitle = document.getElementById('puzzle-title');
+        const puzzleIcon = document.getElementById('puzzle-icon');
+        const puzzleQuestion = document.getElementById('puzzle-question');
+        const optionsContainer = document.getElementById('options-container');
+        const levelIndicator = document.getElementById('level-indicator');
+        const progressPercentage = document.getElementById('progress-percentage');
+        const progressBar = document.getElementById('progress-bar');
+        const timerDisplay = document.getElementById('timer');
+
+        // Modal Elements
+        const modal = document.getElementById('feedback-modal');
+        const modalContent = document.getElementById('modal-content');
+        const modalIcon = document.getElementById('modal-icon');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const modalBtn = document.getElementById('modal-btn');
+
+        // --- Functions ---
+
+        function startGame() {
+            introScreen.classList.add('hidden');
+            puzzleScreen.classList.remove('hidden');
+            startTimer();
+            loadLevel(currentLevel);
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (isGameOver) return clearInterval(timerInterval);
+                
+                timeLeft--;
+                
+                let minutes = Math.floor(timeLeft / 60);
+                let seconds = timeLeft % 60;
+                
+                timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 60) {
+                    timerDisplay.classList.remove('text-red-400');
+                    timerDisplay.classList.add('text-red-600', 'animate-pulse');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    triggerGameOver();
+                }
+            }, 1000);
+        }
+
+        function triggerGameOver() {
+            isGameOver = true;
+            puzzleScreen.classList.add('hidden');
+            gameOverScreen.classList.remove('hidden');
+        }
+
+        function loadLevel(index) {
+            const level = levels[index];
+            
+            // Update UI
+            puzzleTitle.textContent = level.title;
+            puzzleIcon.textContent = level.icon;
+            
+            // Replace newlines with <br> for HTML rendering
+            puzzleQuestion.innerHTML = level.question.replace(/\n/g, '<br>');
+            
+            // Update Progress
+            let currentStep = index + 1;
+            let totalSteps = levels.length;
+            let percent = (currentStep / totalSteps) * 100;
+            
+            levelIndicator.textContent = `الغرفة ${currentStep} من ${totalSteps}`;
+            progressPercentage.textContent = `${percent}%`;
+            progressBar.style.width = `${percent}%`;
+
+            // Clear and Load Options
+            optionsContainer.innerHTML = '';
+            level.options.forEach((optionText, i) => {
+                const btn = document.createElement('button');
+                btn.className = "btn-neon bg-slate-800 hover:bg-blue-900 border border-slate-600 hover:border-blue-400 text-white font-semibold py-4 px-6 rounded-xl text-right transition-all flex items-center gap-3";
+                
+                // Add a letter indicator (A, B, C, D) corresponding to Arabic (أ, ب, ج, د)
+                const letters = ['أ', 'ب', 'ج', 'د'];
+                btn.innerHTML = `<span class="bg-slate-700 text-blue-300 w-8 h-8 flex items-center justify-center rounded-lg font-bold shrink-0">${letters[i]}</span> <span>${optionText}</span>`;
+                
+                btn.onclick = () => checkAnswer(i, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, buttonElement) {
+            const level = levels[currentLevel];
+            
+            if (selectedIndex === level.correctAnswer) {
+                // Correct
+                buttonElement.classList.remove('bg-slate-800', 'border-slate-600');
+                buttonElement.classList.add('bg-green-700', 'border-green-400');
+                showModal(true, level.successMsg);
+            } else {
+                // Incorrect
+                buttonElement.classList.remove('bg-slate-800');
+                buttonElement.classList.add('bg-red-800', 'border-red-500', 'shake');
+                
+                // Remove shake class after animation so it can be triggered again if needed
+                setTimeout(() => {
+                    buttonElement.classList.remove('shake');
+                }, 500);
+
+                // Show error feedback (briefly)
+                showModal(false, "إجابة خاطئة! تذكر خصائص الجسيمات جيداً وحاول مرة أخرى.");
+            }
+        }
+
+        function showModal(isSuccess, message) {
+            modal.classList.remove('hidden');
+            // small delay to allow display:block to apply before animating opacity
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-90');
+            }, 10);
+
+            if (isSuccess) {
+                modalContent.className = "bg-gray-900 border-2 border-green-500 rounded-3xl p-8 max-w-md w-full text-center transform transition-transform duration-300 shadow-[0_0_30px_rgba(34,197,94,0.3)]";
+                modalIcon.textContent = "✅";
+                modalTitle.textContent = "تم فتح القفل!";
+                modalTitle.className = "text-3xl font-bold mb-2 text-green-400";
+                modalMessage.textContent = message;
+                modalBtn.textContent = currentLevel === levels.length - 1 ? "افتح الباب الرئيسي ➔" : "متابعة للغرفة التالية ➔";
+                modalBtn.className = "bg-green-600 hover:bg-green-500 text-white text-lg font-bold py-3 px-8 rounded-full w-full transition-colors mt-4";
+                
+                // Remove the close event if it was set to just hide
+                modalBtn.onclick = closeModalAndProceed;
+            } else {
+                modalContent.className = "bg-gray-900 border-2 border-red-500 rounded-3xl p-8 max-w-md w-full text-center transform transition-transform duration-300 shadow-[0_0_30px_rgba(239,68,68,0.3)]";
+                modalIcon.textContent = "❌";
+                modalTitle.textContent = "إنذار أمني!";
+                modalTitle.className = "text-3xl font-bold mb-2 text-red-400";
+                modalMessage.textContent = message;
+                modalBtn.textContent = "حاول مرة أخرى ↺";
+                modalBtn.className = "bg-red-600 hover:bg-red-500 text-white text-lg font-bold py-3 px-8 rounded-full w-full transition-colors mt-4";
+                
+                modalBtn.onclick = hideModal; // Just hide, don't proceed
+            }
+        }
+
+        function hideModal() {
+            modal.classList.add('opacity-0');
+            modalContent.classList.add('scale-90');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function closeModalAndProceed() {
+            hideModal();
+            
+            // Wait for modal animation to finish before changing level
+            setTimeout(() => {
+                currentLevel++;
+                if (currentLevel < levels.length) {
+                    loadLevel(currentLevel);
+                } else {
+                    triggerVictory();
+                }
+            }, 300);
+        }
+
+        function triggerVictory() {
+            isGameOver = true;
+            clearInterval(timerInterval);
+            puzzleScreen.classList.add('hidden');
+            victoryScreen.classList.remove('hidden');
+        }
+
+    </script>
+</body>
+</html>

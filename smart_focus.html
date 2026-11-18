@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوستر المعرض المدرسي - Smart Focus</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981; /* أخضر الطاقة */
+            --secondary: #2563eb; /* أزرق تكنولوجي */
+            --dark: #0f172a;
+            --light: #ffffff;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #e2e8f0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* حجم A3 القياسي للبوسترات المدرسية */
+        .poster-sheet {
+            width: 297mm;
+            min-height: 420mm; /* A3 height */
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* رأس البوستر */
+        header {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 10px solid var(--primary);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin: 0;
+            line-height: 1;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 1.8rem;
+            margin-top: 10px;
+            font-weight: 400;
+            color: var(--primary);
+        }
+
+        /* شبكة المحتوى */
+        .content {
+            flex: 1;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr; /* عمود صغير وعمود كبير */
+            gap: 30px;
+        }
+
+        .col-left {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .col-right {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* الصناديق */
+        .box {
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 20px;
+            background: #f8fafc;
+        }
+
+        .box-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 8px;
+            width: fit-content;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #334155;
+            margin: 0;
+            text-align: justify;
+        }
+
+        /* قسم الفريق - مهم جداً */
+        .team-section {
+            background: var(--dark);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .team-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .team-member {
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 8px;
+            border-right: 4px solid var(--primary);
+        }
+
+        .member-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: block;
+        }
+
+        .member-role {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            display: block;
+        }
+
+        /* الصور */
+        .img-placeholder {
+            width: 100%;
+            height: 250px;
+            background: #cbd5e1;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            font-weight: bold;
+            margin-top: 10px;
+            overflow: hidden;
+            position: relative;
+            border: 2px dashed #94a3b8;
+        }
+        
+        .img-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        /* الفوتر */
+        footer {
+            background: #f1f5f9;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9rem;
+            color: #64748b;
+            border-top: 1px solid #cbd5e1;
+            margin-top: auto;
+        }
+
+        /* ميزات الطباعة */
+        @media print {
+            body { padding: 0; background: none; }
+            .poster-sheet { width: 100%; height: auto; box-shadow: none; }
+            header, .team-section { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="poster-sheet">
+        
+        <header>
+            <div class="header-top">
+                <span>StartCup Competition 2026</span>
+                <span>بطولة الابتكار المدرسي</span>
+            </div>
+            <h1>Smart Focus</h1>
+            <div class="subtitle">بيئة تعليمية ذكية تدعم التنوع العصبي</div>
+        </header>
+
+        <div class="content">
+            
+            <!-- العمود الأيمن (المعلومات والنظرية) -->
+            <div class="col-left">
+                
+                <div class="box">
+                    <div class="box-title">
+                        <i data-lucide="alert-triangle"></i> المشكلة (The Challenge)
+                    </div>
+                    <p>
+                        تعاني الفصول الدراسية من تحدي مزدوج: <strong>فرط الحركة</strong> لدى بعض الطالبات الذي يسبب تشتتاً، و<strong>الضغط النفسي</strong> الناتج عن الامتحانات. المعلمة تجد صعوبة في احتواء جميع الأنماط، والطالبة تشعر أنها "مشكلة" بدلاً من أن تكون مبدعة.
+                    </p>
+                </div>
+
+                <div class="box">
+                    <div class="box-title">
+                        <i data-lucide="lightbulb"></i> الحل المبتكر (Innovation)
+                    </div>
+                    <p>
+                        نظام <strong>"التركيز الذكي"</strong> هو حل هندسي يحول الحركة العصبية (هز الأرجل) إلى طاقة كهربائية مفيدة، باستخدام دواسة مخفية ذكية.
+                        <br><br>
+                        <strong>النتيجة:</strong> تفريغ طاقة الطالبة + توليد كهرباء + صف هادئ.
+                    </p>
+                </div>
+
+                <div class="box">
+                    <div class="box-title">
+                        <i data-lucide="target"></i> أهداف التنمية (Goals)
+                    </div>
+                    <ul style="padding-right: 20px; margin: 0; line-height: 1.8;">
+                        <li><strong>STEM:</strong> دمج الفيزياء والبرمجة.</li>
+                        <li><strong>Well-being:</strong> تعزيز الصحة النفسية.</li>
+                        <li><strong>Sustainability:</strong> طاقة نظيفة.</li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- العمود الأيسر (التقنية والفريق) -->
+            <div class="col-right">
+                
+                <div class="box" style="border-color: var(--primary);">
+                    <div class="box-title" style="color: var(--dark);">
+                        <i data-lucide="cpu"></i> التكنولوجيا والهندسة (Engineering)
+                    </div>
+                    <p>
+                        يعتمد المشروع على ابتكار هندسي باستخدام:
+                    </p>
+                    <ul style="padding-right: 20px; line-height: 1.6;">
+                        <li><strong>وحدة Micro:bit:</strong> العقل المدبر الذي يحسب عدد الضغطات ومقدار الطاقة.</li>
+                        <li><strong>آلية الدباسة المعدلة:</strong> ابتكار ميكانيكي لتحويل الضغط الرأسي إلى إشارة رقمية (Digital Signal).</li>
+                        <li><strong>تطبيق تفاعلي:</strong> لعرض النتائج وتحفيز الطلاب.</li>
+                    </ul>
+                    
+                    <!-- مكان لصورة المجسم -->
+                    <div class="img-placeholder">
+                        <img src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80" 
+                             alt="Student Engineering Project" 
+                             onerror="this.style.display='none'; this.parentElement.innerText='[مكان لصورة المجسم]';">
+                        <div style="position: absolute; bottom: 0; background: rgba(0,0,0,0.6); color: white; width: 100%; text-align: center; padding: 5px; font-size: 0.8rem;">
+                            نموذج الدواسة الذكية والمايكروبت
+                        </div>
+                    </div>
+                </div>
+
+                <!-- قسم الفريق -->
+                <div class="team-section">
+                    <div class="team-title">
+                        <i data-lucide="users"></i> فريق مغيرات الطاقة (Energy Changers)
+                    </div>
+                    <div class="team-grid">
+                        <div class="team-member">
+                            <span class="member-name">سدين اسماعيل</span>
+                            <span class="member-role">القائدة وصاحبة الفكرة</span>
+                        </div>
+                        <div class="team-member">
+                            <span class="member-name">ديانا مطرية</span>
+                            <span class="member-role">ملهمة المشكلة وتجربة المستخدم</span>
+                        </div>
+                        <div class="team-member">
+                            <span class="member-name">مليسا عبد الكريم</span>
+                            <span class="member-role">الهندسة والعرض (Tech Lead)</span>
+                        </div>
+                        <div class="team-member">
+                            <span class="member-name">سارة مسالمة</span>
+                            <span class="member-role">التنسيق والإعداد</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <footer>
+            مدرسة المبدعات الثانوية | StartCup 2026 Competition
+        </footer>
+
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>غرفة الهروب: مختبر التغذية - الصف التاسع</title>
+    <!-- تحميل مكتبة Tailwind CSS للتصميم المتجاوب -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- تحميل خط Cairo العربي الأنيق -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- تحميل أيقونات FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- تحميل مكتبة Tone.js للمؤثرات الصوتية -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #0f172a;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.15) 0px, transparent 50%);
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        /* تأثيرات الإضاءة والحركة المخصصة للعبة */
+        .neon-border {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3), inset 0 0 10px rgba(16, 185, 129, 0.1);
+        }
+
+        .lock-shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+            40%, 60% { transform: translate3d(6px, 0, 0); }
+        }
+
+        .pulse-glow {
+            animation: pulseGlow 2s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.8); }
+        }
+
+        /* تخصيص شريط التمرير */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 4px;
+        }
+
+        .food-card {
+            transition: all 0.2s ease;
+            cursor: pointer;
+            user-select: none;
+        }
+        .food-card:active {
+            transform: scale(0.95);
+        }
+        .food-card.selected {
+            border-color: #10b981;
+            background-color: rgba(16, 185, 129, 0.2);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- الشريط العلوي: العنوان، المؤقت، وحالة الأقفال -->
+    <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-700/80 sticky top-0 z-40 px-4 py-3 shadow-lg">
+        <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <!-- الشعار والعنوان -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500 flex items-center justify-center text-emerald-400 text-xl">
+                    <i class="fas fa-flask"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg sm:text-xl text-white leading-tight">مختبر التغذية المغلق</h1>
+                    <p class="text-xs text-slate-400">علوم الصف التاسع • المجموعات الغذائية</p>
+                </div>
+            </div>
+
+            <!-- مؤشر الأقفال الأربعة -->
+            <div class="flex items-center gap-2 sm:gap-3 bg-slate-800/80 px-3 py-1.5 rounded-2xl border border-slate-700" id="locks-status">
+                <div id="lock-badge-1" class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/40 text-xs sm:text-sm font-bold transition-all">
+                    <i class="fas fa-lock"></i> <span class="hidden sm:inline">قفل 1</span>
+                </div>
+                <div id="lock-badge-2" class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/40 text-xs sm:text-sm font-bold transition-all">
+                    <i class="fas fa-lock"></i> <span class="hidden sm:inline">قفل 2</span>
+                </div>
+                <div id="lock-badge-3" class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/40 text-xs sm:text-sm font-bold transition-all">
+                    <i class="fas fa-lock"></i> <span class="hidden sm:inline">قفل 3</span>
+                </div>
+                <div id="lock-badge-4" class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/40 text-xs sm:text-sm font-bold transition-all">
+                    <i class="fas fa-lock"></i> <span class="hidden sm:inline">قفل 4</span>
+                </div>
+            </div>
+
+            <!-- المؤقت والصوت -->
+            <div class="flex items-center gap-3">
+                <div class="bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-xl flex items-center gap-2 text-amber-400 font-mono font-bold text-base sm:text-lg">
+                    <i class="fas fa-stopwatch"></i>
+                    <span id="timer-display">15:00</span>
+                </div>
+                <button id="sound-toggle" onclick="toggleSound()" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 transition" title="تبديل الصوت">
+                    <i id="sound-icon" class="fas fa-volume-up"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- منطقة الإشعارات المخصصة (بديل alert) -->
+    <div id="toast-container" class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-11/12 max-w-md pointer-events-none flex flex-col gap-2"></div>
+
+    <!-- المحتوى الرئيسي للعبة -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-6 sm:py-8">
+
+        <!-- شاشة البداية (القصة والتعليمات) -->
+        <section id="intro-screen" class="bg-slate-800/90 backdrop-blur-md border border-slate-700 rounded-3xl p-6 sm:p-10 shadow-2xl text-center max-w-3xl mx-auto my-4">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-4xl text-white shadow-lg pulse-glow">
+                <i class="fas fa-door-closed"></i>
+            </div>
+            <h2 class="text-2xl sm:text-4xl font-black text-white mb-4">هل يمكنك الهروب من مختبر التغذية؟</h2>
+            <p class="text-slate-300 text-base sm:text-lg leading-relaxed mb-6">
+                أثناء قيامك بتجربة علمية في مختبر الأحياء للصف التاسع، أُغلق الباب الآلي للمختبر فجأة! 
+                لفتح البوابة الرئيسية، عليك فك شفرة <span class="text-emerald-400 font-bold">4 أقفال إلكترونية</span> مرتبطة بالمجموعات الغذائية الأساسية ووظائفها الحيوية في جسم الإنسان.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-right mb-8 bg-slate-900/60 p-5 rounded-2xl border border-slate-700/70">
+                <div class="flex items-start gap-3">
+                    <span class="bg-emerald-500/20 text-emerald-400 p-2 rounded-lg mt-1"><i class="fas fa-bolt"></i></span>
+                    <div>
+                        <h4 class="font-bold text-white text-sm">القفل 1: مصادر الطاقة</h4>
+                        <p class="text-xs text-slate-400">تصنيف الكربوهيدرات والدهون.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="bg-blue-500/20 text-blue-400 p-2 rounded-lg mt-1"><i class="fas fa-dna"></i></span>
+                    <div>
+                        <h4 class="font-bold text-white text-sm">القفل 2: البناء والترميم</h4>
+                        <p class="text-xs text-slate-400">البروتينات ووحداتها البنائية.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="bg-amber-500/20 text-amber-400 p-2 rounded-lg mt-1"><i class="fas fa-capsules"></i></span>
+                    <div>
+                        <h4 class="font-bold text-white text-sm">القفل 3: الوقاية والتنظيم</h4>
+                        <p class="text-xs text-slate-400">الفيتامينات والأملاح المعدنية.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="bg-purple-500/20 text-purple-400 p-2 rounded-lg mt-1"><i class="fas fa-key"></i></span>
+                    <div>
+                        <h4 class="font-bold text-white text-sm">القفل 4: الشفرة النهائية</h4>
+                        <p class="text-xs text-slate-400">حساب السعرات وتكوين وجبة متوازنة.</p>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="startGame()" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-lg rounded-2xl shadow-lg shadow-emerald-500/30 transition transform hover:-translate-y-1 flex items-center justify-center gap-3 mx-auto">
+                <i class="fas fa-play"></i> ابدأ مهمة الهروب الآن
+            </button>
+        </section>
+
+        <!-- شاشة اللعب (الغرف والأقفال) -->
+        <section id="game-screen" class="hidden space-y-6">
+            
+            <!-- شريط التنقل بين محطات المختبر -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <button onclick="switchRoom(1)" id="tab-1" class="room-tab p-3 sm:p-4 rounded-2xl border-2 border-emerald-500 bg-slate-800 text-right transition flex flex-col justify-between">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-bold text-emerald-400">المحطة 01</span>
+                        <i id="tab-icon-1" class="fas fa-lock text-rose-400"></i>
+                    </div>
+                    <div class="font-bold text-sm sm:text-base text-white">مفاعل الطاقة</div>
+                </button>
+
+                <button onclick="switchRoom(2)" id="tab-2" class="room-tab p-3 sm:p-4 rounded-2xl border-2 border-slate-700 bg-slate-800/60 hover:bg-slate-800 text-right transition flex flex-col justify-between">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-bold text-blue-400">المحطة 02</span>
+                        <i id="tab-icon-2" class="fas fa-lock text-rose-400"></i>
+                    </div>
+                    <div class="font-bold text-sm sm:text-base text-white">وحدة البناء</div>
+                </button>
+
+                <button onclick="switchRoom(3)" id="tab-3" class="room-tab p-3 sm:p-4 rounded-2xl border-2 border-slate-700 bg-slate-800/60 hover:bg-slate-800 text-right transition flex flex-col justify-between">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-bold text-amber-400">المحطة 03</span>
+                        <i id="tab-icon-3" class="fas fa-lock text-rose-400"></i>
+                    </div>
+                    <div class="font-bold text-sm sm:text-base text-white">خزانة الوقاية</div>
+                </button>
+
+                <button onclick="switchRoom(4)" id="tab-4" class="room-tab p-3 sm:p-4 rounded-2xl border-2 border-slate-700 bg-slate-800/60 hover:bg-slate-800 text-right transition flex flex-col justify-between">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-bold text-purple-400">المحطة 04</span>
+                        <i id="tab-icon-4" class="fas fa-lock text-rose-400"></i>
+                    </div>
+                    <div class="font-bold text-sm sm:text-base text-white">بوابة الخروج</div>
+                </button>
+            </div>
+
+            <!-- ==================== الغرفة 1: الكربوهيدرات والدهون ==================== -->
+            <div id="room-1" class="room-content bg-slate-800/90 border border-slate-700 rounded-3xl p-5 sm:p-8 shadow-xl">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700 pb-4 mb-6">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full">القفل الأول • مصادر الطاقة</span>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mt-2">لغز تصنيف الوقود الحيوي</h3>
+                    </div>
+                    <button onclick="showHint(1)" class="text-xs sm:text-sm bg-slate-700 hover:bg-slate-600 text-amber-300 px-3 py-2 rounded-xl flex items-center gap-2 transition">
+                        <i class="fas fa-lightbulb"></i> تلميح علمي
+                    </button>
+                </div>
+
+                <p class="text-slate-300 text-sm sm:text-base mb-6 leading-relaxed">
+                    لإعادة تشغيل مولد الطاقة في المختبر، عليك فرز العينات الغذائية التالية. 
+                    انقر على كل عنصر غذائي ثم انقر على الوعاء المناسب له (أو استخدم القوائم المنسدلة على الهواتف) لتصنيفها بدقة:
+                </p>
+
+                <!-- البطاقات القابلة للنقر -->
+                <div class="mb-6">
+                    <h4 class="text-xs font-bold text-slate-400 mb-3">1. اختر عينة غذائية من القائمة:</h4>
+                    <div id="r1-items" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                        <!-- يتم توليدها بواسطة JS -->
+                    </div>
+                </div>
+
+                <!-- أوعية التصنيف -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div onclick="assignToBucket('simple_carb')" class="bucket-box bg-slate-900/80 border-2 border-dashed border-emerald-500/50 hover:border-emerald-400 rounded-2xl p-4 min-h-[150px] cursor-pointer transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <h5 class="font-bold text-emerald-400 text-sm sm:text-base">سكريات بسيطة (أحادية/ثنائية)</h5>
+                            <i class="fas fa-cube text-emerald-500"></i>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-3">تعطي طاقة سريعة ومباشرة للجسم.</p>
+                        <div id="bucket-simple_carb" class="flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <div onclick="assignToBucket('complex_carb')" class="bucket-box bg-slate-900/80 border-2 border-dashed border-cyan-500/50 hover:border-cyan-400 rounded-2xl p-4 min-h-[150px] cursor-pointer transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <h5 class="font-bold text-cyan-400 text-sm sm:text-base">كربوهيدرات معقدة (نشويات)</h5>
+                            <i class="fas fa-bread-slice text-cyan-500"></i>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-3">تتحلل ببطء وتوفر طاقة مستمرة.</p>
+                        <div id="bucket-complex_carb" class="flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <div onclick="assignToBucket('lipids')" class="bucket-box bg-slate-900/80 border-2 border-dashed border-amber-500/50 hover:border-amber-400 rounded-2xl p-4 min-h-[150px] cursor-pointer transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <h5 class="font-bold text-amber-400 text-sm sm:text-base">الدهون والزيوت (الليبيدات)</h5>
+                            <i class="fas fa-droplet text-amber-500"></i>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-3">مخزن مركز للطاقة (9 سعرات/غم).</p>
+                        <div id="bucket-lipids" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-700">
+                    <button onclick="resetRoom1()" class="px-4 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm font-semibold transition">
+                        <i class="fas fa-undo ml-1"></i> إعادة ترتيب العينات
+                    </button>
+                    <button onclick="checkRoom1()" id="btn-check-1" class="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm sm:text-base shadow-lg transition flex items-center gap-2">
+                        <i class="fas fa-unlock-alt"></i> فحص وفتح القفل الأول
+                    </button>
+                </div>
+            </div>
+
+            <!-- ==================== الغرفة 2: البروتينات والهضم ==================== -->
+            <div id="room-2" class="room-content hidden bg-slate-800/90 border border-slate-700 rounded-3xl p-5 sm:p-8 shadow-xl">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700 pb-4 mb-6">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full">القفل الثاني • البناء والترميم</span>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mt-2">معادلة البروتينات والأحماض الأمينية</h3>
+                    </div>
+                    <button onclick="showHint(2)" class="text-xs sm:text-sm bg-slate-700 hover:bg-slate-600 text-amber-300 px-3 py-2 rounded-xl flex items-center gap-2 transition">
+                        <i class="fas fa-lightbulb"></i> تلميح علمي
+                    </button>
+                </div>
+
+                <div class="bg-slate-900/80 border border-blue-500/30 rounded-2xl p-5 mb-6">
+                    <h4 class="font-bold text-blue-300 mb-2 flex items-center gap-2">
+                        <i class="fas fa-microscope"></i> ملاحظة المختبر:
+                    </h4>
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        البروتينات ضرورية لنمو العضلات، ترميم الأنسجة التالفة، وصنع الإنزيمات والهرمونات. لفتح هذا القفل، أجب عن الأسئلة الثلاثة لتكوين الرقم السري المكون من 3 خانات:
+                    </p>
+                </div>
+
+                <div class="space-y-5 mb-6">
+                    <!-- سؤال 1 -->
+                    <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-700">
+                        <label class="block font-bold text-white text-sm sm:text-base mb-3">
+                            الخانة الأولى: ما هي الوحدة البنائية الأساسية التي تتكون منها البروتينات؟
+                        </label>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="r2_q1" value="1" class="peer sr-only">
+                                <div class="p-3 rounded-xl bg-slate-800 border border-slate-600 peer-checked:border-blue-500 peer-checked:bg-blue-500/20 text-sm text-center font-semibold transition">
+                                    [1] الأحماض الدهنية
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="r2_q1" value="4" class="peer sr-only">
+                                <div class="p-3 rounded-xl bg-slate-800 border border-slate-600 peer-checked:border-blue-500 peer-checked:bg-blue-500/20 text-sm text-center font-semibold transition">
+                                    [4] الأحماض الأمينية
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="r2_q1" value="7" class="peer sr-only">
+                                <div class="p-3 rounded-xl bg-slate-800 border border-slate-600 peer-checked:border-blue-500 peer-checked:bg-blue-500/20 text-sm text-center font-semibold transition">
+                                    [7] سكر الجلوكوز
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- سؤال 2 -->
+                    <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-700">
+                        <label class="block font-bold text-white text-sm sm:text-base mb-3">
+                            الخانة الثانية: أي من الأطعمة التالية يُعد مصدراً غنياً بالبروتين النباتي المتكامل تقريباً؟
+                        </label>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="r2_q2" value="2" class="peer sr-only">
+                                <div class="p-3 rounded-xl bg-slate-800 border border-slate-600 peer-checked:border-blue-500 peer-checked:bg-blue-500/20 text-sm text-center font-semibold transition">
+                                    [2] فول الصويا والعدس
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="r2_q2" value="5" class="peer sr-only">
+                                <div class="p-3 rounded-xl bg-slate-800 border border-slate-600 peer-checked:border-blue-500 peer-checked:bg-blue-500/20 text-sm text-center font-semibold transition">
+                                    [5] زيت الزيتون
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="r2_q2" value="9" class="peer sr-only">
+                                <div class="p-3 rounded-xl bg-slate-800 border border-slate-600 peer-checked:border-blue-500 peer-checked:bg-blue-500/20 text-sm text-center font-semibold transition">
+                                    [9] التفاح والبرتقال
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- سؤال 3 -->
+                    <div class="bg-slate-900/50 p-4 rounded-2xl border border-slate-700">
+                        <label class="block font-bold text-white text-sm sm:text-base mb-3">
+                            الخانة الثالثة: ما الكاشف الكيميائي المستخدم في المختبر للكشف عن وجود البروتين (يتحول للبنفسجي)؟
+                        </label>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="r2_q3" value="3" class="peer sr-only">
+                                <div class="p-3 rounded-xl bg-slate-800 border border-slate-600 peer-checked:border-blue-500 peer-checked:bg-blue-500/20 text-sm text-center font-semibold transition">
+                                    [3] محلول اليود
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="r2_q3" value="6" class="peer sr-only">
+                                <div class="p-3 rounded-xl bg-slate-800 border border-slate-600 peer-checked:border-blue-500 peer-checked:bg-blue-500/20 text-sm text-center font-semibold transition">
+                                    [6] محلول بندكت
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="r2_q3" value="8" class="peer sr-only">
+                                <div class="p-3 rounded-xl bg-slate-800 border border-slate-600 peer-checked:border-blue-500 peer-checked:bg-blue-500/20 text-sm text-center font-semibold transition">
+                                    [8] كاشف بيوريت (Biuret)
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-end gap-4 pt-4 border-t border-slate-700">
+                    <button onclick="checkRoom2()" id="btn-check-2" class="px-6 py-3 rounded-xl bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold text-sm sm:text-base shadow-lg transition flex items-center gap-2">
+                        <i class="fas fa-unlock-alt"></i> إدخال الشفرة وفتح القفل الثاني
+                    </button>
+                </div>
+            </div>
+
+            <!-- ==================== الغرفة 3: الفيتامينات والأملاح المعدنية ==================== -->
+            <div id="room-3" class="room-content hidden bg-slate-800/90 border border-slate-700 rounded-3xl p-5 sm:p-8 shadow-xl">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700 pb-4 mb-6">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full">القفل الثالث • الوقاية والتنظيم</span>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mt-2">ملفات التشخيص الطبي</h3>
+                    </div>
+                    <button onclick="showHint(3)" class="text-xs sm:text-sm bg-slate-700 hover:bg-slate-600 text-amber-300 px-3 py-2 rounded-xl flex items-center gap-2 transition">
+                        <i class="fas fa-lightbulb"></i> تلميح علمي
+                    </button>
+                </div>
+
+                <p class="text-slate-300 text-sm sm:text-base mb-6">
+                    تحتاج خزانة الأدوية والفيتامينات إلى مطابقة كل حالة مرضية بالعنصر الغذائي الذي يؤدي نقصه إلى حدوثها:
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <!-- حالة 1 -->
+                    <div class="bg-slate-900/70 p-4 rounded-2xl border border-slate-700 flex flex-col justify-between gap-3">
+                        <div>
+                            <span class="text-xs text-amber-400 font-bold">الحالة #1</span>
+                            <h4 class="font-bold text-white text-base">نزيف اللثة وبطء التئام الجروح (مرض الإسقربوط)</h4>
+                        </div>
+                        <select id="r3_s1" class="w-full bg-slate-800 border border-slate-600 rounded-xl p-3 text-white text-sm focus:border-amber-400 focus:outline-none">
+                            <option value="">-- اختر العنصر الناقص --</option>
+                            <option value="iron">معدن الحديد (Fe)</option>
+                            <option value="vit_c">فيتامين C (حمض الأسكوربيك)</option>
+                            <option value="vit_d">فيتامين D</option>
+                            <option value="iodine">معدن اليود (I)</option>
+                        </select>
+                    </div>
+
+                    <!-- حالة 2 -->
+                    <div class="bg-slate-900/70 p-4 rounded-2xl border border-slate-700 flex flex-col justify-between gap-3">
+                        <div>
+                            <span class="text-xs text-amber-400 font-bold">الحالة #2</span>
+                            <h4 class="font-bold text-white text-base">تقوس الساقين ولين العظام عند الأطفال (الكساح)</h4>
+                        </div>
+                        <select id="r3_s2" class="w-full bg-slate-800 border border-slate-600 rounded-xl p-3 text-white text-sm focus:border-amber-400 focus:outline-none">
+                            <option value="">-- اختر العنصر الناقص --</option>
+                            <option value="vit_a">فيتامين A</option>
+                            <option value="iron">معدن الحديد (Fe)</option>
+                            <option value="vit_d">فيتامين D والكالسيوم</option>
+                            <option value="vit_c">فيتامين C</option>
+                        </select>
+                    </div>
+
+                    <!-- حالة 3 -->
+                    <div class="bg-slate-900/70 p-4 rounded-2xl border border-slate-700 flex flex-col justify-between gap-3">
+                        <div>
+                            <span class="text-xs text-amber-400 font-bold">الحالة #3</span>
+                            <h4 class="font-bold text-white text-base">فقر الدم (الأنيميا) والشعور بالتعب الشديد لضعف الهيموغلوبين</h4>
+                        </div>
+                        <select id="r3_s3" class="w-full bg-slate-800 border border-slate-600 rounded-xl p-3 text-white text-sm focus:border-amber-400 focus:outline-none">
+                            <option value="">-- اختر العنصر الناقص --</option>
+                            <option value="iron">معدن الحديد (Fe)</option>
+                            <option value="vit_d">فيتامين D</option>
+                            <option value="iodine">معدن اليود (I)</option>
+                            <option value="vit_a">فيتامين A</option>
+                        </select>
+                    </div>
+
+                    <!-- حالة 4 -->
+                    <div class="bg-slate-900/70 p-4 rounded-2xl border border-slate-700 flex flex-col justify-between gap-3">
+                        <div>
+                            <span class="text-xs text-amber-400 font-bold">الحالة #4</span>
+                            <h4 class="font-bold text-white text-base">تضخم الغدة الدرقية في الرقبة</h4>
+                        </div>
+                        <select id="r3_s4" class="w-full bg-slate-800 border border-slate-600 rounded-xl p-3 text-white text-sm focus:border-amber-400 focus:outline-none">
+                            <option value="">-- اختر العنصر الناقص --</option>
+                            <option value="vit_c">فيتامين C</option>
+                            <option value="iron">معدن الحديد (Fe)</option>
+                            <option value="iodine">معدن اليود (I)</option>
+                            <option value="vit_d">فيتامين D</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-end gap-4 pt-4 border-t border-slate-700">
+                    <button onclick="checkRoom3()" id="btn-check-3" class="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm sm:text-base shadow-lg transition flex items-center gap-2">
+                        <i class="fas fa-unlock-alt"></i> تأكيد التشخيص وفتح القفل الثالث
+                    </button>
+                </div>
+            </div>
+
+            <!-- ==================== الغرفة 4: البوابة النهائية (حساب السعرات والوجبة المتوازنة) ==================== -->
+            <div id="room-4" class="room-content hidden bg-slate-800/90 border border-slate-700 rounded-3xl p-5 sm:p-8 shadow-xl">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700 pb-4 mb-6">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-purple-400 bg-purple-500/10 px-3 py-1 rounded-full">القفل الرابع والأخير • التحدي الشامل</span>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mt-2">حاسبة الطاقة والماء</h3>
+                    </div>
+                    <button onclick="showHint(4)" class="text-xs sm:text-sm bg-slate-700 hover:bg-slate-600 text-amber-300 px-3 py-2 rounded-xl flex items-center gap-2 transition">
+                        <i class="fas fa-lightbulb"></i> تلميح علمي
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- مسألة حساب السعرات الحرارية -->
+                    <div class="bg-slate-900/80 border border-purple-500/30 rounded-2xl p-5">
+                        <h4 class="font-bold text-purple-300 text-lg mb-3 flex items-center gap-2">
+                            <i class="fas fa-calculator"></i> اللغز الحسابي للطاقة
+                        </h4>
+                        <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                            تناول طالب في الصف التاسع وجبة غداء تحتوي على:
+                        </p>
+                        <ul class="space-y-2 text-sm text-slate-200 bg-slate-800/80 p-4 rounded-xl mb-4 border border-slate-700">
+                            <li class="flex justify-between"><span>• كربوهيدرات:</span> <span class="font-bold text-emerald-400">50 غرام</span></li>
+                            <li class="flex justify-between"><span>• بروتينات:</span> <span class="font-bold text-blue-400">20 غرام</span></li>
+                            <li class="flex justify-between"><span>• دهون:</span> <span class="font-bold text-amber-400">10 غرام</span></li>
+                            <li class="flex justify-between"><span>• ماء وألياف:</span> <span class="font-bold text-cyan-400">250 غرام</span></li>
+                        </ul>
+                        <label class="block text-sm font-bold text-white mb-2">
+                            كم يبلغ إجمالي السعرات الحرارية (Kcal) في هذه الوجبة؟
+                        </label>
+                        <input type="number" id="r4_calories" placeholder="أدخل الرقم هنا (مثلاً: 350)" class="w-full bg-slate-800 border border-slate-600 rounded-xl p-3 text-white font-mono text-lg focus:border-purple-400 focus:outline-none">
+                    </div>
+
+                    <!-- سؤال الماء والألياف -->
+                    <div class="bg-slate-900/80 border border-purple-500/30 rounded-2xl p-5 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-bold text-cyan-300 text-lg mb-3 flex items-center gap-2">
+                                <i class="fas fa-tint"></i> لغز الماء والألياف الغذائية
+                            </h4>
+                            <p class="text-slate-300 text-sm leading-relaxed mb-4">
+                                على الرغم من أن الماء والألياف الغذائية لا يمدان الجسم بالسعرات الحرارية، إلا أنهما أساسيان في الهرم الغذائي. ما الوظيفة الرئيسية للألياف الغذائية في الجهاز الهضمي؟
+                            </p>
+                            <div class="space-y-2.5">
+                                <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-800 border border-slate-700 cursor-pointer hover:border-purple-400 transition">
+                                    <input type="radio" name="r4_fiber" value="wrong1" class="accent-purple-500 w-4 h-4">
+                                    <span class="text-sm text-slate-200">بناء الأنسجة العضلية وتعويض الخلايا التالفة.</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-800 border border-slate-700 cursor-pointer hover:border-purple-400 transition">
+                                    <input type="radio" name="r4_fiber" value="correct" class="accent-purple-500 w-4 h-4">
+                                    <span class="text-sm text-slate-200">تسهيل حركة الطعام في الأمعاء والوقاية من الإمساك.</span>
+                                </label>
+                                <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-800 border border-slate-700 cursor-pointer hover:border-purple-400 transition">
+                                    <input type="radio" name="r4_fiber" value="wrong2" class="accent-purple-500 w-4 h-4">
+                                    <span class="text-sm text-slate-200">تخزين الطاقة الاحتياطية تحت الجلد.</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-end gap-4 pt-4 border-t border-slate-700">
+                    <button onclick="checkRoom4()" id="btn-check-4" class="px-6 py-3 rounded-xl bg-purple-500 hover:bg-purple-400 text-white font-bold text-sm sm:text-base shadow-lg transition flex items-center gap-2">
+                        <i class="fas fa-door-open"></i> فك القفل الأخير والهروب من المختبر!
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- شاشة الفوز والهروب الناجح -->
+        <section id="victory-screen" class="hidden bg-slate-800/95 border-2 border-emerald-500 rounded-3xl p-6 sm:p-10 shadow-2xl text-center max-w-2xl mx-auto my-6 neon-border">
+            <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-5xl text-emerald-400 animate-bounce">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <h2 class="text-3xl sm:text-4xl font-black text-white mb-3">تهانينا! لقد هربت بنجاح!</h2>
+            <p class="text-emerald-300 font-bold text-lg mb-4">أثبتّ جدارتك كخبير تغذية في الصف التاسع 🎉</p>
+            <p class="text-slate-300 text-sm sm:text-base mb-6 leading-relaxed">
+                لقد تمكنت من فتح جميع الأقفال الأربعة وفهمت العلاقة بين المجموعات الغذائية المختلفة، وظائفها الحيوية، وكيفية حساب الطاقة اللازمة للجسم.
+            </p>
+
+            <div class="bg-slate-900/90 rounded-2xl p-5 mb-8 border border-slate-700 grid grid-cols-2 gap-4">
+                <div>
+                    <span class="text-xs text-slate-400 block">الوقت المتبقي</span>
+                    <span id="final-time" class="text-2xl font-mono font-bold text-amber-400">00:00</span>
+                </div>
+                <div>
+                    <span class="text-xs text-slate-400 block">التقييم النهائي</span>
+                    <span class="text-2xl font-bold text-emerald-400">عالم تغذية متميز ⭐⭐⭐</span>
+                </div>
+            </div>
+
+            <button onclick="location.reload()" class="px-8 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-2xl shadow-lg transition">
+                <i class="fas fa-redo ml-2"></i> العب مرة أخرى
+            </button>
+        </section>
+
+        <!-- شاشة انتهاء الوقت -->
+        <section id="gameover-screen" class="hidden bg-slate-800/95 border-2 border-rose-500 rounded-3xl p-6 sm:p-10 shadow-2xl text-center max-w-2xl mx-auto my-6">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-rose-500/20 border-2 border-rose-500 flex items-center justify-center text-4xl text-rose-400">
+                <i class="fas fa-hourglass-end"></i>
+            </div>
+            <h2 class="text-3xl font-black text-white mb-3">انتهى الوقت المحدد!</h2>
+            <p class="text-slate-300 text-base mb-8">
+                أُغلق نظام الأمان في المختبر بالكامل. راجع معلوماتك حول المجموعات الغذائية وحاول مرة أخرى!
+            </p>
+            <button onclick="location.reload()" class="px-8 py-3.5 bg-rose-500 hover:bg-rose-400 text-white font-bold rounded-2xl shadow-lg transition">
+                <i class="fas fa-redo ml-2"></i> حاول مرة أخرى
+            </button>
+        </section>
+
+    </main>
+
+    <!-- نافذة التلميح المنبثقة (Modal) -->
+    <div id="hint-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-amber-500/50 rounded-3xl max-w-md w-full p-6 shadow-2xl transform transition-all">
+            <div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-4">
+                <h4 class="font-bold text-amber-400 text-lg flex items-center gap-2">
+                    <i class="fas fa-lightbulb"></i> تلميح من دفتر المختبر
+                </h4>
+                <button onclick="closeHint()" class="text-slate-400 hover:text-white text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <p id="hint-text" class="text-slate-200 text-sm sm:text-base leading-relaxed mb-6"></p>
+            <button onclick="closeHint()" class="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl transition">
+                فهمت، شكراً!
+            </button>
+        </div>
+    </div>
+
+    <!-- التذييل -->
+    <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-800/80">
+        تصميم تفاعلي لمادة العلوم • الصف التاسع الأساسي • وحدة الغذاء والصحة
+    </footer>
+
+    <script>
+        // ================= حالة اللعبة والمتغيرات =================
+        const gameState = {
+            locks: { 1: false, 2: false, 3: false, 4: false },
+            currentRoom: 1,
+            timeRemaining: 15 * 60, // 15 دقيقة بالثواني
+            timerInterval: null,
+            soundEnabled: true,
+            selectedItemR1: null
+        };
+
+        // بيانات الغرفة الأولى (التصنيف)
+        const room1Data = [
+            { id: 'honey', name: 'العسل والفواكه', icon: '🍯', category: 'simple_carb', placed: null },
+            { id: 'bread', name: 'الخبز والبطاطا', icon: '🥔', category: 'complex_carb', placed: null },
+            { id: 'olive', name: 'زيت الزيتون والمكسرات', icon: '🫒', category: 'lipids', placed: null },
+            { id: 'glucose', name: 'سكر المائدة (السكروز)', icon: '🍬', category: 'simple_carb', placed: null },
+            { id: 'rice', name: 'الأرز والمعكرونة', icon: '🍚', category: 'complex_carb', placed: null },
+            { id: 'butter', name: 'الزبدة والشحوم', icon: '🧈', category: 'lipids', placed: null }
+        ];
+
+        // تلميحات الغرف
+        const hints = {
+            1: "تذكر أن السكريات البسيطة مذاقها حلو وتذوب بسرعة (مثل العسل والفواكه)، بينما النشويات (مثل الخبز والأرز والبطاطا) هي كربوهيدرات معقدة. أما الزيوت والزبدة فتتبع مجموعة الدهون (الليبيدات).",
+            2: "الوحدة البنائية للبروتين هي الحمض الأميني (الرقم 4). البقوليات مثل العدس وفول الصويا غنية بالبروتين النباتي (الرقم 2). وكاشف بيوريت الأزرق يتحول للبنفسجي بوجود البروتين (الرقم 8).",
+            3: "فيتامين C موجود في الحمضيات ونقصه يسبب الإسقربوط. فيتامين D يساعد على امتصاص الكالسيوم ونقصه يسبب الكساح. الحديد يدخل في تركيب الهيموغلوبين، واليود ضروري لهرمونات الغدة الدرقية.",
+            4: "لحساب السعرات الحرارية: كل 1 غم كربوهيدرات = 4 سعرات، كل 1 غم بروتين = 4 سعرات، كل 1 غم دهون = 9 سعرات. أما الماء والألياف فتعطي 0 سعرات! (المعادلة: 50×4 + 20×4 + 10×9)."
+        };
+
+        // ================= المؤثرات الصوتية (Tone.js) =================
+        function playSound(type) {
+            if (!gameState.soundEnabled) return;
+            try {
+                if (Tone.context.state !== 'running') {
+                    Tone.start();
+                }
+                const synth = new Tone.Synth().toDestination();
+                if (type === 'click') {
+                    synth.triggerAttackRelease("C5", "32n");
+                } else if (type === 'success') {
+                    const now = Tone.now();
+                    synth.triggerAttackRelease("C5", "16n", now);
+                    synth.triggerAttackRelease("E5", "16n", now + 0.1);
+                    synth.triggerAttackRelease("G5", "8n", now + 0.2);
+                } else if (type === 'error') {
+                    synth.triggerAttackRelease("A2", "8n");
+                } else if (type === 'victory') {
+                    const now = Tone.now();
+                    synth.triggerAttackRelease("C5", "16n", now);
+                    synth.triggerAttackRelease("E5", "16n", now + 0.12);
+                    synth.triggerAttackRelease("G5", "16n", now + 0.24);
+                    synth.triggerAttackRelease("C6", "4n", now + 0.36);
+                }
+            } catch (e) {
+                console.log("Audio skipped");
+            }
+        }
+
+        function toggleSound() {
+            gameState.soundEnabled = !gameState.soundEnabled;
+            const icon = document.getElementById('sound-icon');
+            icon.className = gameState.soundEnabled ? 'fas fa-volume-up' : 'fas fa-volume-mute text-rose-400';
+        }
+
+        // ================= نظام الإشعارات المخصصة =================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let colors = 'bg-slate-800 border-slate-600 text-white';
+            let icon = 'fa-info-circle text-blue-400';
+            
+            if (type === 'success') {
+                colors = 'bg-emerald-950/95 border-emerald-500 text-emerald-100';
+                icon = 'fa-check-circle text-emerald-400';
+            } else if (type === 'error') {
+                colors = 'bg-rose-950/95 border-rose-500 text-rose-100';
+                icon = 'fa-exclamation-triangle text-rose-400';
+            }
+
+            toast.className = `${colors} border px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-bold transition-all duration-300 transform translate-y-0 opacity-100`;
+            toast.innerHTML = `<i class="fas ${icon} text-lg"></i> <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-10px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // ================= بدء اللعبة والمؤقت =================
+        function startGame() {
+            playSound('click');
+            document.getElementById('intro-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            renderRoom1();
+            startTimer();
+        }
+
+        function startTimer() {
+            gameState.timerInterval = setInterval(() => {
+                gameState.timeRemaining--;
+                updateTimerDisplay();
+                if (gameState.timeRemaining <= 0) {
+                    clearInterval(gameState.timerInterval);
+                    document.getElementById('game-screen').classList.add('hidden');
+                    document.getElementById('gameover-screen').classList.remove('hidden');
+                    playSound('error');
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(gameState.timeRemaining / 60);
+            const secs = gameState.timeRemaining % 60;
+            const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            document.getElementById('timer-display').textContent = formatted;
+            if (gameState.timeRemaining < 120) {
+                document.getElementById('timer-display').classList.add('text-rose-500', 'animate-pulse');
+            }
+        }
+
+        // ================= التنقل بين الغرف والتلميحات =================
+        function switchRoom(roomNum) {
+            playSound('click');
+            gameState.currentRoom = roomNum;
+            
+            // إخفاء جميع الغرف
+            document.querySelectorAll('.room-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`room-${roomNum}`).classList.remove('hidden');
+
+            // تحديث أزرار التبويب
+            for (let i = 1; i <= 4; i++) {
+                const tab = document.getElementById(`tab-${i}`);
+                if (i === roomNum) {
+                    tab.classList.remove('border-slate-700', 'bg-slate-800/60');
+                    tab.classList.add('border-emerald-500', 'bg-slate-800');
+                } else {
+                    tab.classList.add('border-slate-700', 'bg-slate-800/60');
+                    tab.classList.remove('border-emerald-500', 'bg-slate-800');
+                }
+            }
+        }
+
+        function showHint(roomNum) {
+            playSound('click');
+            document.getElementById('hint-text').textContent = hints[roomNum];
+            document.getElementById('hint-modal').classList.remove('hidden');
+        }
+
+        function closeHint() {
+            document.getElementById('hint-modal').classList.add('hidden');
+        }
+
+        function unlockSuccess(lockNum) {
+            gameState.locks[lockNum] = true;
+            playSound('success');
+
+            // تحديث الشارة العلوية
+            const badge = document.getElementById(`lock-badge-${lockNum}`);
+            badge.className = 'flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 text-xs sm:text-sm font-bold transition-all';
+            badge.innerHTML = `<i class="fas fa-unlock"></i> <span class="hidden sm:inline">قفل ${lockNum}</span>`;
+
+            // تحديث أيقونة التبويب
+            const tabIcon = document.getElementById(`tab-icon-${lockNum}`);
+            tabIcon.className = 'fas fa-check-circle text-emerald-400';
+
+            // تعطيل زر الفحص
+            const btn = document.getElementById(`btn-check-${lockNum}`);
+            btn.disabled = true;
+            btn.className = 'px-6 py-3 rounded-xl bg-slate-700 text-emerald-400 font-bold text-sm sm:text-base flex items-center gap-2 cursor-default';
+            btn.innerHTML = '<i class="fas fa-check"></i> تم فتح هذا القفل بنجاح';
+
+            // التحقق من فتح جميع الأقفال
+            if (gameState.locks[1] && gameState.locks[2] && gameState.locks[3] && gameState.locks[4]) {
+                setTimeout(() => {
+                    clearInterval(gameState.timerInterval);
+                    document.getElementById('game-screen').classList.add('hidden');
+                    document.getElementById('victory-screen').classList.remove('hidden');
+                    document.getElementById('final-time').textContent = document.getElementById('timer-display').textContent;
+                    playSound('victory');
+                }, 1000);
+            } else if (lockNum < 4) {
+                showToast(`رائع! تم فتح القفل ${lockNum}. انتقل للمحطة التالية!`, 'success');
+                setTimeout(() => switchRoom(lockNum + 1), 1200);
+            } else {
+                showToast(`تم فتح القفل ${lockNum}! تأكد من فتح بقية الأقفال للهروب.`, 'success');
+            }
+        }
+
+        function triggerErrorShake(roomNum, msg) {
+            playSound('error');
+            showToast(msg, 'error');
+            const roomEl = document.getElementById(`room-${roomNum}`);
+            roomEl.classList.remove('lock-shake');
+            void roomEl.offsetWidth; // إعادة تشغيل الأنيميشن
+            roomEl.classList.add('lock-shake');
+        }
+
+        // ================= منطق الغرفة 1 =================
+        function renderRoom1() {
+            const itemsContainer = document.getElementById('r1-items');
+            itemsContainer.innerHTML = '';
+
+            // تفريغ الأوعية
+            ['simple_carb', 'complex_carb', 'lipids'].forEach(b => {
+                document.getElementById(`bucket-${b}`).innerHTML = '';
+            });
+
+            room1Data.forEach(item => {
+                if (item.placed === null) {
+                    const card = document.createElement('div');
+                    const isSelected = gameState.selectedItemR1 === item.id;
+                    card.className = `food-card bg-slate-900 border-2 ${isSelected ? 'selected border-emerald-400' : 'border-slate-700'} rounded-2xl p-3 text-center flex flex-col items-center justify-center gap-1`;
+                    card.onclick = () => selectItemR1(item.id);
+                    card.innerHTML = `
+                        <span class="text-2xl sm:text-3xl">${item.icon}</span>
+                        <span class="text-xs font-bold text-slate-200">${item.name}</span>
+                    `;
+                    itemsContainer.appendChild(card);
+                } else {
+                    const pill = document.createElement('span');
+                    pill.className = 'inline-flex items-center gap-1.5 bg-slate-800 border border-slate-600 px-2.5 py-1 rounded-xl text-xs font-bold text-white cursor-pointer hover:bg-rose-900/50';
+                    pill.title = 'انقر لإعادته';
+                    pill.onclick = (e) => {
+                        e.stopPropagation();
+                        if (!gameState.locks[1]) {
+                            item.placed = null;
+                            renderRoom1();
+                        }
+                    };
+                    pill.innerHTML = `${item.icon} ${item.name} <i class="fas fa-times text-slate-400 text-[10px]"></i>`;
+                    document.getElementById(`bucket-${item.placed}`).appendChild(pill);
+                }
+            });
+        }
+
+        function selectItemR1(id) {
+            if (gameState.locks[1]) return;
+            playSound('click');
+            gameState.selectedItemR1 = (gameState.selectedItemR1 === id) ? null : id;
+            renderRoom1();
+        }
+
+        function assignToBucket(bucketName) {
+            if (gameState.locks[1]) return;
+            if (!gameState.selectedItemR1) {
+                showToast('اختر عينة غذائية أولاً ثم انقر على الوعاء المناسب!', 'info');
+                return;
+            }
+            playSound('click');
+            const item = room1Data.find(i => i.id === gameState.selectedItemR1);
+            if (item) {
+                item.placed = bucketName;
+                gameState.selectedItemR1 = null;
+                renderRoom1();
+            }
+        }
+
+        function resetRoom1() {
+            if (gameState.locks[1]) return;
+            playSound('click');
+            room1Data.forEach(i => i.placed = null);
+            gameState.selectedItemR1 = null;
+            renderRoom1();
+        }
+
+        function checkRoom1() {
+            const unplaced = room1Data.some(i => i.placed === null);
+            if (unplaced) {
+                triggerErrorShake(1, 'يرجى تصنيف جميع العينات الست في الأوعية أولاً!');
+                return;
+            }
+            const allCorrect = room1Data.every(i => i.placed === i.category);
+            if (allCorrect) {
+                unlockSuccess(1);
+            } else {
+                triggerErrorShake(1, 'يوجد خطأ في تصنيف بعض العينات! راجع الفرق بين السكريات البسيطة والنشويات والدهون.');
+            }
+        }
+
+        // ================= منطق الغرفة 2 =================
+        function checkRoom2() {
+            const q1 = document.querySelector('input[name="r2_q1"]:checked')?.value;
+            const q2 = document.querySelector('input[name="r2_q2"]:checked')?.value;
+            const q3 = document.querySelector('input[name="r2_q3"]:checked')?.value;
+
+            if (!q1 || !q2 || !q3) {
+                triggerErrorShake(2, 'يرجى الإجابة على الأسئلة الثلاثة لتكوين الرقم السري!');
+                return;
+            }
+
+            if (q1 === '4' && q2 === '2' && q3 === '8') {
+                unlockSuccess(2);
+            } else {
+                triggerErrorShake(2, 'الشفرة غير صحيحة! تحقق من إجاباتك حول البروتينات وكواشفها.');
+            }
+        }
+
+        // ================= منطق الغرفة 3 =================
+        function checkRoom3() {
+            const s1 = document.getElementById('r3_s1').value;
+            const s2 = document.getElementById('r3_s2').value;
+            const s3 = document.getElementById('r3_s3').value;
+            const s4 = document.getElementById('r3_s4').value;
+
+            if (!s1 || !s2 || !s3 || !s4) {
+                triggerErrorShake(3, 'يرجى اختيار العنصر الغذائي الناقص لجميع الحالات الأربع!');
+                return;
+            }
+
+            if (s1 === 'vit_c' && s2 === 'vit_d' && s3 === 'iron' && s4 === 'iodine') {
+                unlockSuccess(3);
+            } else {
+                triggerErrorShake(3, 'التشخيص الطبي غير دقيق في إحدى الحالات! راجع وظائف الفيتامينات والأملاح.');
+            }
+        }
+
+        // ================= منطق الغرفة 4 =================
+        function checkRoom4() {
+            const caloriesInput = parseInt(document.getElementById('r4_calories').value, 10);
+            const fiberAnswer = document.querySelector('input[name="r4_fiber"]:checked')?.value;
+
+            // الحساب الصحيح: (50 * 4) + (20 * 4) + (10 * 9) = 200 + 80 + 90 = 370
+            if (isNaN(caloriesInput) || !fiberAnswer) {
+                triggerErrorShake(4, 'يرجى إدخال مجموع السعرات الحرارية واختيار وظيفة الألياف!');
+                return;
+            }
+
+            if (caloriesInput === 370 && fiberAnswer === 'correct') {
+                unlockSuccess(4);
+            } else if (caloriesInput !== 370) {
+                triggerErrorShake(4, 'حساب السعرات الحرارية غير صحيح! تذكر أن الدهون تعطي 9 سعرات والماء والألياف 0.');
+            } else {
+                triggerErrorShake(4, 'وظيفة الألياف الغذائية غير صحيحة، حاول مرة أخرى!');
+            }
+        }
+    </script>
+</body>
+</html>

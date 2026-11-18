@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام التحليل الذكي - نسخة المدارس</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- مكتبات الذكاء الاصطناعي -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+
+    <style>
+        body { font-family: 'Tajawal', sans-serif; background-color: #f3f4f6; }
+        #webcam-container canvas { border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); width: 100%; max-width: 350px; margin: auto; display: block; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="bg-white p-6 rounded-2xl shadow-xl w-full max-w-xl text-center">
+        <h1 class="text-3xl font-bold text-indigo-700 mb-2">نظام التحليل الذكي التفاعلي</h1>
+        <p class="text-gray-500 mb-6 text-sm">يدعم البلوتوث المباشر مع المايكروبيت</p>
+
+        <!-- صندوق الحالة -->
+        <div id="status-box" class="mb-4 p-3 rounded-lg bg-blue-50 text-blue-700 font-semibold text-sm transition-all border border-blue-200">
+            مستعد للبدء. يرجى تشغيل الكاميرا أولاً.
+        </div>
+
+        <!-- إدخال الرابط -->
+        <div class="mb-4 w-full text-right hidden">
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 text-left dir-ltr" id="tm-url" type="url" value="https://teachablemachine.withgoogle.com/models/M48-WQ_la/">
+        </div>
+
+        <!-- أزرار التحكم الرئيسية -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
+            <button id="start-cam-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all">
+                📷 1. تشغيل الكاميرا (خلفية)
+            </button>
+            <button id="connect-bt-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all">
+                📶 2. ربط المايكروبيت (بلوتوث)
+            </button>
+        </div>
+
+        <!-- حاوية الكاميرا -->
+        <div id="webcam-container" class="mb-4"></div>
+
+        <!-- شاشة الإخراج (عرض النتيجة) -->
+        <div id="result-screen" class="hidden bg-green-100 border-2 border-green-500 rounded-xl p-5 transform transition-all duration-500 shadow-inner">
+            <h2 class="text-green-800 text-lg mb-1">النتيجة:</h2>
+            <p id="prediction-text" class="text-4xl font-bold text-green-700">--</p>
+        </div>
+    </div>
+
+    <script>
+        let model, webcam, maxPredictions;
+        const statusBox = document.getElementById("status-box");
+        const tmUrlInput = document.getElementById("tm-url");
+        const resultScreen = document.getElementById("result-screen");
+        const predictionText = document.getElementById("prediction-text");
+
+        // دالة تغيير صندوق الحالة
+        function showStatus(message, type = "blue") {
+            const colors = {
+                blue: "bg-blue-50 text-blue-700 border-blue-200",
+                green: "bg-green-50 text-green-700 border-green-200",
+                red: "bg-red-50 text-red-700 border-red-200",
+                amber: "bg-amber-50 text-amber-700 border-amber-200"
+            };
+            statusBox.className = `mb-4 p-3 rounded-lg font-semibold text-sm transition-all border ${colors[type]}`;
+            statusBox.innerText = message;
+        }
+
+        // 1. تهيئة الكاميرا والذكاء الاصطناعي
+        async function initAI() {
+            try {
+                showStatus("جاري تحميل الذكاء الاصطناعي وتفعيل الكاميرا...", "blue");
+                
+                let finalURL = tmUrlInput.value.trim();
+                if (!finalURL.endsWith("/")) finalURL += "/";
+
+                const metadataURL = finalURL + "metadata.json";
+                const modelFile = finalURL + "model.json";
+
+                model = await tmImage.load(modelFile, metadataURL);
+                maxPredictions = model.getTotalClasses();
+
+                // تفعيل الكاميرا الخلفية
+                webcam = new tmImage.Webcam(350, 350, false); 
+                await webcam.setup({ facingMode: "environment" }); 
+                await webcam.play();
+                
+                window.requestAnimationFrame(loop);
+                
+                const container = document.getElementById("webcam-container");
+                if (container.children.length === 0) container.appendChild(webcam.canvas);
+                
+                showStatus("✅ الكاميرا تعمل. يرجى الآن ربط المايكروبيت بالبلوتوث.", "green");
+            } catch (error) {
+                console.error(error);
+                showStatus("❌ خطأ في الكاميرا. تأكد من منح الصلاحية للمتصفح.", "red");
+            }
+        }
+
+        async function loop() {
+            if (webcam && webcam.canvas) webcam.update();
+            window.requestAnimationFrame(loop);
+        }
+
+        // دالة تحليل الصورة
+        async function analyzeImage() {
+            if (!model || !webcam) {
+                showStatus("⚠️ الرجاء تشغيل الكاميرا أولاً!", "amber");
+                return;
+            }
+
+            resultScreen.classList.remove("hidden");
+            predictionText.innerText = "⏳ جاري التحليل...";
+            
+            const prediction = await model.predict(webcam.canvas);
+            let highestProb = 0;
+            let bestMatch = "";
+            
+            for (let i = 0; i < maxPredictions; i++) {
+                if (prediction[i].probability > highestProb) {
+                    highestProb = prediction[i].probability;
+                    bestMatch = prediction[i].className;
+                }
+            }
+            
+            predictionText.innerText = `${bestMatch} (${Math.round(highestProb * 100)}%)`;
+            resultScreen.classList.add("scale-105");
+            setTimeout(() => resultScreen.classList.remove("scale-105"), 300);
+        }
+
+        // 2. كود استقبال البلوتوث (UART)
+        async function connectMicrobit() {
+            try {
+                showStatus("جاري البحث عن المايكروبيت... اختر جهازك من النافذة.", "blue");
+                
+                // البحث عن المايكروبيت والخدمة المطلوبة
+                const device = await navigator.bluetooth.requestDevice({
+                    filters: [{ namePrefix: "BBC micro:bit" }],
+                    optionalServices: ["6e400001-b5a3-f393-e0a9-e50e24dcca9e"] // UUID الخاص بـ UART
+                });
+
+                const server = await device.gatt.connect();
+                const service = await server.getPrimaryService("6e400001-b5a3-f393-e0a9-e50e24dcca9e");
+                const characteristic = await service.getCharacteristic("6e400002-b5a3-f393-e0a9-e50e24dcca9e"); // TX Characteristic
+                
+                await characteristic.startNotifications();
+                characteristic.addEventListener('characteristicvaluechanged', handleBluetoothData);
+                
+                showStatus("✅ تم ربط المايكروبيت! اضغط زر A للتحليل.", "green");
+
+                device.addEventListener('gattserverdisconnected', () => {
+                    showStatus("⚠️ انقطع اتصال البلوتوث.", "amber");
+                });
+
+            } catch (error) {
+                console.error(error);
+                showStatus("❌ فشل الاتصال. تأكد من إعدادات المايكروبيت (No Pairing).", "red");
+            }
+        }
+
+        // قراءة الحرف القادم من المايكروبيت
+        function handleBluetoothData(event) {
+            let decoder = new TextDecoder('utf-8');
+            let data = decoder.decode(event.target.value);
+            console.log("تم استلام إشارة: ", data);
+            
+            // إذا كان النص المستلم يحتوي على الحرف A، قم بالتحليل فوراً
+            if (data.includes("A")) {
+                analyzeImage();
+            }
+        }
+
+        // ربط الأزرار بالدوال
+        document.getElementById("start-cam-btn").addEventListener("click", initAI);
+        document.getElementById("connect-bt-btn").addEventListener("click", connectMicrobit);
+
+    </script>
+</body>
+</html>

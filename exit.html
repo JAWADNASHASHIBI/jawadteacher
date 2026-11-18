@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>لغز معبد فيثاغورس</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f1e7d0; --card:#fffaf0; --panel:#f3e8cf; --text:#2b2418; --muted:#6b5d45;
+  --accent:#9a5b00; --accent-ink:#fff; --line:#d8c8a4; --ok:#2e7d32; --bad:#b3261e;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f172a; --card:#1b2438; --panel:#141c2e; --text:#e2e8f0; --muted:#94a3b8;
+    --accent:#f59e0b; --accent-ink:#1a1204; --line:#2f3b55; --ok:#4ade80; --bad:#f87171;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f172a; --card:#1b2438; --panel:#141c2e; --text:#e2e8f0; --muted:#94a3b8;
+  --accent:#f59e0b; --accent-ink:#1a1204; --line:#2f3b55; --ok:#4ade80; --bad:#f87171;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:'Cairo','Segoe UI',Tahoma,sans-serif;line-height:1.8;display:flex;justify-content:center;padding:16px}
+.wrap{width:100%;max-width:680px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;font-weight:600;color:var(--muted);font-size:.95rem}
+.dots{display:flex;gap:6px}
+.dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--line)}
+.dot.done{background:var(--accent);border-color:var(--accent)}
+.dot.cur{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 30%,transparent)}
+.card{background:var(--card);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:14px;padding:24px}
+h1{font-size:2rem;font-weight:900;margin:.2em 0;color:var(--accent)}
+h2{font-size:1.4rem;font-weight:900;margin:0;color:var(--accent)}
+.head{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.ic{font-size:2.2rem}
+.story{color:var(--muted);margin:.4em 0 1em}
+.center{text-align:center}
+.big{font-size:4rem;line-height:1.2}
+svg{display:block;width:100%;max-width:420px;margin:8px auto 4px;direction:ltr}
+svg .tri{fill:color-mix(in srgb,var(--accent) 14%,transparent);stroke:var(--accent);stroke-width:3;stroke-linejoin:round}
+svg .rt{fill:none;stroke:var(--accent);stroke-width:2}
+svg .dg{stroke:var(--accent);stroke-width:3;stroke-dasharray:7 5}
+svg text{fill:var(--text);font-family:'Cairo',sans-serif;font-size:17px;font-weight:600}
+svg text.unk{fill:var(--accent);font-size:22px;font-weight:900}
+.ask label{display:block;font-weight:600;margin:12px 0 6px}
+.row{display:flex;gap:10px}
+input{flex:0 0 130px;min-width:0;font:inherit;font-size:1.3rem;text-align:center;padding:8px;border-radius:10px;border:2px solid var(--line);background:var(--panel);color:var(--text)}
+input:focus{outline:3px solid color-mix(in srgb,var(--accent) 45%,transparent);border-color:var(--accent)}
+button{font:inherit;font-weight:700;cursor:pointer;border:0;border-radius:10px;padding:8px 22px;background:var(--accent);color:var(--accent-ink)}
+button:focus-visible{outline:3px solid var(--text);outline-offset:2px}
+button.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent);margin-top:12px}
+button:disabled{opacity:.5;cursor:default}
+#msg{min-height:1.8em;margin:10px 0 0;font-weight:700}
+#msg.ok{color:var(--ok)} #msg.bad{color:var(--bad)}
+.hint{background:var(--panel);border-right:4px solid var(--accent);padding:8px 12px;border-radius:8px;margin-top:8px;font-size:.95rem}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.eq{direction:ltr;text-align:center;font-family:monospace;font-size:1.25rem;color:var(--accent);background:var(--panel);padding:10px;border-radius:10px;margin:10px 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:2px 14px;font-weight:600}
+.chip b{color:var(--accent)}
+.stars{font-size:1.6rem;letter-spacing:2px;color:var(--accent)}
+@media (prefers-reduced-motion:reduce){.shake{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar"><div class="dots" id="dots" aria-hidden="true"></div><span id="timer">⏱ 00:00</span><span id="score">⭐ 0</span></div>
+  <div class="card" id="stage"></div>
+</div>
+<script>
+const P=[
+{icon:'🚪',t:'بوابة الحراس',story:'على اللوحة الحجرية مثلث قائم يمثل دعامة البوابة. لتفتحوها اعرفوا طول الوتر، أي الدعامة الرئيسية.',shape:{a:6,b:8,la:'6 م',lb:'8 م',lc:'؟'},q:'ما طول الوتر بالأمتار؟',ans:10,h:['القاعدة: ج² = أ² + ب²','6² + 8² = 36 + 64 = 100']},
+{icon:'🪜',t:'فخ الرواق المظلم',story:'سلم خشبي مائل مستند على الجدار، وعند قمته رافعة تنير الرواق.',shape:{a:5,b:12,la:'5 م',lb:'؟',lc:'13 م'},q:'ما الارتفاع الذي يصل إليه السلم بالأمتار؟',ans:12,h:['السلم هو الوتر، فالضلع المجهول: ب² = ج² − أ²','ب² = 13² − 5² = 169 − 25 = 144']},
+{icon:'🗺️',t:'خريطة الكنز والوادي',story:'الكنز على الجهة المقابلة من وادٍ عميق. موقعكم والنقطة المرجعية والكنز تشكل مثلثاً قائماً. المسافة شرقاً 15 م ثم شمالاً 20 م.',shape:{a:15,b:20,la:'15 م',lb:'20 م',lc:'؟'},q:'ما طول الجسر المستقيم بالأمتار؟',ans:25,h:['الجسر هو الوتر.','15² + 20² = 225 + 400 = 625']},
+{icon:'🗝️',t:'مفتاح الجدار',story:'قضيب معدني طوله 17 سم يستند في فتحة مثلثية. أحد ضلعيها القائمين 8 سم، وعليكم قياس الضلع الآخر لإدخال المفتاح.',shape:{a:8,b:15,la:'8 سم',lb:'؟',lc:'17 سم'},q:'ما طول الضلع المجهول بالسنتيمترات؟',ans:15,h:['الوتر معلوم، فاطرحوا: ب² = ج² − أ²','17² − 8² = 289 − 64 = 225']},
+{icon:'🌿',t:'سور الحديقة المقدسة',story:'حديقة على شكل مثلث قائم ضلعاها القائمان 5 م و12 م. يجب تطويقها بسلسلة ذهبية بطول محيطها بالضبط.',shape:{a:5,b:12,la:'5 م',lb:'12 م',lc:'؟'},q:'ما محيط الحديقة بالأمتار؟',ans:30,h:['أوجدوا الوتر أولاً: 5² + 12² = 169','الوتر 13، والمحيط = 5 + 12 + 13']},
+{icon:'🎨',t:'لوحة الفسيفساء',story:'لوحة مثلثة قائمة، وترها 10 دسم وأحد ضلعيها القائمين 6 دسم. لتكتمل عليكم تغطية سطحها بالكامل، فما مساحتها؟',shape:{a:6,b:8,la:'6 دسم',lb:'؟',lc:'10 دسم'},q:'ما مساحة اللوحة بالدسم²؟',ans:24,h:['الضلع الآخر: ب² = 10² − 6² = 64','ب = 8، والمساحة = ½ × 6 × 8']},
+{icon:'👑',t:'قاعة العرش',story:'أرضية قاعة العرش مستطيلة بعدا 20 م و21 م. يمتد حبل ذهبي بين زاويتين متقابلتين، وطوله هو الرمز المطلوب.',shape:{type:'rect',a:20,b:21,la:'20 م',lb:'21 م',lc:'؟'},q:'ما طول الحبل (قطر المستطيل) بالأمتار؟',ans:29,h:['القطر هو وتر المثلث الذي ضلعاه القائمان 20 و21','20² + 21² = 400 + 441 = 841، وما العدد الذي مربعه 841؟']},
+{icon:'🔐',t:'القفل الذهبي',final:1,story:'على الباب الأخير قفل ذهبي. اجمعوا رموز البوابة الأولى (1)، ومفتاح الجدار (4)، وقاعة العرش (7)، ثم اطرحوا 7.',q:'ما كود الهروب النهائي؟',ans:47,h:['الرموز في الأعلى: اجمعوها أولاً','10 + 15 + 29 = 54']}
+];
+const $=id=>document.getElementById(id);
+let i=-1,stars=[],hintN=[],wrong=[],secs=0,tick=null,codes=[];
+
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function head(){
+  $('dots').innerHTML=P.map((_,k)=>`<span class="dot ${k<i?'done':k===i?'cur':''}"></span>`).join('');
+  $('score').textContent='⭐ '+stars.reduce((a,b)=>a+b,0);
+  $('timer').textContent='⏱ '+fmt(secs);
+}
+function draw(s){
+  const W=260,H=180,sc=Math.min(190/s.a,110/s.b),w=s.a*sc,h=s.b*sc,x0=s.type==='rect'?(W-w)/2:40,y0=150,lab=(t,x,y,an)=>`<text x="${x}" y="${y}" text-anchor="${an}" class="${t==='؟'?'unk':''}">${t}</text>`;
+  let g='';
+  if(s.type==='rect'){
+    g=`<rect class="tri" x="${x0}" y="${y0-h}" width="${w}" height="${h}"/><line class="dg" x1="${x0}" y1="${y0}" x2="${x0+w}" y2="${y0-h}"/>`;
+    g+=lab(s.la,x0+w/2,y0+22,'middle')+lab(s.lb,x0-8,y0-h/2+6,'end')+lab(s.lc,x0+w/2-12,y0-h/2-6,'end');
+  }else{
+    const L=Math.hypot(w,h),nx=h/L*20,ny=w/L*20;
+    g=`<polygon class="tri" points="${x0},${y0} ${x0+w},${y0} ${x0},${y0-h}"/><path class="rt" d="M${x0},${y0-14} L${x0+14},${y0-14} L${x0+14},${y0}"/>`;
+    g+=lab(s.la,x0+w/2,y0+22,'middle')+lab(s.lb,x0-8,y0-h/2+6,'end')+lab(s.lc,x0+w/2+nx,y0-h/2-ny+6,'middle');
+  }
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="رسم المثلث">${g}</svg>`;
+}
+function intro(){
+  i=-1;head();
+  $('stage').innerHTML=`<div class="center"><div class="big">🏛️📐</div><h1>لغز معبد فيثاغورس</h1>
+  <p class="story">أنتم علماء آثار اكتشفوا معبداً بناه تلاميذ فيثاغورس، وانغلق الباب الحجري خلفكم. أمامكم ${P.length} ألغاز، وكل لغز يفتح الذي بعده بنظرية فيثاغورس:</p>
+  <div class="eq">a² + b² = c²</div>
+  <p class="story">لكل لغز ثلاث نجوم، ويخسر التلميح الواحد نجمة، وتخسرون نجمة بعد كل خطأين.</p>
+  <button id="go">ابدأ المغامرة 🔦</button></div>`;
+  $('go').onclick=()=>{stars=[];hintN=P.map(()=>0);wrong=P.map(()=>0);codes=[];secs=0;clearInterval(tick);tick=setInterval(()=>{secs++;$('timer').textContent='⏱ '+fmt(secs)},1000);show(0)};
+}
+function show(n){
+  i=n;head();const p=P[n];
+  const ledger=p.final?`<div class="chips"><span class="chip">الرمز 1: <b>${codes[0]}</b></span><span class="chip">الرمز 4: <b>${codes[3]}</b></span><span class="chip">الرمز 7: <b>${codes[6]}</b></span></div><div class="eq">(1) + (4) + (7) − 7 = ؟</div>`:draw(p.shape);
+  $('stage').innerHTML=`<div class="head"><span class="ic">${p.icon}</span><h2>${n+1}. ${p.t}</h2></div><p class="story">${p.story}</p>${ledger}
+  <div class="ask"><label for="ans">${p.q}</label><div class="row"><input id="ans" inputmode="decimal" autocomplete="off" placeholder="؟"><button id="ok">تحقق</button></div></div>
+  <p id="msg" role="status"></p><div id="hints"></div><button class="ghost" id="hb">تلميح (يخسر نجمة)</button>`;
+  const hints=()=>{$('hints').innerHTML=p.h.slice(0,hintN[n]).map(t=>`<div class="hint">💡 ${t}</div>`).join('');$('hb').disabled=hintN[n]>=p.h.length};
+  hints();
+  $('hb').onclick=()=>{if(hintN[n]<p.h.length){hintN[n]++;hints()}};
+  const go=()=>{
+    const v=$('ans').value.replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace('٫','.').trim(),m=$('msg');
+    if(v===''){m.className='bad';m.textContent='اكتبوا رقماً أولاً.';return}
+    if(Number(v)===p.ans){
+      const s=Math.max(1,3-hintN[n]-Math.floor(wrong[n]/2));stars[n]=s;codes[n]=p.ans;
+      m.className='ok';m.textContent='صحيح! حصلتم على '+'⭐'.repeat(s)+' والباب يُفتح...';
+      $('ok').disabled=true;$('score').textContent='⭐ '+stars.reduce((a,b)=>a+(b||0),0);
+      setTimeout(()=>n+1<P.length?show(n+1):win(),1100);
+    }else{
+      wrong[n]++;m.className='bad';m.textContent='خطأ، الباب ما زال مغلقاً. راجعوا الحل أو اطلبوا تلميحاً.';
+      const f=$('ans');f.classList.remove('shake');void f.offsetWidth;f.classList.add('shake');f.select();
+    }
+  };
+  $('ok').onclick=go;$('ans').onkeydown=e=>{if(e.key==='Enter')go()};$('ans').focus();
+}
+function win(){
+  clearInterval(tick);i=P.length;head();
+  const t=stars.reduce((a,b)=>a+b,0),max=P.length*3,r=t>=max*0.85?'عبقري هندسة!':t>=max*0.6?'عالم رياضيات ماهر':'نجوتم! جرّبوا مرة أخرى لنجوم أكثر';
+  $('stage').innerHTML=`<div class="center"><div class="big">🎉🏆</div><h2 style="font-size:2rem">خرجتم من المعبد!</h2>
+  <p class="story">${r}</p><div class="stars">${t} / ${max} ⭐</div><p>الوقت: <b>${fmt(secs)}</b></p><button id="again">العبوا مرة أخرى 🔄</button></div>`;
+  $('again').onclick=intro;
+}
+intro();
+</script>
+</body>
+</html>

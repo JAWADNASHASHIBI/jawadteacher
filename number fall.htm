@@ -1,0 +1,363 @@
+
+<!-- saved from url=(0039)http://shufatedu.net/Portals/0/hhhh.htm -->
+<html><head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript">
+var i=1
+var ii=1
+iii=new Array(10);
+iii[0]=1;
+iii[1]=1;
+var y;
+x=new Array(30);	
+function starttimer()
+{
+document.getElementById('3').style.position="relative";
+document.getElementById('3').style.top=+i;
+y=i;
+i++;
+timer=setTimeout("starttimer()",10);
+
+}
+
+function starttimer1()
+{
+document.getElementById('4').style.position="relative";
+document.getElementById('4').style.top=+ii;
+
+ii++;
+timer=setTimeout("starttimer1()",10);
+
+}
+function starttimer2()
+{
+
+document.getElementById('5').style.position="relative";
+document.getElementById('5').style.top=+iii[0];
+
+iii[0]++;
+timer=setTimeout("starttimer2()",10);
+
+}
+function starttimer3()
+{
+
+document.getElementById('7').style.position="relative";
+document.getElementById('7').style.top=+iii[1];
+
+iii[1]++;
+timer=setTimeout("starttimer3()",10);
+
+}
+
+function result()
+{ 
+
+if (document.getElementById('3').style.display=='none')
+x[1]=1;
+else
+x[1]=0;
+
+if (document.getElementById('4').style.display=='none')
+x[2]=1;
+else
+x[2]=0;
+if (document.getElementById('5').style.display=='none')
+x[3]=1;
+else
+x[3]=0;
+if (document.getElementById('7').style.display=='none')
+x[4]=1;
+else
+x[4]=0;
+
+document.getElementById('text1').value=x[1]+x[2]+x[3]+x[4];
+}
+
+function stoptimer()
+{
+clearTimeout(timer);
+}
+ function displayKeyCode(evt)
+
+ {
+ var lblCharCode = getObject('spnCode');
+
+	var textBox = getObject('txtChar');
+
+	 var charCode = (evt.which) ? evt.which : event.keyCode
+
+	 textBox.value = String.fromCharCode(charCode);
+
+	 if (charCode == 8) textBox.value = "backspace"; //  backspace
+
+	 if (charCode == 9) textBox.value = "tab"; //  tab
+
+	 if (charCode == 13) textBox.value = "enter"; //  enter
+
+	 if (charCode == 16) textBox.value = "shift"; //  shift
+
+	 if (charCode == 17) textBox.value = "ctrl"; //  ctrl
+
+	 if (charCode == 18) textBox.value = "alt"; //  alt
+
+	 if (charCode == 19) textBox.value = "pause/break"; //  pause/break
+
+	 if (charCode == 20) textBox.value = "caps lock"; //  caps lock
+
+	 if (charCode == 27) textBox.value = "escape"; //  escape
+
+	 if (charCode == 33) textBox.value = "page up"; // page up, to avoid displaying alternate character and confusing people	         
+
+	 if (charCode == 34) textBox.value = "page down"; // page down
+
+	 if (charCode == 35) textBox.value = "end"; // end
+
+	 if (charCode == 36) textBox.value = "home"; // home
+
+	 if (charCode == 37) textBox.value = "left arrow"; // left arrow
+
+	 if (charCode == 38) textBox.value = "up arrow"; // up arrow
+
+	 if (charCode == 39) textBox.value = "right arrow"; // right arrow
+
+	 if (charCode == 40) textBox.value = "down arrow"; // down arrow
+
+	 if (charCode == 45) textBox.value = "insert"; // insert
+
+	 if (charCode == 46) textBox.value = "delete"; // delete
+
+	 if (charCode == 91) textBox.value = "left window"; // left window
+
+	 if (charCode == 92) textBox.value = "right window"; // right window
+
+	 if (charCode == 93) textBox.value = "select key"; // select key
+
+	 if (charCode == 96) textBox.value = "numpad 0"; // numpad 0
+
+	 if (charCode == 97) textBox.value = "numpad 1"; // numpad 1
+
+	 if (charCode == 98) textBox.value = "numpad 2"; // numpad 2
+
+	 if (charCode == 99) textBox.value = "3";  // numpad 3
+
+	 if (charCode == 100) textBox.value = "4"; // numpad 4
+
+	 if (charCode == 101) textBox.value = "5"; // numpad 5
+
+	 if (charCode == 102) textBox.value = "numpad 6"; // numpad 6
+
+	 if (charCode == 103) textBox.value = "7"; // numpad 7
+
+	 if (charCode == 104) textBox.value = "numpad 8"; // numpad 8
+
+	 if (charCode == 105) textBox.value = "numpad 9"; // numpad 9
+
+	 if (charCode == 106) textBox.value = "multiply"; // multiply
+
+	 if (charCode == 107) textBox.value = "add"; // add
+
+	 if (charCode == 109) textBox.value = "subtract"; // subtract
+
+	 if (charCode == 110) textBox.value = "decimal point"; // decimal point
+
+	 if (charCode == 111) textBox.value = "divide"; // divide
+
+	 if (charCode == 112) textBox.value = "F1"; // F1
+
+	 if (charCode == 113) textBox.value = "F2"; // F2
+
+	 if (charCode == 114) textBox.value = "F3"; // F3
+
+	 if (charCode == 115) textBox.value = "F4"; // F4
+
+	 if (charCode == 116) textBox.value = "F5"; // F5
+
+	 if (charCode == 117) textBox.value = "F6"; // F6
+
+	 if (charCode == 118) textBox.value = "F7"; // F7
+
+	 if (charCode == 119) textBox.value = "F8"; // F8
+
+	 if (charCode == 120) textBox.value = "F9"; // F9
+
+	 if (charCode == 121) textBox.value = "F10"; // F10
+
+	 if (charCode == 122) textBox.value = "F11"; // F11
+
+	 if (charCode == 123) textBox.value = "F12"; // F12
+
+	 if (charCode == 144) textBox.value = "num lock"; // num lock
+
+	 if (charCode == 145) textBox.value = "scroll lock"; // scroll lock
+
+	 if (charCode == 186) textBox.value = ";"; // semi-colon
+
+	 if (charCode == 187) textBox.value = "="; // equal-sign
+
+	 if (charCode == 188) textBox.value = ","; // comma
+
+	 if (charCode == 189) textBox.value = "-"; // dash
+
+	 if (charCode == 190) textBox.value = "."; // period
+
+	 if (charCode == 191) textBox.value = "/"; // forward slash
+
+	 if (charCode == 192) textBox.value = "`"; // grave accent
+
+	 if (charCode == 219) textBox.value = "["; // open bracket
+
+	 if (charCode == 220) textBox.value = "\\"; // back slash
+
+	 if (charCode == 221) textBox.value = "]"; // close bracket
+
+	 if (charCode == 222) textBox.value = "'"; // single quote
+	 
+     if (charCode == 55) textBox.value =7;
+     if (charCode == 53) textBox.value =5;
+ 	 if (charCode == 52) textBox.value =4;  // numpad 3
+ 	 if (charCode == 51) textBox.value =3;  // numpad 3
+
+     if ((textBox.value ==3)&&(document.getElementById('4').style.display!='none')&&(text1.value ==0)) {lblCharCode.innerHTML = '<font size=6 color= blue><strong>أحسنت </strong></font><bgsound src=http://shufatedu.net/Portals/0/ding.wav loop=1>';document.getElementById('3').style.display='none'; result();}
+    
+    	else
+	    if ((textBox.value ==4)&&(document.getElementById('3').style.display=='none')&&(text1.value ==1)) {lblCharCode.innerHTML = '<font size=6 color= blue><strong>أحسنت </strong></font> <bgsound src=http://shufatedu.net/Portals/0/ding.wav loop=1>';document.getElementById('4').style.display='none';result();}
+        else 
+       if ((textBox.value ==5)&&(document.getElementById('4').style.display=='none')&&(text1.value ==2)) {lblCharCode.innerHTML = '<font size=6 color= blue><strong>أحسنت </strong> </font> <bgsound src=http://shufatedu.net/Portals/0/ding.wav loop=1>';document.getElementById('5').style.display='none';result();}
+        else
+         if ((textBox.value ==7)&&(document.getElementById('5').style.display=='none')&&(text1.value ==3)) {lblCharCode.innerHTML = '<font size=6 color= blue><strong>أحسنت </strong> </font> <bgsound src=http://shufatedu.net/Portals/0/ding.wav loop=1>';document.getElementById('7').style.display='none';result();}
+
+        else {lblCharCode.innerHTML = '<font size=6 color= red><strong>أخطأت</strong></font>';}
+         
+
+	return false;
+
+
+
+ }
+ 
+ function getObject(obj)
+
+  {
+
+	  var theObj;
+
+	  if (document.all) {
+
+		  if (typeof obj=='string') {
+
+			  return document.all(obj);
+
+		  } else {
+
+			  return obj.style;
+
+		  }
+
+	  }
+
+	  if (document.getElementById) {
+
+		  if (typeof obj=='string') {
+
+			  return document.getElementById(obj);
+
+		  } else {
+
+			  return obj.style;
+
+		  }
+
+	  }
+
+	  return null;
+
+  }
+ 
+
+
+</script>
+<style type="text/css">
+.newStyle2 {
+	position: relative;
+}
+.auto-style1 {
+	color: #FF0000;
+	font-size: x-large;
+}
+.auto-style3 {
+	font-family: Georgia, "Times New Roman", Times, serif;
+}
+.auto-style4 {
+	font-family: "Monotype Hadassah";
+	font-size: large;
+}
+.auto-style5 {
+	color: #FF0000;
+	font-size: x-large;
+	margin-bottom: 5px;
+}
+.auto-style6 {
+	text-align: center;
+}
+#text1.newStyle3 {
+	color: #FF0000;
+	background-color: #0000FF;
+	text-decoration: blink;
+	font-weight: 100;
+	font-size: large;
+	text-align: center;
+}
+.newStyle4 {
+	vertical-align: 1;
+	text-align: center;
+	font-size: xx-large;
+	color: #FF0000;
+}
+.auto-style7 {
+	vertical-align: 1;
+	text-align: center;
+	font-size: xx-large;
+	color: #FF0000;
+	margin-left: 0px;
+}
+</style>
+</head>
+
+<body onload="starttimer();" onunload="stoptimer();" onkeypress="javascript:return false;" onkeydown="javascript:displayKeyCode(event);
+setTimeout(&#39;starttimer1()&#39;,1000);setTimeout(&#39;starttimer2()&#39;,5000);setTimeout(&#39;starttimer3()&#39;,7000) ">
+<div class="auto-style6">
+<p id="4" style="width: 26px; color: #0000FF;" class="auto-style1"><strong>8/2=</strong></p>
+
+<p id="3" style="width: 42px; position: relative; left: 85px; top: 4715px; color: rgb(0, 0, 255);" class="auto-style1"> 
+<strong>6/2= </strong> </p>
+<p id="5" style="width: 42px; position: relative; left: 216px; top: -97px; height: 22px; color: #0000FF;" class="auto-style5"> 
+<strong>15/3= </strong> </p>
+
+<p id="7" style="width: 42px; position: relative; left: 362px; top: -130px; height: 22px; color: #0000FF;" class="auto-style5"> 
+<strong>14/2= </strong> </p>
+
+ &nbsp;&nbsp;&nbsp;
+
+
+ <input id="txtChar" type="text" name="txtChar" class="auto-style7" style="width: 201px; height: 70px;">&nbsp;&nbsp;&nbsp; 
+<span class="auto-style3">&nbsp;</span><label id="Label1"></label>&nbsp;<span id="spnCode" name="spnCode"></span><span class="auto-style4"><label id="Label2"><strong>النتيجة</strong></label></span>
+
+
+<p>&nbsp;</p>
+	<p>&nbsp;</p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</p><p class="auto-style6">&nbsp;<span class="auto-style1"><strong>النقاط</strong></span>&nbsp;&nbsp;
+	<input id="text1" name="Text1" value="0" type="text" style="width: 69px" class="newStyle3"></p>
+
+
+
+</div>
+
+
+
+
+
+
+</body></html>

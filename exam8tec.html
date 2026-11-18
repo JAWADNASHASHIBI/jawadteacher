@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>امتحان التكنولوجيا - الصف الثامن</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- إضافة خريطة الاستيراد لحل مشكلة react/jsx-runtime -->
+    <script type="importmap">
+        {
+            "imports": {
+                "react": "https://esm.sh/react@18",
+                "react-dom/client": "https://esm.sh/react-dom@18/client",
+                "react/jsx-runtime": "https://esm.sh/react@18/jsx-runtime"
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans">
+    
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module">
+        // استخدام خريطة الاستيراد بدلاً من الروابط المباشرة هنا
+        import React, { useState, useEffect } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { User, BookOpen, Award, Download, CheckCircle2, XCircle, AlertCircle, ChevronRight, ChevronLeft, Lock, Users } from 'https://esm.sh/lucide-react@0.292.0';
+        
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+        // إعدادات قاعدة البيانات (Firebase) الخاصة بك
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfD7gqn21-IAKvjHfn26fRMryekjf6v3Y",
+            authDomain: "exam-grade-7.firebaseapp.com",
+            projectId: "exam-grade-7",
+            storageBucket: "exam-grade-7.firebasestorage.app",
+            messagingSenderId: "154841729783",
+            appId: "1:154841729783:web:3c69baebcee767910961f2"
+        };
+        
+        // تهيئة قاعدة البيانات 
+        let app, db;
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            console.log("تم الاتصال بقاعدة البيانات بنجاح");
+        } catch (e) {
+            console.error("خطأ في تهيئة فايربيس:", e);
+        }
+
+        const questions = [
+            { q: "ما المقصود بالوسائط المتعددة (Multimedia)؟", options: ["مجموعة من الصور الثابتة والنصوص المطبوعة فقط.", "نسيج متكامل من نص وصوت وصورة ثابتة ومقاطع فيديو ورسوم متحركة.", "برامج متخصصة في طباعة وتنسيق النصوص فقط.", "أجهزة تستخدم لقص وتعديل الصور."], correct: 1 },
+            { q: "أي من العبارات التالية تعتبر صحيحة فيما يخص تطبيقات الوسائط المتعددة؟", options: ["يجب أن تجتمع جميع عناصر الوسائط المتعددة في تطبيق واحد دائماً.", "ليس شرطاً أن تجتمع جميع عناصر الوسائط المتعددة في تطبيق واحد.", "تعتمد جميع التطبيقات على الرسوم المتحركة كعنصر أساسي وحيد.", "لا يمكن دمج الصوت مع الصورة في أي تطبيق."], correct: 1 },
+            { q: "أي من أنظمة الألوان الآتية يعتمد على تدرج الألوان من الأبيض إلى الأسود بدرجات مختلفة؟", options: ["نظام السلم الرمادي (Grayscale).", "نظام (RGB).", "نظام الألوان المائية.", "نظام الألوان الأساسية فقط."], correct: 0 },
+            { q: "أي من الامتدادات الآتية يعتبر من أفضل ملفات الصور النقطية وأكثرها شيوعاً؟", options: ["SWF", "PDF", "DOC", "JPEG"], correct: 3 },
+            { q: "ما هي أهم ميزة للصور المتجهة (Vector) مقارنة بالصور النقطية (Bitmap)؟", options: ["أنها تتكون من بكسلات صغيرة جداً.", "تفقد دقتها ووضوحها عند تكبيرها.", "تحتفظ بدرجة الوضوح عند تكبيرها أو تصغيرها.", "حجم ملفاتها يكون دائماً أكبر بكثير من الصور النقطية."], correct: 2 },
+            { q: "ما هو الامتداد الذي يُصنف من الصور المتجهة ويُستخدم بكثرة في النشر الإلكتروني للكتب؟", options: ["BMP", "GIF", "PDF", "JPEG"], correct: 2 },
+            { q: "أين تتركز وتنتشر مصانع ومناشير الحجر الطبيعي بشكل رئيسي في فلسطين؟", options: ["المحافظات الجنوبية (قطاع غزة).", "المحافظات الشمالية (الضفة الغربية).", "المناطق الساحلية.", "منطقة الأغوار فقط."], correct: 1 },
+            { q: "ماذا يُطلق على نسبة امتصاص الحجر للماء؟", options: ["صلابة الحجر.", "كثافة الحجر.", "مسامية الحجر.", "قوة تحمل الحجر."], correct: 2 },
+            { q: "ماذا تُسمى الآلات الضخمة المستخدمة في مرحلة استخراج الصخور من الأرض في المحاجر؟", options: ["المناشير اليدوية.", "الحفارات الكبيرة.", "الجلايات.", "المفكات الآلية."], correct: 1 },
+            { q: "ماذا يُثبت على محيط الأقراص الدوارة التي تستعمل لقص الصخور في مناشير الحجر لتسهيل عملية القص؟", options: ["قطع من البلاستيك المقوى.", "قطع من الزجاج.", "أسلاك نحاسية دقيقة.", "قطع من الماس."], correct: 3 },
+            { q: "أي من أنواع \"دقاقة الحجر\" الآتية يتم فيه صقل وتلميع وجه سطح الحجر ليصبح ناعماً؟", options: ["حجر مسمسم.", "حجر طبزة.", "حجر مطبة (مطبوب).", "حجر مجلي."], correct: 3 },
+            { q: "ما هي \"الأحجار الاصطناعية\" (الطوب)؟", options: ["أحجار طبيعية تُستخرج مباشرة من الجبال الصخرية.", "أحجار يتم تصنيعها من خليط من الإسمنت والرمل والركام.", "صخور بركانية يتم قصها وتلميعها.", "أحجار كريمة تستخدم للزينة والديكور فقط."], correct: 1 },
+            { q: "ما هو السبب الرئيسي لاستخدام الطوب الإسمنتي بكثرة في الأبنية في بعض المناطق؟", options: ["لأنه أصعب في التصنيع ويحتاج لمهارة عالية.", "لقلة تكاليفه وتعدد أشكاله وألوانه.", "لأنه أثقل وزناً بكثير من الحجر الطبيعي.", "لأنه يُستخرج من الجبال بسهولة أكبر."], correct: 1 },
+            { q: "ما هي المادة التي يتم بها تعبئة الفراغات (الحلول) بين الأحجار أثناء عملية بناء الحجر؟", options: ["الرمل الجاف.", "المونة الإسمنتية (الكحلة).", "قطع من الخشب.", "الجبس فقط."], correct: 1 },
+            { q: "عند تصميم الجسور، تولد الأحمال إجهادات على المادة تميل فيها جزيئات المادة إلى \"الابتعاد\" عن بعضها البعض ويزداد طول العنصر، ماذا يسمى هذا الإجهاد؟", options: ["إجهاد الضغط.", "إجهاد القص.", "إجهاد الشد.", "إجهاد الانحناء."], correct: 2 },
+            { q: "ماذا يحدث للعنصر في الجسر عندما يتعرض لـ \"إجهاد الضغط\"؟", options: ["تميل جزيئاته للاقتراب من بعضها ويقل طوله.", "تميل جزيئاته للابتعاد عن بعضها ويزداد طوله.", "يتغير لونه الخارجي نتيجة الضغط.", "لا يتأثر شكل العنصر أو طوله إطلاقاً."], correct: 0 },
+            { q: "النظام اللوني (RGB) المُستخدم في الصور يتكون من دمج ثلاثة ألوان رئيسية، ما هي؟", options: ["الأحمر، الأصفر، الأزرق.", "الأحمر، الأخضر، الأزرق.", "الأسود، الأبيض، الرمادي.", "السماوي، الأرجواني، الأصفر."], correct: 1 },
+            { q: "أي من العناصر التالية لا يُعد من المكونات الأساسية لبناء \"الوسائط المتعددة\"؟", options: ["مقاطع الفيديو.", "الرسوم المتحركة.", "اللوحة الأم للحاسوب.", "الصوت."], correct: 2 },
+            { q: "كيف كانت تُبنى الجسور قديماً في بداياتها الأولى؟", options: ["من الحديد الصلب.", "من الخرسانة المسلحة.", "من جذوع الأشجار والنباتات المرنة والحبال.", "من الطوب الإسمنتي."], correct: 2 },
+            { q: "في مرحلة تجهيز الحجر، ما الهدف من استخدام \"الجلايات\"؟", options: ["تكسير الصخور الكبيرة في المحجر.", "صقل وتلميع الحجر لاستخدامه في الأرضيات وتكسية الحوائط.", "نقل الحجر من المحجر إلى المنشار.", "رفع الحجارة إلى الطوابق العليا أثناء البناء."], correct: 1 }
+        ];
+
+        function App() {
+            const [step, setStep] = useState('login');
+            const [studentName, setStudentName] = useState('');
+            const [studentClass, setStudentClass] = useState('');
+            const [answers, setAnswers] = useState({});
+            const [showConfirm, setShowConfirm] = useState(false);
+            
+            const [results, setResults] = useState([]);
+            const [teacherPassword, setTeacherPassword] = useState('');
+            const [isSubmitting, setIsSubmitting] = useState(false);
+
+            useEffect(() => {
+                if (step !== 'teacher_dashboard' || !db) return;
+                
+                try {
+                    const q = collection(db, 'exam_results_grade8');
+                    const unsubscribe = onSnapshot(q, (snapshot) => {
+                        const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        docs.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
+                        setResults(docs);
+                    }, (error) => {
+                        console.error("خطأ في جلب البيانات:", error);
+                        alert("حدث خطأ في جلب البيانات. الرجاء التأكد من تفعيل Rules في فايربيس.");
+                    });
+
+                    return () => unsubscribe();
+                } catch(e) {
+                    console.error("خطأ:", e);
+                }
+            }, [step]);
+
+            const handleStart = () => {
+                if (studentName.trim() && studentClass.trim()) {
+                    setStep('exam');
+                }
+            };
+
+            const handleAnswer = (questionIndex, optionIndex) => {
+                setAnswers({ ...answers, [questionIndex]: optionIndex });
+            };
+
+            const calculateScore = async () => {
+                if (isSubmitting) return;
+                setIsSubmitting(true);
+
+                let currentScore = 0;
+                questions.forEach((q, index) => {
+                    if (answers[index] === q.correct) {
+                        currentScore += 1;
+                    }
+                });
+                
+                if (db) {
+                    try {
+                        await addDoc(collection(db, 'exam_results_grade8'), {
+                            studentName: studentName.trim(),
+                            studentClass: studentClass,
+                            score: currentScore,
+                            timestamp: serverTimestamp()
+                        });
+                        setStep('submitted');
+                        setShowConfirm(false);
+                        setIsSubmitting(false);
+                    } catch (error) {
+                        console.error("خطأ في الحفظ:", error);
+                        alert(`حدث خطأ أثناء إرسال النتيجة: ${error.message}\nتأكدي من تعديل الـ Rules في فايربيس.`);
+                        setIsSubmitting(false);
+                    }
+                } else {
+                    alert("نظام الحفظ غير متصل. الرجاء التأكد من اتصال الإنترنت.");
+                    setIsSubmitting(false);
+                }
+            };
+
+            const handleTeacherLogin = () => {
+                if (teacherPassword === '1234') { 
+                    setStep('teacher_dashboard');
+                    setTeacherPassword('');
+                } else {
+                    alert('كلمة المرور غير صحيحة!');
+                }
+            };
+
+            const handleDownloadCSVAll = () => {
+                let csvContent = "\uFEFF";
+                csvContent += "اسم الطالبة,الصف,العلامة (من 20),تاريخ التسليم\n";
+                
+                results.forEach((res) => {
+                    const date = res.timestamp ? new Date(res.timestamp.toDate()).toLocaleString('ar-EG') : 'غير متوفر';
+                    csvContent += `${res.studentName},${res.studentClass},${res.score},${date}\n`;
+                });
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.setAttribute("href", url);
+                link.setAttribute("download", `نتائج_الامتحان_الثامن.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+
+            const unansweredCount = questions.length - Object.keys(answers).length;
+
+            return (
+                <div dir="rtl" className="min-h-screen bg-slate-50 text-slate-800 font-sans p-4 md:p-8">
+                <div className="max-w-4xl mx-auto">
+                    
+                    <header className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6 text-center relative">
+                    <button 
+                        onClick={() => setStep('teacher_login')}
+                        className="absolute top-6 left-6 text-slate-300 hover:text-blue-600 transition-colors"
+                        title="دخول المعلم"
+                    >
+                        <Lock className="w-5 h-5" />
+                    </button>
+                    <h1 className="text-2xl md:text-3xl font-bold text-blue-700 mb-2">امتحان نهاية الفصل الثاني</h1>
+                    <h2 className="text-lg text-slate-600 flex items-center justify-center gap-2">
+                        <BookOpen className="w-5 h-5" /> مبحث التكنولوجيا - الصف الثامن
+                    </h2>
+                    </header>
+
+                    {step === 'login' && (
+                    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-10 max-w-lg mx-auto transform transition-all">
+                        <div className="text-center mb-8">
+                        <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <User className="w-8 h-8 text-blue-600" />
+                        </div>
+                        <h3 className="text-xl font-bold text-slate-800">بيانات الطالب</h3>
+                        <p className="text-slate-500 mt-1">يرجى إدخال اسمك وصفك للبدء بالامتحان</p>
+                        </div>
+
+                        <div className="space-y-5">
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">الاسم الرباعي:</label>
+                            <input 
+                            type="text" 
+                            value={studentName}
+                            onChange={(e) => setStudentName(e.target.value)}
+                            placeholder="مثال: أحمد محمد محمود"
+                            className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">الشعبة / الصف:</label>
+                            <select 
+                            value={studentClass}
+                            onChange={(e) => setStudentClass(e.target.value)}
+                            className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all appearance-none bg-white cursor-pointer"
+                            >
+                                <option value="" disabled>اختر الصف والشعبة...</option>
+                                <option value="الثامن أ">الثامن أ</option>
+                                <option value="الثامن ب">الثامن ب</option>
+                                <option value="الثامن ج">الثامن ج</option>
+                            </select>
+                        </div>
+                        
+                        <button 
+                            onClick={handleStart}
+                            disabled={!studentName.trim() || !studentClass.trim()}
+                            className={`w-full py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 mt-4
+                            ${(!studentName.trim() || !studentClass.trim()) 
+                                ? 'bg-slate-200 text-slate-400 cursor-not-allowed' 
+                                : 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg hover:shadow-blue-500/30'}`}
+                        >
+                            ابدأ الامتحان الآن <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        </div>
+                    </div>
+                    )}
+
+                    {step === 'exam' && (
+                    <div className="space-y-6">
+                        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex justify-between items-center sticky top-4 z-10 shadow-sm backdrop-blur-md bg-opacity-90">
+                        <div className="font-semibold text-blue-800">
+                            الطالب: <span className="font-bold">{studentName}</span> | الصف: <span className="font-bold">{studentClass}</span>
+                        </div>
+                        <div className="text-sm bg-white px-3 py-1 rounded-full border border-blue-100 text-blue-700 font-medium">
+                            تمت الإجابة: {Object.keys(answers).length} / 20
+                        </div>
+                        </div>
+
+                        {questions.map((q, qIndex) => (
+                        <div key={qIndex} className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+                            <h3 className="text-lg md:text-xl font-semibold text-slate-800 mb-6 flex items-start gap-3">
+                            <span className="bg-blue-100 text-blue-700 w-8 h-8 rounded-lg flex items-center justify-center shrink-0 font-bold">
+                                {qIndex + 1}
+                            </span>
+                            <span className="mt-1">{q.q}</span>
+                            </h3>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pl-0 md:pl-11">
+                            {q.options.map((opt, optIndex) => (
+                                <label 
+                                key={optIndex} 
+                                className={`flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all
+                                    ${answers[qIndex] === optIndex 
+                                    ? 'border-blue-500 bg-blue-50' 
+                                    : 'border-slate-100 bg-slate-50 hover:border-blue-200 hover:bg-slate-100'}`}
+                                >
+                                <input 
+                                    type="radio" 
+                                    name={`question-${qIndex}`} 
+                                    checked={answers[qIndex] === optIndex}
+                                    onChange={() => handleAnswer(qIndex, optIndex)}
+                                    className="w-5 h-5 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span className="text-slate-700 font-medium">{opt}</span>
+                                </label>
+                            ))}
+                            </div>
+                        </div>
+                        ))}
+
+                        <div className="text-center pt-6 pb-12">
+                        <button 
+                            onClick={() => setShowConfirm(true)}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-emerald-500/30 transition-all inline-flex items-center gap-2"
+                        >
+                            <CheckCircle2 className="w-6 h-6" /> تسليم الامتحان
+                        </button>
+                        </div>
+
+                        {showConfirm && (
+                        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                            <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl text-center">
+                            <div className="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <AlertCircle className="w-8 h-8 text-amber-600" />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-800 mb-2">تأكيد التسليم</h3>
+                            
+                            {unansweredCount > 0 ? (
+                                <p className="text-red-600 font-medium mb-6">
+                                انتبه! لديك ({unansweredCount}) أسئلة لم تقم بالإجابة عليها. هل أنت متأكد من رغبتك في التسليم؟
+                                </p>
+                            ) : (
+                                <p className="text-slate-600 mb-6">
+                                لقد أجبت على جميع الأسئلة. هل أنت جاهز للتسليم؟
+                                </p>
+                            )}
+
+                            <div className="flex gap-3">
+                            <button 
+                            onClick={calculateScore}
+                            disabled={isSubmitting}
+                            className={`flex-1 text-white font-bold py-3 rounded-xl transition-colors ${isSubmitting ? 'bg-slate-400' : 'bg-blue-600 hover:bg-blue-700'}`}
+                            >
+                            {isSubmitting ? 'جاري التسليم...' : 'نعم، سلّم الامتحان'}
+                            </button>
+                            <button 
+                            onClick={() => setShowConfirm(false)}
+                            disabled={isSubmitting}
+                            className="flex-1 bg-slate-100 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 transition-colors"
+                            >
+                            تراجع للمراجعة
+                            </button>
+                        </div>
+                        </div>
+                    </div>
+                    )}
+                </div>
+                )}
+
+                {step === 'submitted' && (
+                <div className="space-y-6">
+                    <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 md:p-12 text-center max-w-2xl mx-auto">
+                    <CheckCircle2 className="w-24 h-24 mx-auto mb-6 text-emerald-500" />
+                    <h2 className="text-3xl font-bold text-slate-800 mb-4">تم تسليم الامتحان بنجاح!</h2>
+                    <p className="text-xl text-slate-600 mb-2">شكراً لكِ يا <span className="font-bold text-blue-600">{studentName}</span>.</p>
+                    <p className="text-lg text-slate-500">لقد تم إرسال إجاباتكِ إلى معلمة المادة.</p>
+                    <button 
+                        onClick={() => window.location.reload()}
+                        className="mt-8 text-blue-600 font-semibold hover:underline"
+                    >
+                        العودة للصفحة الرئيسية
+                    </button>
+                    </div>
+                </div>
+                )}
+
+                {step === 'teacher_login' && (
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-10 max-w-sm mx-auto">
+                    <div className="text-center mb-6">
+                    <div className="bg-slate-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Lock className="w-8 h-8 text-slate-600" />
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-800">دخول المعلم</h3>
+                    <p className="text-sm text-slate-500 mt-2">يرجى إدخال كلمة المرور (للتجربة: 1234)</p>
+                    </div>
+                    <div className="space-y-4">
+                    <input 
+                        type="password" 
+                        value={teacherPassword}
+                        onChange={(e) => setTeacherPassword(e.target.value)}
+                        placeholder="كلمة المرور"
+                        className="w-full px-4 py-3 rounded-xl border text-center border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                    />
+                    <button 
+                        onClick={handleTeacherLogin}
+                        className="w-full bg-slate-800 text-white font-bold py-3 rounded-xl hover:bg-slate-900 transition-colors"
+                    >
+                        دخول للوحة التحكم
+                    </button>
+                    <button 
+                        onClick={() => setStep('login')}
+                        className="w-full text-slate-500 font-medium py-2 hover:text-slate-800 transition-colors"
+                    >
+                        عودة لصفحة الطلاب
+                    </button>
+                    </div>
+                </div>
+                )}
+
+                {step === 'teacher_dashboard' && (
+                <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                    <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="bg-blue-100 p-4 rounded-2xl">
+                        <Users className="w-8 h-8 text-blue-700" />
+                        </div>
+                        <div>
+                        <h2 className="text-2xl font-bold text-slate-800">لوحة تحكم المعلم</h2>
+                        <p className="text-slate-500">سجل نتائج الطالبات - الصف الثامن</p>
+                        </div>
+                    </div>
+                    <div className="flex gap-3">
+                        <button 
+                        onClick={handleDownloadCSVAll}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-emerald-500/30 transition-all"
+                        >
+                        <Download className="w-5 h-5" /> تحميل كملف إكسل
+                        </button>
+                        <button 
+                        onClick={() => {
+                            setStep('login');
+                            setTeacherPassword('');
+                        }}
+                        className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-3 rounded-xl font-bold transition-all"
+                        >
+                        خروج
+                        </button>
+                    </div>
+                    </div>
+
+                    {results.length === 0 ? (
+                    <div className="text-center py-16 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+                        <AlertCircle className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+                        <p className="text-lg font-medium text-slate-600">لا توجد نتائج مسجلة حتى الآن.</p>
+                        <p className="text-slate-500 text-sm mt-1">إذا حلت الطالبة وظهر لها خطأ هنا، فتأكدي من تفعيل الـ Rules في Firebase.</p>
+                    </div>
+                    ) : (
+                    <div className="overflow-x-auto border border-slate-200 rounded-2xl">
+                        <table className="w-full text-right border-collapse bg-white">
+                        <thead>
+                            <tr className="bg-slate-50 border-b border-slate-200">
+                            <th className="py-4 px-6 font-semibold text-slate-700">الرقم</th>
+                            <th className="py-4 px-6 font-semibold text-slate-700">اسم الطالبة</th>
+                            <th className="py-4 px-6 font-semibold text-slate-700">الصف</th>
+                            <th className="py-4 px-6 font-semibold text-slate-700 text-center">العلامة</th>
+                            <th className="py-4 px-6 font-semibold text-slate-700">وقت التسليم</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {results.map((res, index) => (
+                            <tr key={res.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                <td className="py-4 px-6 text-slate-500">{index + 1}</td>
+                                <td className="py-4 px-6 font-bold text-slate-800">{res.studentName}</td>
+                                <td className="py-4 px-6 text-slate-600">{res.studentClass}</td>
+                                <td className="py-4 px-6 text-center">
+                                <span className={`inline-block px-4 py-1.5 rounded-full font-bold text-sm ${res.score >= 10 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                                    {res.score} / 20
+                                </span>
+                                </td>
+                                <td className="py-4 px-6 text-sm text-slate-500">
+                                {res.timestamp ? new Date(res.timestamp.toDate()).toLocaleString('ar-EG') : '-'}
+                                </td>
+                            </tr>
+                            ))}
+                        </tbody>
+                        </table>
+                    </div>
+                    )}
+                </div>
+                )}
+
+            </div>
+            </div>
+            );
+        }
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

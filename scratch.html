@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+<meta charset="UTF-8">
+<title>بطاقات الطاقة - مهمة القلم الطائر</title>
+<style>
+  body { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 30px; 
+    padding: 50px; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background-color: #f8f9fa; 
+    justify-content: center;
+  }
+  .card {
+    width: 160px; 
+    height: 160px; 
+    border-radius: 20px;
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    color: white; 
+    font-size: 32px; 
+    font-weight: bold; 
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    border: 4px solid rgba(255, 255, 255, 0.3);
+  }
+  /* ألوان مميزة لكل بطاقة لتناسب اللعبة */
+  .c1 { background-color: #e74c3c; } /* الحرارة - أحمر */
+  .c2 { background-color: #3498db; } /* تيار مستمر - أزرق */
+  .c3 { background-color: #2ecc71; } /* تيار متردد - أخضر */
+  .c4 { background-color: #e67e22; } /* المقاومة - برتقالي */
+  .c5 { background-color: #9b59b6; } /* المكثف - بنفسجي */
+  .c6 { background-color: #f1c40f; color: #333; } /* توالي - أصفر */
+  .c7 { background-color: #1abc9c; } /* توازي - سماوي */
+  
+  .small { 
+    font-size: 16px; 
+    margin-top: 10px; 
+    opacity: 0.9;
+    font-family: Arial, sans-serif;
+  }
+</style>
+</head>
+<body>
+
+  <div class="card c1">חום<div class="small">الحرارة</div></div>
+  <div class="card c2">זרם ישר<div class="small">DC (مستمر)</div></div>
+  <div class="card c3">זרם חילופין<div class="small">AC (متردد)</div></div>
+  <div class="card c4">התנגדות<div class="small">المقاومة</div></div>
+  <div class="card c5">קבל<div class="small">المكثف</div></div>
+  <div class="card c6">חיבור בטור<div class="small">على التوالي</div></div>
+  <div class="card c7">חיבור במקביל<div class="small">على التوازي</div></div>
+
+</body>
+</html>

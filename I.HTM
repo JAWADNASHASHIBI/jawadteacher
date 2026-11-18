@@ -1,0 +1,200 @@
+<html dir="rtl">
+
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+<meta http-equiv="Content-Language" content="ar-sa">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1256">
+<title>تمرين لمراعاة الفروق الفردية</title>
+<script language="JavaScript">
+<!--
+function FP_swapImg() {//v1.0
+ var doc=document,args=arguments,elm,n; doc.$imgSwaps=new Array(); for(n=2; n<args.length;
+ n+=2) { elm=FP_getObjectByID(args[n]); if(elm) { doc.$imgSwaps[doc.$imgSwaps.length]=elm;
+ elm.$src=elm.src; elm.src=args[n+1]; } }
+}
+
+function FP_preloadImgs() {//v1.0
+ var d=document,a=arguments; if(!d.FP_imgs) d.FP_imgs=new Array();
+ for(var i=0; i<a.length; i++) { d.FP_imgs[i]=new Image; d.FP_imgs[i].src=a[i]; }
+}
+
+function FP_getObjectByID(id,o) {//v1.0
+ var c,el,els,f,m,n; if(!o)o=document; if(o.getElementById) el=o.getElementById(id);
+ else if(o.layers) c=o.layers; else if(o.all) el=o.all[id]; if(el) return el;
+ if(o.id==id || o.name==id) return o; if(o.childNodes) c=o.childNodes; if(c)
+ for(n=0; n<c.length; n++) { el=FP_getObjectByID(id,c[n]); if(el) return el; }
+ f=o.forms; if(f) for(n=0; n<f.length; n++) { els=f[n].elements;
+ for(m=0; m<els.length; m++){ el=FP_getObjectByID(id,els[n]); if(el) return el; } }
+ return null;
+}
+function gettip(image)
+{
+document.getElementById('i1').innerHTML="<img src='" + image + "' />";
+}
+function getresult(image)
+{
+document.getElementById('i1').innerHTML="<img src='" + image + "' /><bgsound src='http://shufatedu.net/Portals/0/ding.wav' loop=1><font size = 4 color = blue><b> <p>الإجابة صحيحة</p></b></font>";
+}
+function getresult2(image)
+{
+document.getElementById('i1').innerHTML="<img src='" + image + "' /><bgsound src='http://shufatedu.net/Portals/0/SIT_error_beeps.wav' loop=1><font size = 4 color = blue><b> <p>الإجابة خاطئة</p></b></font>";
+}
+function getresult3(image)
+{
+document.getElementById('i2').innerHTML="<img src='" + image + "' /><bgsound src='http://shufatedu.net/Portals/0/ding.wav' loop=1><font size = 4 color = blue><b> <p>الإجابة صحيحة</p></b></font>";
+}
+function getresult4(image)
+{
+document.getElementById('i2').innerHTML="<img src='" + image + "' /><bgsound src='http://shufatedu.net/Portals/0/SIT_error_beeps.wav' loop=1><font size = 4 color = blue><b> <p>الإجابة خاطئة</p></b></font>";
+}
+function getresult5(image)
+{
+document.getElementById('i3').innerHTML="<img src='" + image + "' /><bgsound src='http://shufatedu.net/Portals/0/ding.wav' loop=1><font size = 4 color = blue><b> <p>الإجابة صحيحة</p></b></font>";
+}
+function getresult6(image)
+{
+document.getElementById('i3').innerHTML="<img src='" + image + "' /><bgsound src='http://shufatedu.net/Portals/0/SIT_error_beeps.wav' loop=1><font size = 4 color = blue><b> <p>الإجابة خاطئة</p></b></font>";
+}
+function getresult7(image)
+{
+document.getElementById('i4').innerHTML="<img src='" + image + "' /><bgsound src='http://shufatedu.net/Portals/0/ding.wav' loop=1><font size = 4 color = blue><b> <p>الإجابة صحيحة</p></b></font>";
+}
+function getresult8(image)
+{
+document.getElementById('i4').innerHTML="<img src='" + image + "' /><bgsound src='http://shufatedu.net/Portals/0/SIT_error_beeps.wav' loop=1><font size = 4 color = blue><b> <p>الإجابة خاطئة</p></b></font>";
+}
+function getresult9(image)
+{
+document.getElementById('i5').innerHTML="<img src='" + image + "' /><bgsound src='http://shufatedu.net/Portals/0/ding.wav' loop=1><font size = 4 color = blue><b> <p>الإجابة صحيحة</p></b></font>";
+}
+function getresult10(image)
+{
+document.getElementById('i5').innerHTML="<img src='" + image + "' /><bgsound src='http://shufatedu.net/Portals/0/SIT_error_beeps.wav' loop=1><font size = 4 color = blue><b> <p>الإجابة خاطئة</p></b></font>";
+}
+function getresult11(image)
+{
+document.getElementById('i6').innerHTML="<img src='" + image + "' /><bgsound src='http://shufatedu.net/Portals/0/ding.wav' loop=1><font size = 4 color = blue><b> <p>الإجابة صحيحة</p></b></font>";
+}
+function getresult12(image)
+{
+document.getElementById('i6').innerHTML="<img src='" + image + "' /><bgsound src='http://shufatedu.net/Portals/0/SIT_error_beeps.wav' loop=1><font size = 4 color = blue><b> <p>الإجابة خاطئة</p></b></font>";
+}
+function getresult13(image)
+{
+document.getElementById('i').innerHTML="<img src='" + image + "' /><bgsound src='http://shufatedu.net/Portals/0/ding.wav' loop=1><font size = 4 color = blue><b> <p>الإجابة صحيحة</p></b></font>";
+}
+function getresult14(image)
+{
+document.getElementById('i').innerHTML="<img src='" + image + "' /><bgsound src='http://shufatedu.net/Portals/0/SIT_error_beeps.wav' loop=1><font size = 4 color = blue><b> <p>الإجابة خاطئة</p></b></font>";
+}
+function getresult16(image)
+{
+document.getElementById('i7').innerHTML="<img src='" + image + "' /><bgsound src='http://shufatedu.net/Portals/0/SIT_error_beeps.wav' loop=1><font size = 4 color = blue><b> <p>الإجابة خاطئة</p></b></font>";
+}
+function getresult15(image)
+{
+document.getElementById('i7').innerHTML="<img src='" + image + "' /><bgsound src='http://shufatedu.net/Portals/0/ding.wav' loop=1><font size = 4 color = blue><b> <p>الإجابة صحيحة</p></b></font>";
+}
+function getresult17(image)
+{
+document.getElementById('i8').innerHTML="<img src='" + image + "' /><bgsound src='http://shufatedu.net/Portals/0/SIT_error_beeps.wav' loop=1><font size = 4 color = blue><b> <p>الإجابة خاطئة</p></b></font>";
+}
+function getresult18(image)
+{
+document.getElementById('i8').innerHTML="<img src='" + image + "' /><bgsound src='http://shufatedu.net/Portals/0/ding.wav' loop=1><font size = 4 color = blue><b> <p>الإجابة صحيحة</p></b></font>";
+}
+// -->
+</script>
+</head>
+
+<body onload="FP_preloadImgs(/*url*/'http://shufatedu.net/Portals/0/buttong4.jpg', /*url*/'http://shufatedu.net/Portals/0/buttong5.jpg')">
+
+<p align="center"><b><font size="6" color="#008000">تمرين لمراعاة الفروق الفردية</font></b></p>
+<p align="center" dir="ltr"><b><font size="4" color="#008000">حرف </font>
+<font size="4" color="#0000FF">الجيم</font><font size="4" color="#008000"> في 
+أول الكلمة وفي آخر الكلمة وفي وسطها</font></b></p>
+<p align="center"><font size="4" color="#0000FF"><b>صفي حرف الجيم الناقص من 
+الكلمة في المكان المناسب</b></font></p>
+<p align="center"><b><font size="4" color="#008000">أكتبي في الفراغ الحرف 
+المناسب وانتقلي إلى الفراغ الثاني بالنقر عليه</font></b></p>
+<table border="6" width="97%" bordercolor="#000000">
+	<tr>
+		<td width="427" style="border-style: solid; border-width: 1px" bgcolor="#FFFF00" align="center">
+		<font size="3" color="#0000FF">
+		 <!--webbot bot="Validation" s-data-type="String" b-value-required="TRUE" i-minimum-length="2" i-maximum-length="2" --><input   onblur ="javascript:if (this.value=='جـ') {getresult13('http://www.shufatedu.net/portals/0/smiley_019.gif')}else {getresult14('http://shufatedu.net/Portals/0/Angry_barbarian.gif')};"  name="T1" size="1" style="font-size: 36pt; color: #FF0000" maxlength="2" id="y1"></font><font color="#0000FF"><b><font size="7">ـــبل</font></b></font></td>
+		<td width="140" style="border-style: solid; border-width: 1px" bgcolor="#FFFF00" align="center" id="i">
+		 </td>
+	</tr>
+	<tr>
+		<td width="427" style="border-style: solid; border-width: 1px" bgcolor="#FFFF00" align="center" id="pp">
+		<font size="3" color="#0000FF"> <!--webbot bot="Validation" s-data-type="String" b-value-required="TRUE" i-minimum-length="2" i-maximum-length="2" s-validation-constraint="Equal to" s-validation-value="جـ" --><input  onblur ="javascript:if (this.value=='جـ') {getresult('http://www.shufatedu.net/portals/0/smiley_019.gif')}else {getresult2('http://shufatedu.net/Portals/0/Angry_barbarian.gif')};" name="T5" size="1" style="font-size: 36pt; color: #FF0000" maxlength="2" id="y6"></font><font color="#0000FF"><b><font size="7">ــرس</font></b></font></td>
+		<td width="140" style="border-style: solid; border-width: 1px" bgcolor="#FFFF00" align="center" id="i1"> <p> </td>
+	</tr>
+	<tr>
+		<td width="427" style="border-style: solid; border-width: 1px" bgcolor="#FFFF00" align="center">
+		<b><font color="#0000FF" size="7">عَـ</font></b><font size="3" color="#0000FF"><!--webbot bot="Validation" s-data-type="String" b-value-required="TRUE" i-minimum-length="3" i-maximum-length="3" s-validation-constraint="Equal to" s-validation-value="ـجـ" --><input  onblur ="javascript:if (this.value=='ـجـ') {getresult3('http://www.shufatedu.net/portals/0/smiley_019.gif')}else {getresult4('http://shufatedu.net/Portals/0/Angry_barbarian.gif')};" name="T11" size="2" style="font-size: 36pt; color: #FF0000; font-weight: 700" maxlength="3" id="y15" dir="rtl"></font><b><font color="#0000FF" size="7">ـل</font></b></td>
+		<td width="140" style="border-style: solid; border-width: 1px" bgcolor="#FFFF00" align="center" id="i2">
+		 <p> </td>
+	</tr>
+	<tr>
+		<td width="427" style="border-style: solid; border-width: 1px" bgcolor="#FFFF00" align="center">
+		<b><font size="7" color="#0000FF">بربيـ</font></b><font size="3" color="#0000FF"><!--webbot bot="Validation" s-data-type="String" b-value-required="TRUE" i-minimum-length="2" i-maximum-length="2" s-validation-constraint="Equal to" s-validation-value="ـج" --><input  onblur ="javascript:if (this.value=='ـج') {getresult5('http://www.shufatedu.net/portals/0/smiley_019.gif')}else {getresult6('http://shufatedu.net/Portals/0/Angry_barbarian.gif')};" name="T12" size="2" style="font-size: 36pt; color: #FF0000" id="y16" maxlength="2" dir="rtl"></font></td>
+		<td width="140" style="border-style: solid; border-width: 1px" bgcolor="#FFFF00" align="center" id="i3">
+		 <p> </td>
+	</tr>
+	<tr>
+		<td width="427" style="border-style: solid; border-width: 1px" bgcolor="#FFFF00" align="center">
+		<b><font color="#0000FF" size="7">د</font></b><font size="3" color="#0000FF"><!--webbot bot="Validation" s-data-type="String" b-value-required="TRUE" i-minimum-length="2" i-maximum-length="2" s-validation-constraint="Equal to" s-validation-value="جـ" --><input onblur ="javascript:if (this.value=='جـ') {getresult7('http://www.shufatedu.net/portals/0/smiley_019.gif')}else {getresult8('http://shufatedu.net/Portals/0/Angry_barbarian.gif')};" name="T13" size="1" style="font-size: 18pt; color: #FF0000; " id="y17" dir="rtl" maxlength="2"></font><b><font color="#0000FF" size="7">ـا</font></b><font size="3" color="#0000FF"><span lang="en-us">
+		</span>
+		 <!--webbot bot="Validation" s-data-type="String" b-value-required="TRUE" i-minimum-length="1" i-maximum-length="1" s-validation-constraint="Equal to" s-validation-value="ج" --><input onblur ="javascript:if (this.value=='ج' && document.getElementById('y17').value=='جـ') {getresult7('http://www.shufatedu.net/portals/0/smiley_019.gif')}else {getresult8('http://shufatedu.net/Portals/0/Angry_barbarian.gif')};" name="T14" size="2" style="font-size: 18pt; color: #FF0000; " id="y18" dir="rtl" maxlength="1"></font></td>
+		<td width="140" style="border-style: solid; border-width: 1px" bgcolor="#FFFF00" align="center" id="i4">
+		 <p> </td>
+	</tr>
+	<tr>
+		<td width="427" style="border-style: solid; border-width: 1px" bgcolor="#FFFF00" align="center">
+		<b><font color="#0000FF" size="7">تـا</font></b><font size="3" color="#0000FF"><!--webbot bot="Validation" s-data-type="String" b-value-required="TRUE" i-minimum-length="1" i-maximum-length="1" s-validation-constraint="Equal to" s-validation-value="ج" --><input onblur ="javascript:if (this.value=='ج') {getresult9('http://www.shufatedu.net/portals/0/smiley_019.gif')}else {getresult10('http://shufatedu.net/Portals/0/Angry_barbarian.gif')};" name="T15" size="2" style="font-size: 36pt; color: #FF0000" id="y19" dir="rtl" maxlength="1"></font></td>
+		<td width="140" style="border-style: solid; border-width: 1px" bgcolor="#FFFF00" align="center" id="i5">
+		 <p> </td>
+	</tr>
+	<tr>
+		<td width="427" style="border-style: solid; border-width: 1px" bgcolor="#FFFF00" align="center">
+		<b><font size="7" color="#0000FF">عِـلا</font></b><font size="3" color="#0000FF"><!--webbot bot="Validation" s-data-type="String" b-value-required="TRUE" i-minimum-length="1" i-maximum-length="1" s-validation-constraint="Equal to" s-validation-value="ج" --><input onblur ="javascript:if (this.value=='ج') {getresult11('http://www.shufatedu.net/portals/0/smiley_019.gif')}else {getresult12('http://shufatedu.net/Portals/0/Angry_barbarian.gif')};" name="T16" size="1" style="font-size: 36pt; color: #FF0000" id="y20" dir="rtl" maxlength="1"></font><p> </td>
+		<td width="140" style="border-style: solid; border-width: 1px" bgcolor="#FFFF00" align="center" id="i6">
+		 <p> </td>
+	</tr>
+<tr>
+		<td width="427" style="border-style: solid; border-width: 1px" bgcolor="#FFFF00" align="center">
+		<b><font size="7" color="#0000FF">8</font></b><font size="3" color="#0000FF"><!--webbot bot="Validation" s-data-type="String" b-value-required="TRUE" i-minimum-length="1" i-maximum-length="1" s-validation-constraint="Equal to" s-validation-value="ج" --><select id="mySelect" onchange ="javascript:if (this.value=='u') {getresult15('http://www.shufatedu.net/portals/0/smiley_019.gif')}else {getresult16('http://shufatedu.net/Portals/0/Angry_barbarian.gif')};"name="T17" size="1" style="font-size: 36pt; color: #FF0000" id="y21" dir="rtl" maxlength="1">
+  <option></option>
+  <option value="u"> > </option>
+  <option> <  </option>
+  <option> = </option>
+</select>  </font> <b><font size="7" color="#0000FF">5</font> </td>
+		<td width="140" style="border-style: solid; border-width: 1px" bgcolor="#FFFF00" align="center" id="i7">
+		 <p> </td>
+	</tr>
+<tr>
+<td width="427" style="border-style: solid; border-width: 1px" bgcolor="#FFFF00" align="center">
+		<b><font size="7" color="#0000FF">5+9</font></b><font size="3" color="#0000FF"><!--webbot bot="Validation" s-data-type="String" b-value-required="TRUE" i-minimum-length="1" i-maximum-length="1" s-validation-constraint="Equal to" s-validation-value="ج" --><select id="mySelect" onchange ="javascript:if (this.value=='u') {getresult18('http://www.shufatedu.net/portals/0/smiley_019.gif')}else {getresult17('http://shufatedu.net/Portals/0/Angry_barbarian.gif')};"name="T17" size="1" style="font-size: 36pt; color: #FF0000" id="y21" dir="rtl" maxlength="1">
+  <option></option>
+  <option value="u"> > </option>
+  <option> <  </option>
+  <option> = </option>
+</select>  </font> <b><font size="7" color="#0000FF">5+1</font> </td>
+		<td width="140" style="border-style: solid; border-width: 1px" bgcolor="#FFFF00" align="center" id="i8">
+		 <p> </td>
+</tr>
+</table>
+<p align="center"><font color="#008000" size="4"><b>برمجة وتصميم :معلم الحاسوب 
+جواد النشاشيبي</b></font></p>
+<p align="center"><font color="#008000" size="4"><b>ورقة العمل من إعداد المعلمة 
+حاتمة عبد العزيز الأنصاري</b></font></p>
+
+<p align="center"><a href="http://shufatedu.net/Default.aspx?tabid=1">
+<img border="0" id="imgg1" src="http://shufatedu.net/Portals/0/buttong5.jpg" height="39" width="195" alt="الصفحة الرئيسية" onmouseover="FP_swapImg(1,0,/*id*/'imgg1',/*url*/'http://shufatedu.net/Portals/0/buttong4.jpg')" onmouseout="FP_swapImg(0,0,/*id*/'imgg1',/*url*/'http://shufatedu.net/Portals/0/buttong5.jpg')" onmousedown="FP_swapImg(1,0,/*id*/'imgg1',/*url*/'http://shufatedu.net/Portals/0/buttong5.jpg')" onmouseup="FP_swapImg(0,0,/*id*/'imgg1',/*url*/'http://shufatedu.net/Portals/0/buttong4.jpg')" fp-style="fp-btn: Corporate 4; fp-font-color-normal: #0000FF; fp-font-color-hover: #FF0000; fp-font-color-press: #008000" fp-title="الصفحة الرئيسية"></a></p>
+
+</body>
+
+</html> 
+

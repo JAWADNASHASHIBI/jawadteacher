@@ -1,0 +1,463 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html dir="ltr" xmlns="http://www.w3.org/1999/xhtml">
+
+<!-- #BeginTemplate "../master.dwt" -->
+
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<!-- #BeginEditable "doctitle" -->
+<title>drag drop</title>
+<style type="text/css">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+div.ex
+{
+width:220px;
+padding:10px;
+border:5px solid gray;
+margin:0px;
+}
+
+.auto-style5 {
+	text-align: center;
+}
+.auto-style6 {
+	border-style: solid;
+	border-width: 1px;
+	margin-left: 0px;
+}
+.auto-style9 {
+	color: #000000;
+	background-color: #CE32CE;
+}
+.auto-style10 {
+	color: #CE32CE;
+}
+.auto-style11 {
+	color: #CE32CE;
+	font-weight: bold;
+}
+</style>
+<script type="text/javascript" >
+
+/* ----------------------------------------------
+    fnSetInfo sets the data format in the first 
+    parameter and provides the text to drop in second.
+    The second line copies text.
+ ----------------------------------------------*/
+/* ----------------------------------------------
+تعريف الصور داخل مصفوفات من إتجاهين
+ ----------------------------------------------*/
+    var myImages = new Array();
+ myImages[0] = new Array(4);
+ myImages[0][0] = "images/camel.png";
+ myImages[0][1] = "images/home.png";
+ myImages[0][2] = "images/donky.png";
+ myImages[0][3] = "images/stairs.png"
+
+myImages[1] = new Array(4);
+myImages[1][0] = "images/girl.png";
+myImages[1][1] = "images/radish.png";
+myImages[1][2] = "images/olive.png";
+myImages[1][3] = "images/rabbit.png";
+
+
+myImages[2] = new Array(4);
+myImages[2][0] = "images/grape.png";
+myImages[2][1] = "images/goal.png";
+myImages[2][2] = "images/icecream.png";
+myImages[2][3] = "images/crocodile.png";
+
+
+myImages[3] = new Array(4);
+myImages[3][0] = "images/vilage.png";
+myImages[3][1] = "images/trutle.png";
+myImages[3][2] = "images/book.png";
+myImages[3][3] = "images/milk.png";
+myImages[4] = new Array(4);
+myImages[4][0] = "images/stake.png";
+myImages[4][1] = "images/bread.png";
+myImages[4][2] = "images/bee.png";
+myImages[4][3]="images/melon.png";
+imagecounter=myImages.length-1;
+/* ----------------------------------------------
+الأجوبة الصحيحة بالدرس بمصفوفة من إتجاه واحد
+ ----------------------------------------------*/
+
+i=0;
+k=0;
+var j;
+ot=new Array();
+ot[0]="حمار";
+ot[1]="أرنب";
+ot[2]="مرمى";
+ot[3]="قرى";
+ot[4]="عصا";
+ var r=new Array();
+r[0]=new Array();
+r[0][0]="جمل";
+r[0][1]="بيت";
+r[0][2]="حمار"
+r[0][3]="درج";
+r[1]=new Array();
+r[1][0]="بنت";
+r[1][1]="فجل";
+r[1][2]="زيتون";
+r[1][3]="أرنب";
+r[2]=new Array();
+r[2][0]="عنب";
+r[2][1]="مرمى";
+r[2][2]="بوظة";
+r[2][3]="تمساح";
+r[3]=new Array();
+r[3][0]="قرى";
+r[3][1]="سلحفاة";
+r[3][2]="كتاب";
+r[3][3]="حليب";
+r[4]=new Array();
+r[4][0]="عصا";
+r[4][1]="خبز";
+r[4][2]="نحلة";
+r[4][3]="بطيخة";
+var sound = new Array;
+sound[4] = new Array;
+sound[0] = "sound/excellant.wav";
+sound[1] = "sound/greatjob.wav";
+sound[2] = "sound/goodjob.wav";
+sound[3] = "sound/good.wav";
+
+/* ----------------------------------------------
+أسئلة الدرس
+ ----------------------------------------------*/
+
+qs=new Array();
+qs[0]="أنا أختار الصورة التي تحتوي على حرف أ"
+qs[1]="أنا أختار الصورة التي تحتوي على حرف أ "
+qs[2]="أنا أختار الصورة التي تحتوي على حرف الألف المقصورة ى"
+qs[3]="أنا أختار الصورة التي تحتوي على حرف الألف المقصورة ى"
+qs[4]="أنا أختار الصورة التي تحتوي على حرف أ"
+
+textcounter=ot.length-1;
+
+ii=0;
+/* ----------------------------------------------
+الزر الأول
+ ----------------------------------------------*/
+
+function first()
+{
+document.getElementById('imageviewer').src=myImages[0][0];
+document.getElementById('imageviewer1').src=myImages[0][1];
+document.getElementById('imageviewer2').src=myImages[0][2];
+document.getElementById('imageviewer3').src=myImages[0][3];
+
+i=0;
+
+document.getElementById('oTarget').value=ot[0];
+document.getElementById('sq').value = r[0][0];
+
+document.getElementById('Qestion').innerHTML = "<h2 ><font size=6>" + qs[0] + "</font></h2>";
+
+ii=0;
+}
+/* ----------------------------------------------
+الزر السابق
+ ----------------------------------------------*/
+
+function previous()
+{
+if (i>0)
+	{
+	i--;
+	document.getElementById('imageviewer').src=myImages[i][0];
+	document.getElementById('imageviewer1').src=myImages[i][1];
+	document.getElementById('imageviewer2').src=myImages[i][2];
+	document.getElementById('imageviewer3').src=myImages[i][3];
+	}
+	
+	if (ii>0 )
+	{	ii--;
+	   
+		document.getElementById('oTarget').value=ot[ii];
+		document.getElementById('sq').value=r[ii][0];
+		document.getElementById('sq').value=r[ii][1];
+		document.getElementById('sq').value=r[ii][2];
+        document.getElementById('sq').value=r[ii][3];
+        document.getElementById('Qestion').innerHTML="<h2><font size=6>"+qs[ii]+"</font></h2>";
+
+	}
+}
+/* ----------------------------------------------
+الزر التالي
+ ----------------------------------------------*/
+
+function next()
+{
+if (i<4)
+	{
+	i++;
+	document.getElementById('imageviewer').src=myImages[i][0];
+	document.getElementById('imageviewer1').src=myImages[i][1];
+	document.getElementById('imageviewer2').src=myImages[i][2];
+	document.getElementById('imageviewer3').src=myImages[i][3];
+
+	}
+	if(ii<textcounter )
+	{	
+	    ii++;
+	    
+        document.getElementById('oTarget').value=ot[ii];
+       document.getElementById('sq').value=r[ii][0];
+		document.getElementById('sq').value=r[ii][1];
+		document.getElementById('sq').value=r[ii][2];
+        document.getElementById('sq').value=r[ii][3];
+
+
+        document.getElementById('Qestion').innerHTML="<h2 ><font size=6>"+qs[ii]+"</font></h2>";
+
+	}
+}
+/* ----------------------------------------------
+الزر الأخير
+ ----------------------------------------------*/
+
+function last()
+{
+document.getElementById('imageviewer').src=myImages[imagecounter][0];
+document.getElementById('imageviewer1').src=myImages[imagecounter][1];
+document.getElementById('imageviewer2').src=myImages[imagecounter][2];
+document.getElementById('imageviewer3').src=myImages[imagecounter][3];
+
+i=imagecounter;
+
+
+document.getElementById('oTarget').value=ot[textcounter];
+document.getElementById('sq').value=r[textcounter][0];
+document.getElementById('sq').value=r[textcounter][1];
+document.getElementById('sq').value=r[textcounter][2];
+document.getElementById('sq').value=r[textcounter][3];
+document.getElementById('Qestion').innerHTML="<h2 ><font size=6>"+qs[textcounter]+"</font></h2>";
+ii=textcounter;
+k=textcounter;
+}
+
+     /* ----------------------------------------------
+تعيين الإجابة لسحبها 
+ ----------------------------------------------*/
+
+                              
+function fnSetInfo() {
+                                                     
+        if (ii==3){
+     event.dataTransfer.setData("Text", "قرى"); 
+  event.dataTransfer.effectAllowed = "copy";    }    
+  else         
+   if (ii==4){
+                                                     
+  event.dataTransfer.setData("Text", "عصا");
+    event.dataTransfer.effectAllowed = "copy";                 
+           }
+  }
+
+  function fnSetInfo1() {
+
+event.dataTransfer.setData("Text", "مرمى"); 
+  event.dataTransfer.effectAllowed = "copy"; 
+}
+ function fnSetInfo2() {
+
+
+event.dataTransfer.setData("Text", "حمار"); 
+
+
+  event.dataTransfer.effectAllowed = "copy"; 
+}
+function fnSetInfo3() {
+
+event.dataTransfer.setData("Text", "أرنب"); 
+  event.dataTransfer.effectAllowed = "copy"; 
+}
+function fnSetInfo4() {
+
+event.dataTransfer.setData("Text", "أرنب"); 
+  event.dataTransfer.effectAllowed = "copy"; 
+}
+
+
+
+/* ----------------------------------------------
+   fnGetInfo is called by the target
+   object in the ondrop event.
+   It cancels the default action and
+   sets the cursor to the system copy icon.  
+   Then it specifies the data format to retrieve.
+   Last, it sets the value property of oTarget 
+   object to the information from getData. 
+ ----------------------------------------------*/ 
+
+function fnGetInfo() {
+  event.returnValue = false;                           
+  event.dataTransfer.dropEffect = "copy";              
+  oTarget.value = event.dataTransfer.getData("Text"); 
+
+  if (document.getElementById('oTarget').value==ot[ii])
+    {
+    document.getElementById('oTarget').innerHTML="<img border='0' src='" +  myImages[i][j] + "' width='100' height='50' />"
+  document.getElementById('sq').innerHTML="<font size=7 color=#00000>" + ot[ii] + "</font>"
+  document.getElementById('sq1').innerHTML = "<center><font color=green ><b><img src='images/72763drooopy.gif' width=60  height=50 ><p>أحسنت</p><bgsound src='SOUND/excellant.wav' loop=1><audio autoplay='autoplay'> <source src='SOUND/excellant.mp3'> <source src='SOUND/excellant.wav'> </audio></b></font></center>"
+ } else
+{
+document.getElementById('oTarget').innerHTML="<img border='0' src='" +  myImages[i][j] + "' width='100' height='50' />"
+
+document.getElementById('sq').innerHTML="<font size=7 color=#00000>" + r[ii][j] + "</font>"
+
+document.getElementById('sq1').innerHTML = "<center><font color=red><b><img src='images/72770drooopy.gif' width=60  height=50><p>الإجابة خاطئة</p><bgsound src='SOUND/rongansr.wav' loop=1 ><audio autoplay='autoplay'><source src='SOUND/rongansr.mp3'> <source src='SOUND/rongansr.wav'> </audio></b></font></center>";
+}
+if (r[ii][j]=="حمار")
+  document.getElementById('sq').innerHTML="<font size=7 color=#ff0000>" + r[ii][j] + "</font>"
+if (r[ii][j]=="أرنب")
+  document.getElementById('sq').innerHTML="<font size=7 color=#ff0000>" + r[ii][j] + "</font>"
+if (r[ii][j]=="مرمى")
+  document.getElementById('sq').innerHTML="<font size=7 color=#ff0000>" + r[ii][j] + "</font>"
+if (r[ii][j]=="قرى")
+  document.getElementById('sq').innerHTML="<font size=7 color=#ff0000>" + r[ii][j] + "</font>"
+if (r[ii][j]=="عصا")
+  document.getElementById('sq').innerHTML="<font size=7 color=#ff0000>" + r[ii][j] + "</font>"
+
+
+
+}
+
+
+
+/* ----------------------------------------------
+    fnCancelDefault
+    Cancels the default action in ondragenter
+    and ondragover so that the copy cursor is
+    displayed until the selection is dropped.
+ ----------------------------------------------*/
+ /* ----------------------------------------------
+   إدراج الصورة والصوت والكتابة
+ ----------------------------------------------*/
+
+
+function fnCancelDefault() {                                            
+  event.returnValue = false;                  
+  event.dataTransfer.dropEffect = "copy";  
+}
+
+function otwrite()
+{
+document.getElementById('oTarget').innerHTML="<font size=7 >أ</font>";
+document.getElementById('sq').innerHTML="<font size=7 >أ</font>";
+document.getElementById('sq1').innerHTML="";
+
+}
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+</script>
+
+<!-- #EndEditable -->
+<link href="../styles/style1.css" media="screen" rel="stylesheet" title="CSS" type="text/css" />
+<style type="text/css">
+
+.auto-style1 {
+	text-align: right;
+}
+.auto-style2 {
+	text-align: right;
+	margin-right: 9px;
+}
+.auto-style3 {
+	margin-right: 0px;
+	margin-left: 65px;
+}
+.auto-style4 {
+	margin-bottom: 0;
+}
+</style>
+</head>
+
+<body style="background-position: inherit; background-image: url('../images/images.gif')">
+
+<!-- Begin Container -->
+
+	<!-- End Navigation -->
+	<!-- Begin Content -->
+	<!-- End Content -->
+	<!-- Begin Footer -->
+	<div id="content" style="width: 524px; right: 118px; top: 11px;">
+		<!-- #BeginEditable "content" -->
+		<form>
+	<div class="auto-style5">
+	<!-- الأزرار -->
+
+<input type="button" value="الأول" onclick="first(); otwrite();"/>
+<input type="button" value="السابق" onclick="previous(); otwrite();"/>
+<input type="button" value="التالي" onclick="next(); otwrite();"/>
+<input type="button" value="الأخير" onclick="last(); otwrite();"/>
+</div>
+</form>
+        <div align=center id="Qestion"> 
+		<h2 align=right><font size=6>(أنا أختار الصورة التي تحتوي على حرف (أ</font></h2></div> 
+<table style="text-align:center; width: 116%;" class="auto-style6" align="center" >
+	<tr>
+		<td id="sq1" class="auto-style5" style="width: 41px">&nbsp;</td>
+		<td  id="oTarget" value="حمار"
+       ondragenter="fnCancelDefault()"  
+        ondrop="fnGetInfo()"
+       ondragover="fnCancelDefault()" class="auto-style9" size="22" name="oTarget" style="font-size: 18pt; font-family: Simplified Arabic; font-weight: bold; text-align: center; direction: rtl; background-color: #FFFFFF" style="width:166px"  class="auto-style5">
+<p><font size="7">أ</font> </td>
+		<td class="auto-style5" style="width: 164px">
+		&nbsp;</td>
+		<td id =sq class="auto-style5" style="width: 240px" colspan="2">
+<p style="text-align:center"/><font size="7" color="#008000">
+<span class="auto-style11">&nbsp;&nbsp; أ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>
+<span class="auto-style10">&nbsp;</span></font></td>
+	</tr>
+	<tr>
+		<td class="auto-style5" style="width: 164px">
+		<img id="imageviewer" border="0" src="images/camel.png" width="100" height="50" draggable="true"  ondragstart="j=0;
+ fnSetInfo();"/></td>
+		<td class="auto-style5" style="width: 240px">
+		<img border="0" id="imageviewer1" src="images/home.png" width="100" height="50" draggable="true" ondragstart="j=1; fnSetInfo1();" ></td>
+		<td id="s3" class="auto-style5" style="width: 240px">
+		<img border="0" id="imageviewer2" src="images/donky.png" width="100" height="50" draggable="true" ondragstart="j=2;fnSetInfo2();" ></td>
+		<td class="auto-style5" style="width: 240px">
+		<img border="0" id="imageviewer3" src="images/stairs.png" width="100" height="50" draggable="true" ondragstart="j=3; fnSetInfo3();" ></td>
+		<td class="auto-style5" style="width: 240px">
+		&nbsp;</td>
+	</tr>
+	</table>
+		<!-- #EndEditable "content" --></div>
+	
+	<!-- End Footer --></div>
+<!-- End Container -->
+
+</body>
+
+<!-- #EndTemplate -->
+
+</html>

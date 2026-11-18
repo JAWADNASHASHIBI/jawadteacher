@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+<meta content="ar-jo" http-equiv="Content-Language" />
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<title>مبلغ القرض</title>
+<script type="text/javascript"   charset="utf-8" language="javascript">
+function result()
+{
+
+var l=document.getElementById('T1').value;
+var i=document.getElementById('T2').value;
+var t=document.getElementById('T3').value;
+var fe=document.getElementById('T4').value;
+
+
+
+document.getElementById('T4').readOnly=true;
+var fe=Math.pow(1+i,t);
+var fev=fe-1;
+var n=fev.toFixed(5);
+var f=l*fev;
+var fv=l+f;
+document.getElementById('T4').value=n;
+document.getElementById('T5').value=f;
+document.getElementById('T6').value=fv;
+
+}
+</script>
+</head>
+
+<body>
+
+<form method="post" id="T5">
+	مبلغ القرض</form>
+<label id="Label1"></label>
+<p><input name="Text1" type="text" id="T1" /></p>
+<label id="Label2"></label>
+<form method="post">
+	الفائدة المركبة</form>
+<p><input name="Text2" type="text" id="T2" /></p>
+<p>المدة</p>
+<form method="post">
+	<input name="Text3" type="text"  id="T3" /></form>
+<form method="post">
+	<input dir="rtl" name="Button1" type="button" onclick="javascript:result();"  value="احسب" /></form>
+<label id="Label3"></label>
+<p>الفائدة الفعلية</p>
+<form method="post">
+	<input name="Text4" type="text" id="T4" /></form>
+
+<p>مبلغ الفائدة</p>
+<form method="post">
+	<input id="T5" name="Text7" type="text" /></form>
+<p>الفائدة المستقبلية</p>
+<form method="post">
+	<input name="Text6" type="text" id="T6" /></form>
+
+</body>
+
+</html>

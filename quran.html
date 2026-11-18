@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مولد شهادات القرآن الكريم - مدرسة شعفاط</title>
+    <!-- استدعاء خطوط عربية كلاسيكية وجميلة من جوجل -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --gold-color: #c59b27;
+            --dark-green: #0d4715;
+            --bg-cream: #fdfbf7;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        /* تنسيقات الخطوط الكلاسيكية */
+        .font-amiri { font-family: 'Amiri', serif; }
+        .font-ruqaa { font-family: 'Aref Ruqaa', serif; }
+
+        /* تصميم صفحة الشهادة */
+        .certificate {
+            width: 297mm;
+            height: 210mm;
+            background-color: var(--bg-cream);
+            margin: 0 auto;
+            margin-bottom: 2rem;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            background-image: radial-gradient(var(--gold-color) 0.5px, transparent 0.5px), radial-gradient(var(--gold-color) 0.5px, transparent 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            background-color: var(--bg-cream);
+            page-break-after: always;
+            /* خاصية إجبار المتصفح على طباعة الألوان والخلفيات */
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+        }
+
+        /* الإطار الخارجي والداخلي */
+        .cert-border-outer {
+            position: absolute;
+            top: 15mm; bottom: 15mm; left: 15mm; right: 15mm;
+            border: 8px solid var(--gold-color);
+            padding: 6px;
+        }
+        
+        .cert-border-inner {
+            height: 100%;
+            border: 3px dashed var(--dark-green);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: inset 0 0 50px rgba(197, 155, 39, 0.1);
+        }
+
+        /* الزخارف في الزوايا */
+        .corner {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--dark-green);
+        }
+        .corner-tl { top: -6px; right: -6px; border-bottom: none; border-left: none; }
+        .corner-tr { top: -6px; left: -6px; border-bottom: none; border-right: none; }
+        .corner-bl { bottom: -6px; right: -6px; border-top: none; border-left: none; }
+        .corner-br { bottom: -6px; left: -6px; border-top: none; border-right: none; }
+
+        /* إعدادات الطباعة */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 0;
+            }
+            body {
+                background-color: white;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .certificate {
+                box-shadow: none;
+                margin: 0;
+                border: none;
+                background-image: none !important; 
+            }
+            #certificates-container {
+                display: block;
+            }
+            .cert-border-outer {
+                border-color: var(--gold-color) !important;
+            }
+            .cert-border-inner {
+                border-color: var(--dark-green) !important;
+            }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- لوحة التحكم (لا تظهر في الطباعة) -->
+    <div class="no-print bg-white shadow-md p-6 mb-8 max-w-4xl mx-auto mt-6 rounded-lg border-t-4 border-green-700">
+        <h1 class="text-2xl font-bold text-green-800 mb-2 font-amiri">مولد شهادات القرآن الكريم</h1>
+        <p class="text-gray-600 mb-4">مدرسة شعفاط الأساسية للبنات أ | العام الدراسي 2025 - 2026</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div class="md:col-span-1">
+                <label class="block text-gray-700 font-semibold mb-2" for="classNameInput">اسم الصف:</label>
+                <input type="text" id="classNameInput" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600" placeholder="مثال: السادس (أ)">
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-gray-700 font-semibold mb-2" for="namesList">أدخلي أسماء الطالبات (كل اسم في سطر جديد):</label>
+                <textarea id="namesList" rows="4" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-green-600 focus:ring-1 focus:ring-green-600" placeholder="مثال:&#10;ليان أحمد حسين&#10;سارة محمد علي"></textarea>
+            </div>
+        </div>
+        
+        <div class="flex flex-wrap gap-4 justify-between items-center mt-2 border-b pb-4">
+            <button onclick="generateCertificates()" class="bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-6 rounded-lg transition duration-200">
+                1. معاينة الشهادات
+            </button>
+            <button onclick="window.print()" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-6 rounded-lg transition duration-200 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
+                </svg>
+                2. طباعة ملونة
+            </button>
+        </div>
+
+        <!-- قسم تعليمات حل مشكلة الأبيض والأسود -->
+        <div class="mt-4 bg-yellow-50 p-4 rounded border border-yellow-200">
+            <h3 class="text-yellow-800 font-bold mb-2 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                هام: إذا كانت الطباعة تخرج أبيض وأسود فقط
+            </h3>
+            <ul class="text-sm text-yellow-900 list-disc list-inside space-y-1">
+                <li>بعد الضغط على زر الطباعة، ابحثي عن خيار <strong>"رسومات الخلفية" (Background Graphics)</strong> في نافذة المتصفح وقومي بتفعيله.</li>
+                <li>تأكدي أن خيار <strong>"اللون" (Color)</strong> مضبوط على <strong>"ملون" (Color)</strong> وليس أبيض وأسود.</li>
+                <li>بما أن إعدادات طابعتك مضبوطة على <strong>Auto Color</strong>، فإن تفعيل "رسومات الخلفية" في المتصفح هو الحل النهائي.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- حاوية الشهادات -->
+    <div id="certificates-container">
+        <!-- سيتم توليد الشهادات هنا -->
+    </div>
+
+    <!-- قالب الشهادة المخفي الذي ننسخ منه -->
+    <template id="certificate-template">
+        <div class="certificate">
+            <div class="cert-border-outer">
+                <div class="corner corner-tl"></div>
+                <div class="corner corner-tr"></div>
+                <div class="corner corner-bl"></div>
+                <div class="corner corner-br"></div>
+                
+                <div class="cert-border-inner">
+                    <!-- الترويسة مع الشعار -->
+                    <div class="w-full relative mt-2">
+                        <!-- الشعار الأيمن -->
+                        <img src="شعار المدرسة (1).png" alt="شعار المدرسة" class="absolute top-0 right-2 w-28 h-auto drop-shadow-md">
+                        
+                        <!-- النص الأوسط -->
+                        <div class="text-center w-full pt-2">
+                            <p class="font-amiri text-2xl mb-4 text-green-900">بسم الله الرحمن الرحيم</p>
+                            <h1 class="font-ruqaa text-6xl text-[#c59b27] mb-6" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">شـهـادة تـفـوق وتـقـديـر</h1>
+                            <p class="font-amiri text-2xl text-gray-800">تتشرف <strong class="text-green-800">مدرسة شعفاط الأساسية للبنات أ</strong> بمنح هذه الشهادة للطالبة المتميزة:</p>
+                        </div>
+                    </div>
+
+                    <!-- اسم الطالبة -->
+                    <div class="w-full text-center mt-6 relative">
+                        <div class="absolute w-full h-px bg-gray-300 top-1/2 -z-10"></div>
+                        <span class="student-name font-ruqaa text-5xl text-green-900 bg-white px-8 pb-4 pt-2 inline-block border-b-2 border-green-800" style="line-height: 1.2;">
+                            [اسم الطالبة]
+                        </span>
+                    </div>
+
+                    <!-- اسم الصف -->
+                    <div class="w-full text-center mb-6">
+                        <p class="font-amiri text-2xl text-gray-800">الصف: <strong class="class-name text-green-800 mx-1">[اسم الصف]</strong></p>
+                    </div>
+
+                    <!-- نص الشهادة -->
+                    <div class="text-center px-16">
+                        <p class="font-amiri text-2xl text-gray-800 leading-relaxed mb-4">
+                            تقديراً لجهدها المبارك وعزيمتها الصادقة في <strong class="text-[#c59b27]">مسابقة حفظ القرآن الكريم</strong><br>
+                            خلال العام الدراسي <span class="font-sans font-bold text-green-800 text-xl mx-1">2025 - 2026</span>.
+                        </p>
+                        <p class="font-amiri text-xl text-gray-700 leading-relaxed mb-4">
+                            هنيئاً لكِ هذا الشرف العظيم، سائلين المولى عز وجل أن يلبس والديكِ تاج الوقار،<br>وأن يوفقكِ لرفع راية العلم والإيمان دائماً.
+                        </p>
+                    </div>
+
+                    <!-- التواقيع -->
+                    <div class="w-full flex justify-between px-20 mb-6 mt-4">
+                        <div class="text-center">
+                            <p class="font-amiri text-xl font-bold text-green-900 mb-8">معلمة المادة</p>
+                            <p class="font-amiri text-2xl text-gray-800 border-t border-gray-400 pt-2 w-48 mx-auto">أ. ميسر الخطيب</p>
+                        </div>
+                        
+                        <!-- مكان الختم (دائرة زخرفية) -->
+                        <div class="flex items-center justify-center">
+                            <div class="w-24 h-24 rounded-full border-2 border-dashed border-[#c59b27] flex items-center justify-center opacity-50">
+                                <span class="font-amiri text-[#c59b27] text-sm text-center">ختم<br>المدرسة</span>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <p class="font-amiri text-xl font-bold text-green-900 mb-8">مديرة المدرسة</p>
+                            <p class="font-amiri text-2xl text-gray-800 border-t border-gray-400 pt-2 w-48 mx-auto">أ. سوزان الخطيب</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        function generateCertificates() {
+            const namesText = document.getElementById('namesList').value;
+            const classNameInput = document.getElementById('classNameInput').value || '......................';
+            
+            const container = document.getElementById('certificates-container');
+            const template = document.getElementById('certificate-template');
+            
+            container.innerHTML = '';
+            const names = namesText.split('\n').map(name => name.trim()).filter(name => name.length > 0);
+
+            if (names.length === 0) {
+                names.push('[اسم الطالبة]');
+            }
+
+            names.forEach(name => {
+                const clone = template.content.cloneNode(true);
+                clone.querySelector('.student-name').textContent = name;
+                clone.querySelector('.class-name').textContent = classNameInput;
+                container.appendChild(clone);
+            });
+        }
+
+        window.onload = generateCertificates;
+    </script>
+</body>
+</html>

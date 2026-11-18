@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام التحليل الذكي للمايكروبيت</title>
+    
+    <!-- استخدام Tailwind CSS لتصميم واجهة عصرية -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- استدعاء مكتبات TensorFlow و Teachable Machine من جوجل -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+
+    <style>
+        body { font-family: 'Tajawal', sans-serif; background-color: #f3f4f6; }
+        #webcam-container canvas { border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); width: 100%; max-width: 350px; margin: auto; display: block; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-lg text-center">
+        <h1 class="text-3xl font-bold text-indigo-600 mb-2">نظام التحليل الذكي للمايكروبيت</h1>
+        <p class="text-gray-500 mb-4">اضغط على زر التشغيل أدناه لتفعيل الكاميرا الخلفية وتحليل الصورة</p>
+
+        <!-- صندوق عرض الرسائل والحالة -->
+        <div id="status-box" class="mb-4 p-3 rounded-lg bg-blue-50 text-blue-700 font-semibold text-sm transition-all">
+            جاهز للتشغيل. تأكد من صحة رابط نموذجك أدناه.
+        </div>
+
+        <!-- إدخال رابط Teachable Machine -->
+        <div class="mb-4 w-full text-right">
+            <label class="block text-gray-700 text-sm font-bold mb-1" for="tm-url">
+                رابط نموذج Teachable Machine:
+            </label>
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 text-left dir-ltr" id="tm-url" type="url" placeholder="https://teachablemachine.withgoogle.com/models/..." value="https://teachablemachine.withgoogle.com/models/YyLz14xZ8/">
+        </div>
+
+        <!-- أزرار التحكم -->
+        <div class="flex gap-2 mb-6">
+            <button id="start-cam-btn" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition-transform transform hover:scale-105 text-sm">
+                📷 تشغيل الكاميرا الخلفية والذكاء الاصطناعي
+            </button>
+        </div>
+
+        <!-- زر محاكاة زر A (مفيد جداً كبديل فوري أثناء الشرح) -->
+        <button id="simulate-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all mb-6 text-base border-b-4 border-amber-700 active:border-b-0 active:translate-y-1">
+            🔘 اضغط هنا لتحليل الصورة (محاكاة زر A)
+        </button>
+
+        <!-- حاوية الكاميرا -->
+        <div id="webcam-container" class="mb-4"></div>
+
+        <!-- شاشة الإخراج (عرض النتيجة) -->
+        <div id="result-screen" class="hidden bg-green-100 border-2 border-green-400 rounded-xl p-5 transform transition-all duration-500">
+            <h2 class="text-green-800 text-base mb-1">نتيجة التحليل الذكي:</h2>
+            <p id="prediction-text" class="text-3xl font-bold text-green-700">--</p>
+        </div>
+    </div>
+
+    <script>
+        let model, webcam, maxPredictions;
+        const statusBox = document.getElementById("status-box");
+        const startCamBtn = document.getElementById("start-cam-btn");
+        const simulateBtn = document.getElementById("simulate-btn");
+        const resultScreen = document.getElementById("result-screen");
+        const predictionText = document.getElementById("prediction-text");
+        const tmUrlInput = document.getElementById("tm-url");
+
+        function showStatus(message, type = "blue") {
+            const colors = {
+                blue: "bg-blue-50 text-blue-700 border-blue-200",
+                green: "bg-green-50 text-green-700 border-green-200",
+                red: "bg-red-50 text-red-700 border-red-200"
+            };
+            statusBox.className = `mb-4 p-3 rounded-lg font-semibold text-sm transition-all border ${colors[type] || colors.blue}`;
+            statusBox.innerText = message;
+        }
+
+        // تهيئة الكاميرا الخلفية والذكاء الاصطناعي
+        async function initAI() {
+            try {
+                showStatus("جاري تحميل نموذج الذكاء الاصطناعي وتفعيل الكاميرا الخلفية...", "blue");
+                
+                let userURL = tmUrlInput.value.trim();
+                if (userURL !== "" && !userURL.endsWith("/")) {
+                    userURL += "/";
+                }
+
+                const finalURL = userURL !== "" ? userURL : "https://teachablemachine.withgoogle.com/models/YyLz14xZ8/"; 
+                const metadataURL = finalURL + "metadata.json";
+                const modelFile = finalURL + "model.json";
+
+                model = await tmImage.load(modelFile, metadataURL);
+                maxPredictions = model.getTotalClasses();
+
+                // إعداد الكاميرا مع تحديد خاصية الكاميرا الخلفية (environment)
+                webcam = new tmImage.Webcam(300, 300, false); 
+                
+                // تعديل إعدادات الاتصال بالكاميرا لتفضيل الكاميرا الخلفية
+                await webcam.setup({ facingMode: "environment" }); 
+                await webcam.play();
+                
+                window.requestAnimationFrame(loop);
+                
+                const container = document.getElementById("webcam-container");
+                if (container.children.length === 0) {
+                    container.appendChild(webcam.canvas);
+                }
+                
+                showStatus("✅ الكاميرا الخلفية ونموذج الذكاء الاصطناعي يعملان بنجاح!", "green");
+                
+            } catch (error) {
+                console.error(error);
+                showStatus("❌ خطأ في تحميل الكاميرا أو النموذج. تأكد من صحة رابط Teachable Machine ومنح صلاحية الكاميرا.", "red");
+            }
+        }
+
+        async function loop() {
+            if (webcam && webcam.canvas) {
+                webcam.update();
+            }
+            window.requestAnimationFrame(loop);
+        }
+
+        // دالة تحليل الصورة الحالية وعرض النتيجة
+        async function analyzeImage() {
+            if (!model || !webcam) {
+                showStatus("الرجاء تشغيل الكاميرا والنموذج أولاً بالنقر على الزر الأخضر!", "red");
+                initAI();
+                return;
+            }
+
+            resultScreen.classList.remove("hidden");
+            predictionText.innerText = "جاري التحليل... ⏳";
+            
+            const prediction = await model.predict(webcam.canvas);
+            
+            let highestProb = 0;
+            let bestMatch = "";
+            
+            for (let i = 0; i < maxPredictions; i++) {
+                if (prediction[i].probability > highestProb) {
+                    highestProb = prediction[i].probability;
+                    bestMatch = prediction[i].className;
+                }
+            }
+            
+            predictionText.innerText = `${bestMatch} (${Math.round(highestProb * 100)}%)`;
+            
+            resultScreen.classList.add("scale-105");
+            setTimeout(() => resultScreen.classList.remove("scale-105"), 300);
+        }
+
+        // ربط الأحداث بالأزرار
+        startCamBtn.addEventListener("click", () => {
+            initAI();
+        });
+
+        simulateBtn.addEventListener("click", () => {
+            analyzeImage();
+        });
+    </script>
+</body>
+</html>

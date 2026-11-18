@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>غرفة هروب رياضيات: لغز معبد فيثاغورس</title>
+    <!-- استدعاء خطوط عربية مناسبة -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- استدعاء مكتبة Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+            background-image: radial-gradient(#1e293b 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .room-card {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.1);
+        }
+        .fade-in {
+            animation: fadeIn 0.8s ease-in forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .math-text {
+            font-family: monospace;
+            font-size: 1.2rem;
+            color: #fbbf24; /* Amber 400 */
+        }
+    </style>
+</head>
+<body class="text-slate-300 min-h-screen flex items-center justify-center p-4">
+
+    <!-- نافذة الرسائل (Toast) بديل الـ Alert -->
+    <div id="toast" class="fixed top-10 left-1/2 transform -translate-x-1/2 z-50 hidden px-6 py-3 rounded-lg shadow-2xl font-bold text-white transition-all duration-300">
+        <span id="toastMessage">رسالة</span>
+    </div>
+
+    <div class="max-w-3xl w-full room-card rounded-2xl p-8 md:p-12 relative overflow-hidden">
+        
+        <!-- الزخرفة العلوية -->
+        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-amber-600 via-yellow-400 to-amber-600"></div>
+
+        <!-- 1. المقدمة -->
+        <div id="section-intro" class="fade-in text-center space-y-6">
+            <div class="text-6xl mb-4">🏛️📐</div>
+            <h1 class="text-3xl md:text-4xl font-black text-amber-500 mb-4 shadow-black text-shadow">لغز معبد فيثاغورس</h1>
+            <p class="text-lg leading-relaxed text-slate-400 text-justify mb-8">
+                أنتم مجموعة من علماء الآثار الشجعان الذين اكتشفوا معبداً أثرياً قديماً يُعتقد أنه بُني على يد تلاميذ العالم الرياضياتي الشهير "فيثاغورس". بمجرد دخولكم إلى القاعة الرئيسية، انغلق الباب الحجري الضخم خلفكم فجأة!
+                <br><br>
+                السبيل الوحيد للخروج هو حل سلسلة من الألغاز الرياضية التي تركها حراس المعبد باستخدام نظرية فيثاغورس <span class="math-text" dir="ltr">a&sup2; + b&sup2; = c&sup2;</span>.
+                هل أنتم مستعدون للهروب؟
+            </p>
+            <button onclick="showSection('section-room1')" class="bg-amber-600 hover:bg-amber-500 text-white text-xl font-bold py-3 px-12 rounded-full transition-all hover:scale-105 shadow-[0_0_15px_rgba(217,119,6,0.5)]">
+                ابدأ المغامرة 🔦
+            </button>
+        </div>
+
+        <!-- 2. اللغز الأول -->
+        <div id="section-room1" class="hidden fade-in space-y-6">
+            <div class="flex items-center space-x-4 space-x-reverse mb-4">
+                <span class="text-4xl">🚪</span>
+                <h2 class="text-2xl font-bold text-amber-500">اللغز الأول: بوابة الحراس</h2>
+            </div>
+            <p class="text-lg text-slate-300 leading-relaxed">
+                لتجاوز البوابة الأولى، وجدتم لوحة حجرية تحتوي على مثلث قائم الزاوية يمثل دعامة البوابة. 
+                مكتوب على اللوحة: <span class="italic text-slate-400">"لكي تفتح الباب، يجب أن تعرف طول الوتر (الدعامة الرئيسية)".</span>
+            </p>
+            <ul class="list-disc list-inside text-slate-400 space-y-2 bg-slate-800/50 p-4 rounded-lg">
+                <li>القاعدة (الضلع الأول) يبلغ طولها: <span class="text-amber-400 font-bold">6 أمتار</span>.</li>
+                <li>الارتفاع (الضلع الثاني) يبلغ طوله: <span class="text-amber-400 font-bold">8 أمتار</span>.</li>
+            </ul>
+            <div class="mt-8 flex flex-col sm:flex-row items-center gap-4">
+                <label for="ans1" class="font-bold">أدخل طول الدعامة (الوتر):</label>
+                <input type="number" id="ans1" class="bg-slate-800 border-2 border-slate-600 focus:border-amber-500 text-white rounded-lg px-4 py-2 text-center text-xl w-32 outline-none transition-colors" placeholder="؟؟">
+                <button onclick="checkAnswer('ans1', 10, 'section-room2')" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-lg transition-all shadow-lg w-full sm:w-auto">
+                    فتح الباب 🗝️
+                </button>
+            </div>
+        </div>
+
+        <!-- 3. اللغز الثاني -->
+        <div id="section-room2" class="hidden fade-in space-y-6">
+            <div class="flex items-center space-x-4 space-x-reverse mb-4">
+                <span class="text-4xl">🪜</span>
+                <h2 class="text-2xl font-bold text-amber-500">اللغز الثاني: فخ الرواق المظلم</h2>
+            </div>
+            <p class="text-lg text-slate-300 leading-relaxed">
+                بعد عبور البوابة، دخلتم إلى رواق مظلم. لإنارة الرواق، يجب عليكم سحب رافعة مخفية في أعلى الجدار.
+                توجد سلم خشبي مائل مستند على الجدار.
+            </p>
+            <ul class="list-disc list-inside text-slate-400 space-y-2 bg-slate-800/50 p-4 rounded-lg">
+                <li>طول السلم (الوتر) هو <span class="text-amber-400 font-bold">13 متراً</span>.</li>
+                <li>تبعد قاعدة السلم عن الجدار مسافة <span class="text-amber-400 font-bold">5 أمتار</span>.</li>
+            </ul>
+            <div class="mt-8 flex flex-col sm:flex-row items-center gap-4">
+                <label for="ans2" class="font-bold">ما هو الارتفاع الذي تصل إليه السلم؟</label>
+                <input type="number" id="ans2" class="bg-slate-800 border-2 border-slate-600 focus:border-amber-500 text-white rounded-lg px-4 py-2 text-center text-xl w-32 outline-none transition-colors" placeholder="؟؟">
+                <button onclick="checkAnswer('ans2', 12, 'section-room3')" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-lg transition-all shadow-lg w-full sm:w-auto">
+                    إنارة الرواق 💡
+                </button>
+            </div>
+        </div>
+
+        <!-- 4. اللغز الثالث -->
+        <div id="section-room3" class="hidden fade-in space-y-6">
+            <div class="flex items-center space-x-4 space-x-reverse mb-4">
+                <span class="text-4xl">🗺️</span>
+                <h2 class="text-2xl font-bold text-amber-500">اللغز الثالث: خريطة الكنز والوادي</h2>
+            </div>
+            <p class="text-lg text-slate-300 leading-relaxed">
+                أنار الرواق ووصلتم إلى قاعة الكنز، ولكن الكنز موجود في الجهة المقابلة لوادي عميق داخل المعبد. يوجد خريطة توضح كيفية بناء جسر مستقيم للعبور.
+                تشير الخريطة إلى أن نقطة البداية (موقعكم) ونقطة الكنز تشكلان مع نقطة مرجعية مثلثاً قائم الزاوية:
+            </p>
+            <ul class="list-disc list-inside text-slate-400 space-y-2 bg-slate-800/50 p-4 rounded-lg">
+                <li>المسافة من موقعكم إلى النقطة المرجعية (شرقاً) هي <span class="text-amber-400 font-bold">15 متراً</span>.</li>
+                <li>المسافة من النقطة المرجعية إلى الكنز (شمالاً) هي <span class="text-amber-400 font-bold">20 متراً</span>.</li>
+            </ul>
+            <div class="mt-8 flex flex-col sm:flex-row items-center gap-4">
+                <label for="ans3" class="font-bold">ما هي المسافة المباشرة (طول الجسر)؟</label>
+                <input type="number" id="ans3" class="bg-slate-800 border-2 border-slate-600 focus:border-amber-500 text-white rounded-lg px-4 py-2 text-center text-xl w-32 outline-none transition-colors" placeholder="؟؟">
+                <button onclick="checkAnswer('ans3', 25, 'section-room4')" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-lg transition-all shadow-lg w-full sm:w-auto">
+                    بناء الجسر 🌉
+                </button>
+            </div>
+        </div>
+
+        <!-- 5. اللغز الرابع والأخير -->
+        <div id="section-room4" class="hidden fade-in space-y-6">
+            <div class="flex items-center space-x-4 space-x-reverse mb-4">
+                <span class="text-4xl">🔐</span>
+                <h2 class="text-2xl font-bold text-amber-500">اللغز الأخير: القفل الذهبي</h2>
+            </div>
+            <p class="text-lg text-slate-300 leading-relaxed">
+                وصلتم أخيراً إلى باب الخروج النهائي، وعليه قفل ذهبي. 
+                مكتوب على الباب: <span class="italic text-slate-400">"اجمع الأرقام السرية الثلاثة التي حصلت عليها من الألغاز السابقة، ثم اطرح منها العدد 7 لتحصل على كود الهروب النهائي".</span>
+            </p>
+            <div class="bg-slate-800/80 p-4 rounded-lg text-center border border-amber-900/50">
+                <p class="math-text" dir="ltr">(Ans 1) + (Ans 2) + (Ans 3) - 7 = ???</p>
+            </div>
+            <div class="mt-8 flex flex-col sm:flex-row items-center gap-4">
+                <label for="ans4" class="font-bold text-amber-400">أدخل كود الهروب النهائي:</label>
+                <input type="number" id="ans4" class="bg-slate-900 border-2 border-amber-600 focus:border-yellow-400 text-yellow-400 rounded-lg px-4 py-2 text-center text-2xl w-32 outline-none transition-colors shadow-[0_0_10px_rgba(217,119,6,0.3)]" placeholder="***">
+                <button onclick="checkAnswer('ans4', 40, 'section-success')" class="bg-gradient-to-r from-amber-600 to-yellow-500 hover:from-amber-500 hover:to-yellow-400 text-slate-900 font-black py-2 px-6 rounded-lg transition-all shadow-lg w-full sm:w-auto text-lg">
+                    فتح الباب والهروب 🏃‍♂️
+                </button>
+            </div>
+        </div>
+
+        <!-- 6. النهاية (النجاح) -->
+        <div id="section-success" class="hidden fade-in text-center space-y-6 py-8">
+            <div class="text-7xl mb-4">🎉🏆</div>
+            <h2 class="text-4xl font-black text-green-400 mb-4">نجاح مبهر!</h2>
+            <p class="text-xl text-slate-300 leading-relaxed">
+                لقد فتحتم الباب الأخير بنجاح وخرجتم من المعبد بسلام!<br>
+                أثبتم أنكم علماء رياضيات محترفون وأن نظرية فيثاغورس ليس لها أسرار تخفيها عنكم.
+            </p>
+            <button onclick="location.reload()" class="mt-8 bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-6 rounded-full transition-all">
+                العب مرة أخرى 🔄
+            </button>
+        </div>
+
+    </div>
+
+    <!-- JavaScript للتحكم بالمنطق -->
+    <script>
+        // إخفاء جميع الأقسام وإظهار القسم المطلوب
+        function showSection(sectionId) {
+            const sections = ['section-intro', 'section-room1', 'section-room2', 'section-room3', 'section-room4', 'section-success'];
+            sections.forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // تمرير الشاشة للأعلى قليلاً لتجربة أفضل على الموبايل
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // دالة عرض رسائل التنبيه (Toast) كبديل للـ Alert
+        function showToast(message, isSuccess) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMessage');
+            
+            toastMsg.innerText = message;
+            
+            if(isSuccess) {
+                toast.classList.remove('bg-red-600');
+                toast.classList.add('bg-green-600');
+            } else {
+                toast.classList.remove('bg-green-600');
+                toast.classList.add('bg-red-600');
+            }
+
+            toast.classList.remove('hidden');
+            
+            // إخفاء الرسالة بعد 3 ثواني
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // التحقق من إجابة الطالب
+        function checkAnswer(inputId, correctAnswer, nextSectionId) {
+            const userInput = document.getElementById(inputId).value;
+            
+            if (userInput.trim() === "") {
+                showToast("الرجاء إدخال رقم قبل المحاولة!", false);
+                return;
+            }
+
+            // تحويل المدخل إلى رقم لتجنب مشاكل النصوص
+            if (Number(userInput) === correctAnswer) {
+                showToast("إجابة صحيحة! الباب يُفتح...", true);
+                setTimeout(() => {
+                    showSection(nextSectionId);
+                }, 1000); // تأخير بسيط للإثارة
+            } else {
+                showToast("إجابة خاطئة! الباب مغلق، حاول حسابها مرة أخرى.", false);
+                // تصفير الحقل بعد الخطأ (اختياري)
+                // document.getElementById(inputId).value = ""; 
+            }
+        }
+
+        // إضافة دعم للضغط على زر "Enter" للتحقق من الإجابة
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    // البحث عن الزر المجاور والضغط عليه
+                    this.parentElement.querySelector('button').click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

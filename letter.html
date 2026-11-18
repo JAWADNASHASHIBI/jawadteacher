@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة سحب وإفلات الحروف</title>
+    
+    <!-- تحميل خط Cairo لجمالية النصوص العربية -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
+        /* تأثير عند سحب العنصر فوق منطقة الإفلات */
+        .drag-over {
+            border-color: #3b82f6 !important;
+            background-color: #eff6ff !important;
+            transform: scale(1.05);
+        }
+        /* شفافية العنصر أثناء سحبه */
+        .item-dragging {
+            opacity: 0.5;
+        }
+        /* حركة الاهتزاز عند الإجابة الخاطئة */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .shake-animation {
+            animation: shake 0.4s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 min-h-screen flex items-center justify-center text-gray-800 p-4">
+
+    <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-10 w-full max-w-3xl">
+        
+        <!-- الترويسة (المستوى والعنوان) -->
+        <div class="flex justify-between items-center border-b-2 border-gray-100 pb-4 mb-6">
+            <h1 class="text-3xl font-bold text-purple-700">لعبة الحروف</h1>
+            <span id="levelIndicator" class="bg-purple-100 text-purple-800 py-1 px-4 rounded-full font-semibold">
+                المستوى 1 / 5
+            </span>
+        </div>
+
+        <!-- نص السؤال -->
+        <div class="text-center mb-8">
+            <h2 id="questionText" class="text-2xl md:text-3xl font-bold text-gray-700 leading-tight">
+                أنا أختار الصورة التي تحتوي على حرف (أ)
+            </h2>
+        </div>
+
+        <!-- منطقة الإفلات -->
+        <div class="flex flex-col items-center justify-center mb-10">
+            <div id="dropZone" class="w-40 h-40 md:w-56 md:h-56 border-4 border-dashed border-gray-300 rounded-3xl flex flex-col items-center justify-center text-center transition-all duration-300 bg-gray-50 relative">
+                <span id="dropPlaceholder" class="text-gray-400 text-lg font-semibold p-4">اسحب الصورة إلى هنا</span>
+                <div id="dropResult" class="absolute inset-0 flex flex-col items-center justify-center hidden rounded-3xl bg-white">
+                    <span id="resultEmoji" class="text-6xl md:text-8xl"></span>
+                    <span id="resultText" class="text-2xl font-bold mt-2"></span>
+                </div>
+            </div>
+            
+            <!-- رسالة التغذية الراجعة (أحسنت / خطأ) -->
+            <div id="feedbackMsg" class="mt-4 text-xl font-bold h-8 transition-opacity duration-300 opacity-0">
+                أحسنت!
+            </div>
+        </div>
+
+        <!-- خيارات الصور القابلة للسحب -->
+        <div id="optionsContainer" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+            <!-- سيتم توليد الخيارات هنا بواسطة الجافاسكربت -->
+        </div>
+
+        <!-- أزرار التنقل -->
+        <div class="flex flex-wrap justify-center gap-3">
+            <button onclick="goToFirst()" class="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-xl font-bold transition-colors duration-200">
+                الأول
+            </button>
+            <button onclick="goToPrev()" class="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold transition-colors duration-200">
+                السابق
+            </button>
+            <button onclick="goToNext()" class="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold transition-colors duration-200">
+                التالي
+            </button>
+            <button onclick="goToLast()" class="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-xl font-bold transition-colors duration-200">
+                الأخير
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "أنا أختار الصورة التي تبدأ بحرف (أ)",
+                correctIndex: 0,
+                options: [
+                    { emoji: "🐇", word: "أرنب" },
+                    { emoji: "🏠", word: "بيت" },
+                    { emoji: "🌳", word: "شجرة" },
+                    { emoji: "🍎", word: "تفاحة" }
+                ]
+            },
+            {
+                question: "أنا أختار الصورة التي تبدأ بحرف (ب)",
+                correctIndex: 1,
+                options: [
+                    { emoji: "🐘", word: "فيل" },
+                    { emoji: "🐄", word: "بقرة" },
+                    { emoji: "🐍", word: "ثعبان" },
+                    { emoji: "📖", word: "كتاب" }
+                ]
+            },
+            {
+                question: "أنا أختار الصورة التي تبدأ بحرف (ج)",
+                correctIndex: 2,
+                options: [
+                    { emoji: "🐦", word: "عصفور" },
+                    { emoji: "🐈", word: "قطة" },
+                    { emoji: "🐫", word: "جمل" },
+                    { emoji: "🚗", word: "سيارة" }
+                ]
+            },
+            {
+                question: "أنا أختار الصورة التي تبدأ بحرف (ح)",
+                correctIndex: 0,
+                options: [
+                    { emoji: "🐴", word: "حصان" },
+                    { emoji: "☀️", word: "شمس" },
+                    { emoji: "🐟", word: "سمكة" },
+                    { emoji: "🍇", word: "عنب" }
+                ]
+            },
+            {
+                question: "أنا أختار الصورة التي تبدأ بحرف (خ)",
+                correctIndex: 0,
+                options: [
+                    { emoji: "🍞", word: "خبز" },
+                    { emoji: "🐐", word: "ماعز" },
+                    { emoji: "🍯", word: "عسل" },
+                    { emoji: "🐔", word: "دجاجة" }
+                ]
+            }
+        ];
+
+        let currentIndex = 0;
+
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const levelIndicator = document.getElementById('levelIndicator');
+        const dropZone = document.getElementById('dropZone');
+        const dropPlaceholder = document.getElementById('dropPlaceholder');
+        const dropResult = document.getElementById('dropResult');
+        const resultEmoji = document.getElementById('resultEmoji');
+        const resultText = document.getElementById('resultText');
+        const feedbackMsg = document.getElementById('feedbackMsg');
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(type) {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            if (type === 'correct') {
+                // صوت الإجابة الصحيحة (نغمة إيجابية)
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } else {
+                // صوت الإجابة الخاطئة (نغمة سلبية)
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            }
+        }
+
+        function loadLevel(index) {
+            const data = quizData[index];
+            
+            // تحديث النص والمستوى
+            questionText.textContent = data.question;
+            levelIndicator.textContent = `المستوى ${index + 1} / ${quizData.length}`;
+            
+            // إعادة ضبط منطقة الإفلات
+            dropResult.classList.add('hidden');
+            dropPlaceholder.classList.remove('hidden');
+            dropZone.classList.remove('border-green-500', 'border-red-500', 'bg-green-50', 'bg-red-50');
+            dropZone.classList.add('border-gray-300', 'bg-gray-50');
+            feedbackMsg.style.opacity = '0';
+            
+            // إعادة رسم الخيارات
+            optionsContainer.innerHTML = '';
+            
+            data.options.forEach((opt, idx) => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'bg-white border-2 border-gray-200 rounded-2xl p-4 flex flex-col items-center justify-center cursor-grab hover:shadow-lg transition-shadow duration-200 hover:border-purple-400';
+                optDiv.draggable = true;
+                
+                // أحداث السحب
+                optDiv.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', idx);
+                    e.dataTransfer.effectAllowed = 'copy';
+                    optDiv.classList.add('item-dragging');
+                });
+                
+                optDiv.addEventListener('dragend', () => {
+                    optDiv.classList.remove('item-dragging');
+                });
+                
+                optDiv.innerHTML = `
+                    <span class="text-5xl md:text-6xl mb-2">${opt.emoji}</span>
+                `;
+                optionsContainer.appendChild(optDiv);
+            });
+        }
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault(); 
+            e.dataTransfer.dropEffect = 'copy';
+            dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            
+            const draggedIndex = parseInt(e.dataTransfer.getData('text/plain'));
+            if (isNaN(draggedIndex)) return;
+
+            checkAnswer(draggedIndex);
+        });
+
+        function checkAnswer(selectedIndex) {
+            const data = quizData[currentIndex];
+            const selectedItem = data.options[selectedIndex];
+            
+            dropPlaceholder.classList.add('hidden');
+            dropResult.classList.remove('hidden');
+            
+            resultEmoji.textContent = selectedItem.emoji;
+            resultText.textContent = selectedItem.word;
+            
+            dropZone.classList.remove('border-gray-300', 'bg-gray-50', 'border-green-500', 'border-red-500', 'bg-green-50', 'bg-red-50');
+            
+            if (selectedIndex === data.correctIndex) {
+                // إجابة صحيحة
+                playSound('correct');
+                dropZone.classList.add('border-green-500', 'bg-green-50');
+                resultText.classList.remove('text-red-600');
+                resultText.classList.add('text-green-600');
+                
+                feedbackMsg.textContent = "عمل رائع! إجابة صحيحة.";
+                feedbackMsg.className = "mt-4 text-xl font-bold h-8 transition-opacity duration-300 text-green-600 opacity-100";
+            } else {
+                // إجابة خاطئة
+                playSound('wrong');
+                dropZone.classList.add('border-red-500', 'bg-red-50', 'shake-animation');
+                resultText.classList.remove('text-green-600');
+                resultText.classList.add('text-red-600');
+                
+                feedbackMsg.textContent = "إجابة خاطئة، حاول مرة أخرى!";
+                feedbackMsg.className = "mt-4 text-xl font-bold h-8 transition-opacity duration-300 text-red-600 opacity-100";
+                
+                setTimeout(() => {
+                    dropZone.classList.remove('shake-animation');
+                }, 400);
+            }
+        }
+
+        function goToFirst() {
+            currentIndex = 0;
+            loadLevel(currentIndex);
+        }
+        
+        function goToPrev() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                loadLevel(currentIndex);
+            }
+        }
+        
+        function goToNext() {
+            if (currentIndex < quizData.length - 1) {
+                currentIndex++;
+                loadLevel(currentIndex);
+            }
+        }
+        
+        function goToLast() {
+            currentIndex = quizData.length - 1;
+            loadLevel(currentIndex);
+        }
+
+        /* بدء اللعبة عند تحميل الصفحة */
+        window.onload = () => {
+            loadLevel(currentIndex);
+        };
+
+    </script>
+</body>
+</html>

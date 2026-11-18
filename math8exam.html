@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta name="copyright" content="(c) Jawad Nashashibi - CC BY-NC 4.0 - not for sale">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>امتحان الرياضيات - الصف الثامن</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans">
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect } from 'https://esm.sh/react@18';
+        import { createRoot } from 'https://esm.sh/react-dom@18/client';
+        import { User, BookOpen, Lock, ChevronLeft, CheckCircle2, AlertCircle, Download, Users } from 'https://esm.sh/lucide-react@0.292.0';
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfD7gqn21-IAKvjHfn26fRMryekjf6v3Y",
+            authDomain: "exam-grade-7.firebaseapp.com",
+            projectId: "exam-grade-7",
+            storageBucket: "exam-grade-7.firebasestorage.app",
+            messagingSenderId: "154841729783",
+            appId: "1:154841729783:web:3c69baebcee767910961f2"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // مكون لإنشاء الكسور بشكل عمودي (بسط ومقام)
+        const Frac = ({ t, b }) => (
+            <span className="inline-block align-middle text-center mx-1 leading-tight font-semibold">
+                <span className="block border-b-[1.5px] border-slate-800 px-2 pb-[1px]">{t}</span>
+                <span className="block px-2 pt-[1px]">{b}</span>
+            </span>
+        );
+
+        // مكون لإنشاء الجذر التربيعي بشكله الرياضي
+        const Sqrt = ({ val }) => (
+            <span className="inline-flex items-center mx-1 font-sans font-bold" dir="ltr">
+                <span className="text-xl leading-none mt-[2px]">&#8730;</span>
+                <span className="border-t-[1.5px] border-slate-800 px-1">{val}</span>
+            </span>
+        );
+
+        const questions = [
+            { q: "١. في المثلث القائم الزاوية، جيب الزاوية الحادة (جا) يساوي:", options: ["المجاور على الوتر", "المقابل على الوتر", "المقابل على المجاور", "الوتر على المقابل"], correct: 1 },
+            { q: "٢. في المثلث القائم الزاوية، جيب التمام (جتا) للزاوية الحادة يساوي:", options: ["المقابل على الوتر", "المقابل على المجاور", "المجاور على الوتر", "الوتر على المجاور"], correct: 2 },
+            { q: "٣. ظل الزاوية الحادة (ظا) في المثلث القائم الزاوية يساوي:", options: ["المقابل على المجاور", "المجاور على المقابل", "المقابل على الوتر", "المجاور على الوتر"], correct: 0 },
+            { q: "٤. في مثلث قائم الزاوية أطوال أضلاعه ٣، ٤، ٥ سم، جيب أصغر زاوية حادة فيه يساوي:", options: [<Frac t="٣" b="٤" />, <Frac t="٤" b="٥" />, <Frac t="٣" b="٥" />, <Frac t="٥" b="٣" />], correct: 2 },
+            { q: "٥. إذا كان جا(س) = ٠٫٦ و جتا(س) = ٠٫٨، فإن ظا(س) يساوي:", options: ["٠٫٤٨", "١٫٣٣", "٠٫٧٥", "١٫٤"], correct: 2 },
+            { q: "٦. ما هي قيمة جا ٣٠° ؟", options: [<Frac t="١" b="٢" />, <Frac t={<Sqrt val="٣" />} b="٢" />, "١", <Frac t={<Sqrt val="٢" />} b="٢" />], correct: 0 },
+            { q: "٧. ما هي قيمة جتا ٦٠° ؟", options: [<Frac t="١" b="٢" />, <Frac t={<Sqrt val="٣" />} b="٢" />, "١", <Frac t={<Sqrt val="٢" />} b="٢" />], correct: 0 },
+            { q: "٨. قيمة ظا ٤٥° تساوي:", options: ["٠", <Frac t="١" b="٢" />, <Sqrt val="٢" />, "١"], correct: 3 },
+            { q: "٩. في المثلث أ ب جـ القائم في ب، إذا كان أ ب = ٦ سم، ب جـ = ٨ سم، فإن جا(أ) يساوي:", options: ["٠٫٦", "٠٫٨", "٠٫٧٥", "١٫٣٣"], correct: 1 },
+            { q: "١٠. قيمة ظا(جـ) في المثلث أ ب جـ (القائم في ب، أ ب = ٦ ، ب جـ = ٨) هي:", options: [<Frac t="٦" b="٨" />, <Frac t="٨" b="٦" />, <Frac t="٦" b="١٠" />, <Frac t="٨" b="١٠" />], correct: 0 },
+            { q: "١١. سلم طوله ١٠ أمتار يستند على حائط. إذا كانت الزاوية مع الأرض ٣٠°، فما ارتفاع الحائط؟", options: ["٥ أمتار", "١٠ أمتار", "٨٫٦ أمتار", "٢٠ متراً"], correct: 0 },
+            { q: "١٢. إذا كان ظا(س) = ١، فإن قياس الزاوية الحادة (س) هو:", options: ["٣٠°", "٤٥°", "٦٠°", "٩٠°"], correct: 1 },
+            { q: "١٣. أي العلاقة الآتية صحيحة لأي زاوية حادة (س)؟", options: ["جا(س) = جتا(س)", <span className="flex items-center justify-center gap-2">ظا(س) = <Frac t="جتا(س)" b="جا(س)" /></span>, <span className="flex items-center justify-center gap-2">ظا(س) = <Frac t="جا(س)" b="جتا(س)" /></span>, "جا(س) + جتا(س) = ١"], correct: 2 },
+            { q: "١٤. ما هي الصورة العامة للمعادلة التربيعية؟", options: ["أ س + ب = ٠", "أ س٢ + ب س + جـ = ٠", "أ س٣ + ب س٢ = ٠", "س + ص = جـ"], correct: 1 },
+            { q: "١٥. قانون المميز للمعادلة أ س٢ + ب س + جـ = ٠ هو:", options: ["ب٢ + ٤ أ جـ", "ب - ٤ أ جـ", "ب٢ - ٤ أ جـ", "٢ أ - ب"], correct: 2 },
+            { q: "١٦. إذا كان المميز (موجباً)، فكم حلاً حقيقياً للمعادلة؟", options: ["لا يوجد", "حل واحد", "حلان مختلفان", "لا نهائي"], correct: 2 },
+            { q: "١٧. متى يكون للمعادلة التربيعية حل حقيقي واحد؟", options: ["المميز موجب", "المميز سالب", "المميز صفر", "أ = ب"], correct: 2 },
+            { q: "١٨. إذا كان المميز سالباً، فإن المعادلة:", options: ["لها حلان", "لها حل واحد", "ليس لها حلول حقيقية", "معادلة خطية"], correct: 2 },
+            { q: "١٩. في المعادلة س٢ - ٥س + ٦ = ٠، قيمة المميز هي:", options: ["١", "٢٤", "-١", "٢٥"], correct: 0 },
+            { q: "٢٠. ما هو القانون العام للمعادلة التربيعية؟", options: [<span className="flex items-center justify-center gap-2">س = <Frac t={<span className="flex items-center gap-1">-ب ± <Sqrt val="المميز" /></span>} b="٢أ" /></span>, <span className="flex items-center justify-center gap-2">س = <Frac t={<span className="flex items-center gap-1">ب ± <Sqrt val="المميز" /></span>} b="أ" /></span>, <span className="flex items-center justify-center gap-2">س = <Frac t="-ب ± المميز" b="٢أ" /></span>, <span className="flex items-center justify-center gap-2">س = <Frac t="-ب" b="٢أ" /></span>], correct: 0 },
+            { q: "٢١. في المعادلة ٢س٢ - ٣س + ١ = ٠، قيم المعاملات (أ ، ب ، جـ) هي:", options: ["٢، ٣، ١", "٢، -٣، ١", "-٢، -٣، ١", "٢، ١، -٣"], correct: 1 },
+            { q: "٢٢. عدد الحلول الحقيقية للمعادلة س٢ + ٤ = ٠ هو:", options: ["حلان", "حل واحد", "ثلاثة", "لا يوجد"], correct: 3 },
+            { q: "٢٣. إذا كان المميز = ٠، فأي مما يلي حل لها؟", options: ["س = ٢ و -٢", "س = ٥", "ليس لها حل", "س = ١ و ٣"], correct: 1 },
+            { q: "٢٤. جذرا المعادلة س٢ - ٩ = ٠ هما:", options: ["٣ و ٠", "-٣ و ٠", "٣ و -٣", "٩ و -٩"], correct: 2 },
+            { q: "٢٥. حل المعادلة س٢ - ٤س = ٠ هو:", options: ["٠ و -٤", "٠ و ٤", "٢ و -٢", "٤ و -٤"], correct: 1 },
+            { q: "٢٦. أي المعادلات تمتلك جذرين مختلفين؟", options: ["س٢ + ١ = ٠", "س٢ - ٤س + ٤ = ٠", "س٢ - ٥س - ٦ = ٠", "س٢ + ٢س + ٥ = ٠"], correct: 2 },
+            { q: "٢٧. قيمة س التي تحل المعادلة س٢ - ٢س + ١ = ٠ هي:", options: ["١", "-١", "٢", "٠"], correct: 0 },
+            { q: "٢٨. نظام المعادلات الخطية يتكون من:", options: ["معادلة واحدة", "معادلتين خطيتين", "معادلة تربيعية", "ثلاث معادلات"], correct: 1 },
+            { q: "٢٩. لحل س + ص = ٥ ، و س - ص = ١ بالحذف، أسهل خطوة:", options: ["الضرب في ٢", "الطرح", "الجمع", "التعويض"], correct: 2 },
+            { q: "٣٠. بجمع س + ص = ٥ و س - ص = ١، الناتج هو:", options: ["٢ص = ٦", "٢س = ٦", "٢س = ٤", "س = ٦"], correct: 1 },
+            { q: "٣١. حل النظام س + ص = ٥ و س - ص = ١ هو:", options: ["(٢ ، ٣)", "(٣ ، ٢)", "(٤ ، ١)", "(١ ، ٤)"], correct: 1 },
+            { q: "٣٢. فكرة التعويض هي:", options: ["جمع المعادلات", "الرسم البياني", "كتابة متغير بدلالة الآخر", "الضرب في سالب"], correct: 2 },
+            { q: "٣٣. إذا كان ص = ٢س، و س + ص = ٦، قيمة س هي:", options: ["٢", "٣", "٤", "١"], correct: 0 },
+            { q: "٣٤. حل النظام ص = س + ١ و ٢س + ص = ٤ هو:", options: ["(١ ، ٢)", "(٢ ، ١)", "(٠ ، ١)", "(١ ، ٣)"], correct: 0 },
+            { q: "٣٥. للتخلص من ص في ٢س + ٣ص = ٧ و ٤س - ص = ٥، نضرب الثانية في:", options: ["٢", "-٢", "٣", "-٣"], correct: 2 },
+            { q: "٣٦. حل المعادلة س - ٢ص = ٠ هو:", options: ["(١ ، ٢)", "(٢ ، ١)", "(٢ ، ٠)", "(٠ ، ٢)"], correct: 1 },
+            { q: "٣٧. مستقيمان متوازيان لا يتقاطعان، عدد الحلول:", options: ["حل واحد", "حلان", "لا يوجد", "لا نهائي"], correct: 2 },
+            { q: "٣٨. مستقيمان متطابقان، عدد الحلول:", options: ["لا يوجد", "حل واحد", "حلان", "لا نهائي"], correct: 3 },
+            { q: "٣٩. في النظام س = ٣ و ٢س + ص = ١٠، قيمة ص هي:", options: ["٤", "٦", "١٠", "٣"], correct: 0 },
+            { q: "٤٠. من الطرق الجبرية لحل نظام:", options: ["البيانية", "الحذف والتعويض", "التخمين", "القانون العام"], correct: 1 }
+        ];
+
+        function App() {
+            const [step, setStep] = useState('login');
+            const [studentName, setStudentName] = useState('');
+            const [studentClass, setStudentClass] = useState('');
+            const [answers, setAnswers] = useState({});
+            const [results, setResults] = useState([]);
+            const [teacherPassword, setTeacherPassword] = useState('');
+            const [isSubmitting, setIsSubmitting] = useState(false);
+            const [showConfirm, setShowConfirm] = useState(false);
+            
+            useEffect(() => {
+                if (step === 'teacher_dashboard') {
+                    const q = collection(db, 'math8_results');
+                    return onSnapshot(q, (snapshot) => {
+                        const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                        docs.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
+                        setResults(docs);
+                    });
+                }
+            }, [step]);
+
+            const calculateScore = async () => {
+                if (isSubmitting) return;
+                setIsSubmitting(true);
+                
+                let score = 0;
+                questions.forEach((q, i) => { if (answers[i] === q.correct) score++; });
+                
+                try {
+                    await addDoc(collection(db, 'math8_results'), { 
+                        studentName, 
+                        studentClass, 
+                        score, 
+                        timestamp: serverTimestamp() 
+                    });
+                    setStep('submitted');
+                    setShowConfirm(false);
+                    setIsSubmitting(false);
+                } catch (error) {
+                    alert("حدث خطأ أثناء إرسال النتيجة. الرجاء المحاولة مرة أخرى.");
+                    setIsSubmitting(false);
+                }
+            };
+
+            const handleTeacherLogin = () => {
+                if (teacherPassword === '1234') { 
+                    setStep('teacher_dashboard');
+                    setTeacherPassword('');
+                } else {
+                    alert('كلمة المرور غير صحيحة!');
+                }
+            };
+
+            const handleDownloadCSVAll = () => {
+                let csvContent = "\uFEFF";
+                csvContent += "اسم الطالبة,الصف,العلامة (من 40),تاريخ التسليم\n";
+                
+                results.forEach((res) => {
+                    const date = res.timestamp ? new Date(res.timestamp.toDate()).toLocaleString('ar-EG') : 'غير متوفر';
+                    csvContent += `${res.studentName},${res.studentClass},${res.score},${date}\n`;
+                });
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.setAttribute("href", url);
+                link.setAttribute("download", `نتائج_الرياضيات_الثامن.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+
+            const unansweredCount = questions.length - Object.keys(answers).length;
+
+            return (
+                <div dir="rtl" className="min-h-screen bg-slate-50 text-slate-800 font-sans p-4 md:p-8">
+                    <div className="max-w-4xl mx-auto">
+                        
+                        <header className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6 text-center relative">
+                            <button 
+                                onClick={() => setStep('teacher_login')}
+                                className="absolute top-6 left-6 text-slate-300 hover:text-blue-600 transition-colors"
+                                title="دخول المعلم"
+                            >
+                                <Lock className="w-5 h-5" />
+                            </button>
+                            <h1 className="text-2xl md:text-3xl font-bold text-blue-700 mb-2">امتحان الرياضيات - الصف الثامن</h1>
+                            <h2 className="text-lg text-slate-600 flex items-center justify-center gap-2">
+                                <BookOpen className="w-5 h-5" /> نهاية السنة - الفصل الثاني
+                            </h2>
+                        </header>
+
+                        {step === 'login' && (
+                            <div className="bg-white p-8 rounded-3xl shadow-lg max-w-lg mx-auto">
+                                <div className="text-center mb-8">
+                                    <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <User className="w-8 h-8 text-blue-600" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-800">بيانات الطالب</h3>
+                                </div>
+                                <input 
+                                    className="w-full p-4 border border-slate-300 mb-4 rounded-xl focus:ring-2 focus:ring-blue-200 outline-none" 
+                                    placeholder="الاسم الرباعي" 
+                                    onChange={(e) => setStudentName(e.target.value)} 
+                                />
+                                <select 
+                                    className="w-full p-4 border border-slate-300 mb-6 rounded-xl focus:ring-2 focus:ring-blue-200 outline-none appearance-none cursor-pointer" 
+                                    onChange={(e) => setStudentClass(e.target.value)}
+                                >
+                                    <option value="" disabled selected>اختر الشعبة...</option>
+                                    <option>الثامن أ</option>
+                                    <option>الثامن ب</option>
+                                    <option>الثامن ج</option>
+                                </select>
+                                <button 
+                                    onClick={() => setStep('exam')} 
+                                    disabled={!studentName.trim() || !studentClass.trim()}
+                                    className={`w-full text-white p-4 rounded-xl font-bold transition-all flex items-center justify-center gap-2
+                                    ${(!studentName.trim() || !studentClass.trim()) ? 'bg-slate-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+                                >
+                                    ابدأ الامتحان الآن <ChevronLeft className="w-5 h-5" />
+                                </button>
+                            </div>
+                        )}
+                        
+                        {step === 'exam' && (
+                            <div className="space-y-6">
+                                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex justify-between items-center sticky top-4 z-10 shadow-sm backdrop-blur-md bg-opacity-90">
+                                    <div className="font-semibold text-blue-800">
+                                        الطالب: <span className="font-bold">{studentName}</span> | الصف: <span className="font-bold">{studentClass}</span>
+                                    </div>
+                                    <div className="text-sm bg-white px-3 py-1 rounded-full border border-blue-100 text-blue-700 font-medium">
+                                        تمت الإجابة: {Object.keys(answers).length} / 40
+                                    </div>
+                                </div>
+
+                                {questions.map((q, i) => (
+                                    <div key={i} className="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200">
+                                        <h3 className="text-lg md:text-xl font-bold mb-6 text-slate-800 leading-relaxed">{q.q}</h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pl-0 md:pl-6">
+                                            {q.options.map((opt, oi) => (
+                                                <button 
+                                                    key={oi} 
+                                                    onClick={() => setAnswers({...answers, [i]: oi})} 
+                                                    className={`p-4 rounded-xl border-2 flex flex-wrap items-center gap-3 transition-colors text-right
+                                                    ${answers[i] === oi ? 'bg-blue-50 border-blue-500 text-blue-800 font-bold' : 'bg-slate-50 border-slate-100 hover:border-blue-200'}`}
+                                                >
+                                                    <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center
+                                                        ${answers[i] === oi ? 'border-blue-500 bg-blue-500' : 'border-slate-300'}`}>
+                                                        {answers[i] === oi && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                                                    </div>
+                                                    <span className="text-lg">{opt}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                                
+                                <div className="text-center pt-6 pb-12">
+                                    <button 
+                                        onClick={() => setShowConfirm(true)} 
+                                        className="bg-emerald-600 hover:bg-emerald-700 text-white px-10 py-4 rounded-xl font-bold text-lg shadow-lg transition-all inline-flex items-center gap-2"
+                                    >
+                                        <CheckCircle2 className="w-6 h-6" /> تسليم الامتحان
+                                    </button>
+                                </div>
+
+                                {showConfirm && (
+                                    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                                        <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl text-center">
+                                            <div className="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                <AlertCircle className="w-8 h-8 text-amber-600" />
+                                            </div>
+                                            <h3 className="text-xl font-bold text-slate-800 mb-2">تأكيد التسليم</h3>
+                                            
+                                            {unansweredCount > 0 ? (
+                                                <p className="text-red-600 font-medium mb-6">
+                                                    انتبه! لديك ({unansweredCount}) أسئلة لم تقم بالإجابة عليها. هل أنت متأكد من رغبتك في التسليم؟
+                                                </p>
+                                            ) : (
+                                                <p className="text-slate-600 mb-6">
+                                                    لقد أجبت على جميع الأسئلة. هل أنت جاهز للتسليم؟
+                                                </p>
+                                            )}
+
+                                            <div className="flex gap-3">
+                                                <button 
+                                                    onClick={calculateScore}
+                                                    disabled={isSubmitting}
+                                                    className={`flex-1 text-white font-bold py-3 rounded-xl transition-colors ${isSubmitting ? 'bg-slate-400' : 'bg-blue-600 hover:bg-blue-700'}`}
+                                                >
+                                                    {isSubmitting ? 'جاري التسليم...' : 'نعم، سلّم الامتحان'}
+                                                </button>
+                                                <button 
+                                                    onClick={() => setShowConfirm(false)}
+                                                    disabled={isSubmitting}
+                                                    className="flex-1 bg-slate-100 text-slate-700 font-bold py-3 rounded-xl hover:bg-slate-200 transition-colors"
+                                                >
+                                                    تراجع للمراجعة
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                        
+                        {step === 'submitted' && (
+                            <div className="space-y-6">
+                                <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 md:p-12 text-center max-w-2xl mx-auto">
+                                    <CheckCircle2 className="w-24 h-24 mx-auto mb-6 text-emerald-500" />
+                                    <h2 className="text-3xl font-bold text-slate-800 mb-4">تم تسليم الامتحان بنجاح!</h2>
+                                    <p className="text-xl text-slate-600 mb-2">شكراً لكِ يا <span className="font-bold text-blue-600">{studentName}</span>.</p>
+                                    <p className="text-lg text-slate-500">لقد تم إرسال إجاباتكِ إلى معلمة المادة.</p>
+                                    <button 
+                                        onClick={() => window.location.reload()}
+                                        className="mt-8 text-blue-600 font-semibold hover:underline"
+                                    >
+                                        العودة للصفحة الرئيسية
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 'teacher_login' && (
+                            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-10 max-w-sm mx-auto">
+                                <div className="text-center mb-6">
+                                    <div className="bg-slate-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <Lock className="w-8 h-8 text-slate-600" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-slate-800">دخول المعلم</h3>
+                                    <p className="text-sm text-slate-500 mt-2">يرجى إدخال كلمة المرور (للتجربة: 1234)</p>
+                                </div>
+                                <div className="space-y-4">
+                                    <input 
+                                        type="password" 
+                                        value={teacherPassword}
+                                        onChange={(e) => setTeacherPassword(e.target.value)}
+                                        placeholder="كلمة المرور"
+                                        className="w-full px-4 py-3 rounded-xl border text-center border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+                                    />
+                                    <button 
+                                        onClick={handleTeacherLogin}
+                                        className="w-full bg-slate-800 text-white font-bold py-3 rounded-xl hover:bg-slate-900 transition-colors"
+                                    >
+                                        دخول للوحة التحكم
+                                    </button>
+                                    <button 
+                                        onClick={() => setStep('login')}
+                                        className="w-full text-slate-500 font-medium py-2 hover:text-slate-800 transition-colors"
+                                    >
+                                        عودة لصفحة الطلاب
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 'teacher_dashboard' && (
+                            <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                                <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                                    <div className="flex items-center gap-4">
+                                        <div className="bg-blue-100 p-4 rounded-2xl">
+                                            <Users className="w-8 h-8 text-blue-700" />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-2xl font-bold text-slate-800">لوحة تحكم المعلم</h2>
+                                            <p className="text-slate-500">سجل نتائج الطالبات - الرياضيات (الصف الثامن)</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-3">
+                                        <button 
+                                            onClick={handleDownloadCSVAll}
+                                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg transition-all"
+                                        >
+                                            <Download className="w-5 h-5" /> تحميل كملف إكسل
+                                        </button>
+                                        <button 
+                                            onClick={() => {
+                                                setStep('login');
+                                                setTeacherPassword('');
+                                            }}
+                                            className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-3 rounded-xl font-bold transition-all"
+                                        >
+                                            خروج
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {results.length === 0 ? (
+                                    <div className="text-center py-16 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+                                        <AlertCircle className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+                                        <p className="text-lg font-medium text-slate-600">لا توجد نتائج مسجلة حتى الآن.</p>
+                                        <p className="text-slate-500 text-sm mt-1">ستظهر إجابات الطالبات هنا فور تسليمهن للامتحان.</p>
+                                    </div>
+                                ) : (
+                                    <div className="overflow-x-auto border border-slate-200 rounded-2xl">
+                                        <table className="w-full text-right border-collapse bg-white">
+                                            <thead>
+                                                <tr className="bg-slate-50 border-b border-slate-200">
+                                                    <th className="py-4 px-6 font-semibold text-slate-700">الرقم</th>
+                                                    <th className="py-4 px-6 font-semibold text-slate-700">اسم الطالبة</th>
+                                                    <th className="py-4 px-6 font-semibold text-slate-700">الصف</th>
+                                                    <th className="py-4 px-6 font-semibold text-slate-700 text-center">العلامة</th>
+                                                    <th className="py-4 px-6 font-semibold text-slate-700">وقت التسليم</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {results.map((res, index) => (
+                                                    <tr key={res.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                                                        <td className="py-4 px-6 text-slate-500">{index + 1}</td>
+                                                        <td className="py-4 px-6 font-bold text-slate-800">{res.studentName}</td>
+                                                        <td className="py-4 px-6 text-slate-600">{res.studentClass}</td>
+                                                        <td className="py-4 px-6 text-center">
+                                                            <span className={`inline-block px-4 py-1.5 rounded-full font-bold text-sm ${res.score >= 20 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                                                                {res.score} / 40
+                                                            </span>
+                                                        </td>
+                                                        <td className="py-4 px-6 text-sm text-slate-500">
+                                                            {res.timestamp ? new Date(res.timestamp.toDate()).toLocaleString('ar-EG') : '-'}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+        createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
